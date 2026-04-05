@@ -1,4 +1,4 @@
-export type MessageStatus = "pending" | "sent" | "received";
+export type MessageStatus = "pending" | "completed";
 export type Role = "user" | "assistant";
 
 export type Message = {
@@ -9,9 +9,10 @@ export type Message = {
   status: MessageStatus;
 };
 
-export type Conversation = {
-  id: string;
-  title: string;
-  messages: Message[];
-  createdAt: number;
-};
+// Commenting for later use when we implement conversation management
+// export type Conversation = {
+//   id: string;
+//   title: string;
+//   messages: Message[];
+//   createdAt: number;
+// };
