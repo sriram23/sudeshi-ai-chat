@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 export async function POST(req: NextRequest) {
-    const { message } = await req.json();
-    console.log("Received message:", message);
+    const { message, model } = await req.json();
     const response = await fetch("https://api.sarvam.ai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -11,10 +10,9 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
             messages: [{role: "user", content: message}],
             stream: true,
-            model: "sarvam-105b"
+            model: model || "sarvam-30b"
         })
     });
-    console.log("Response from Sarvam API received:", response);
     return new Response(response.body, {
         headers: {
             "Content-Type": "text/event-stream",

@@ -2,13 +2,14 @@ import { json } from "stream/consumers";
 
 export async function streamChat(
     message: string,
+    model: string = "sarvam-30b",
     onChunk: (chunk: string) => void,
     signal?: AbortSignal
 ) {
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     const res = await fetch("/api/chat", {
         method: "POST",
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, model }),
         signal
     });
 

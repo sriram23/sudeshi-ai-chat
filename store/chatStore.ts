@@ -3,6 +3,8 @@ import { Message, MessageStatus } from "@/app/features/chat/types/chat.types";
 
 type ChatStatus = "idle" | "streaming" | "error";
 
+type ChatModel = "sarvam-30b" | "sarvam-105b";
+
 type ChatControls = {
   abortController?: AbortController;
 };
@@ -11,8 +13,12 @@ type ChatStore = {
   messages: Message[];
   currentResponse: string;
   status: ChatStatus;
+  settings: {
+    model: ChatModel;
+  };
   controls: ChatControls;
   addMessage: (message: Message) => void;
+  setSettings: (newSettings: { model: ChatModel }) => void;
   updateMessageStatus: (id: string, status: MessageStatus) => void;
   updateGlobalStatus: (status: ChatStatus) => void;
   appendToResponse: (chunk: string) => void;
@@ -25,6 +31,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   messages: [],
   currentResponse: "",
   status: "idle",
+  settings: {
+    model: "sarvam-30b"
+  },
   controls: {
     abortController: undefined,
   },
@@ -36,6 +45,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     })),
 
     updateGlobalStatus: (status: "idle" | "streaming" | "error") => set({ status }),
+    setSettings : (newSettings: { model: "sarvam-30b" | "sarvam-105b" }) => set( (state) => ({ settings: {
+        ...state.settings,
+        ...newSettings
+    } })),
     appendToResponse: (chunk: string) => set((state) => ({
         currentResponse: state.currentResponse + chunk
     })),
@@ -70,6 +83,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         abortController: controller,
       },
     })),
+
   reset: () =>
     set({
       messages: [],

@@ -13,7 +13,7 @@ export const useChat = () => {
         setAbortController
     } = useChatStore();
 
-    const sendMessage = async (input: string) => {
+    const sendMessage = async (input: string, model: string = "sarvam-30b") => {
         // Abort controller
         const controller = new AbortController();
         setAbortController(controller);
@@ -27,7 +27,7 @@ export const useChat = () => {
         updateGlobalStatus("streaming");
 
         try {
-            await streamChat(input, (chunk) => { appendToResponse(chunk) }, controller.signal);
+            await streamChat(input, model, (chunk) => { appendToResponse(chunk) }, controller.signal);
             finalizeResponse();
         } catch (error) {
             if(controller.signal.aborted) {
