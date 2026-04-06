@@ -1,54 +1,87 @@
-import { useChatStore } from "@/store/chatStore"
+import { useChatStore } from "@/store/chatStore";
 import { createMessage } from "@/app/features/chat/utils/messageFactory";
 import { streamChat } from "../services/sarvamClient";
-import { setGlobal } from "next/dist/trace";
 
 export const useChat = () => {
-    const {
-        addMessage,
-        appendToResponse,
-        finalizeResponse,
-        updateGlobalStatus,
-        status,
-        setAbortController,
-    } = useChatStore();
+  const {
+    addMessage,
+    appendToResponse,
+    finalizeResponse,
+    setStatus,
+    status,
+    setAbortController,
+    createConversation,
+    settings,
+  } = useChatStore();
 
-    const sendMessage = async (input: string, model: string = "sarvam-30b") => {
-        // Abort controller
-        const controller = new AbortController();
-        setAbortController(controller);
+  const sendMessage = async (input: string) => {
+    if (!input.trim()) return;
+    if (status === "streaming") return;
 
-        if(!input.trim()) return;
-        if(status === "streaming") return; // Prevent sending new messages while streaming
+    const store = useChatStore.getState();
 
-        const userMessage = createMessage("user", input, "completed");
-        addMessage(userMessage);
-
-        updateGlobalStatus("streaming");
-
-        try {
-            const { messages: latestMessages } = useChatStore.getState();
-
-            const history =  latestMessages.map(msg => ({ role: msg.role, content: msg.content }));
-            const truncatedHistory = history.slice(-19);
-            await streamChat([...truncatedHistory], model, (chunk) => { appendToResponse(chunk) }, controller.signal);
-            finalizeResponse();
-        } catch (error) {
-            if(controller.signal.aborted) {
-                console.log("Streaming aborted by user.");
-                finalizeResponse();
-            } else {
-                console.error("Error during streaming:", error);
-                updateGlobalStatus("error");
-            }
-        } finally {
-            setAbortController(undefined);
-        }
-    };
-    const stopStreaming = () => {
-        const { controls } = useChatStore.getState();
-        controls.abortController?.abort();
+    // 🟢 ensure conversation exists
+    if (!store.activeConversationId) {
+      createConversation("New Chat");
     }
-    return { sendMessage, stopStreaming };
 
+    // 🟢 add user message
+    const userMessage = createMessage("user", input, "completed");
+    addMessage(userMessage);
+
+    // 🟢 get latest state AFTER adding message
+    const {
+      conversations,
+      activeConversationId,
+    } = useChatStore.getState();
+
+    const activeConversation = conversations.find(
+      (c) => c.id === activeConversationId
+    );
+
+    const latestMessages = activeConversation?.messages || [];
+
+    // 🟢 build context
+    const history = latestMessages.map((msg) => ({
+      role: msg.role,
+      content: msg.content,
+    }));
+
+    const truncatedHistory = history.slice(-20);
+
+    // 🟢 create controller AFTER guards
+    const controller = new AbortController();
+    setAbortController(controller);
+
+    setStatus("streaming");
+
+    try {
+      await streamChat(
+        truncatedHistory,
+        settings.model,
+        (chunk) => appendToResponse(chunk),
+        controller.signal
+      );
+
+      finalizeResponse();
+      setStatus("idle");
+    } catch (error) {
+      if (controller.signal.aborted) {
+        finalizeResponse();
+        setStatus("idle");
+      } else {
+        console.error("Error during streaming:", error);
+        setStatus("error");
+      }
+    } finally {
+      setAbortController(undefined);
+    }
+  };
+
+  const stopStreaming = () => {
+    const { controls } = useChatStore.getState();
+    controls.abortController?.abort();
+  };
+
+  return { sendMessage, stopStreaming };
 }
