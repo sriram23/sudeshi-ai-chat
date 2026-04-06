@@ -16,7 +16,7 @@ const ChatContainer = () => {
                 {messages.map((msg) => (
                     <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                         {msg.role === "user" && status === "idle" && (
-                            <button onClick={() => { sendMessage(msg.content); setInput(""); }}>
+                            <button onClick={() => { sendMessage(msg.content, settings.model); setInput(""); }}>
                                 <RotateCcw size={16} />
                             </button>
                         )}

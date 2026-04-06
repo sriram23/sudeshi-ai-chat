@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 export async function POST(req: NextRequest) {
-    const { message, model } = await req.json();
+    const { messages, model } = await req.json();
     const response = await fetch("https://api.sarvam.ai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
             "Authorization": `Bearer ${process.env.SARVAM_API_KEY}`,
         },
         body: JSON.stringify({
-            messages: [{role: "user", content: message}],
+            messages: messages,
             stream: true,
             model: model || "sarvam-30b"
         })

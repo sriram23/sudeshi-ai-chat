@@ -10,7 +10,7 @@ export const useChat = () => {
         finalizeResponse,
         updateGlobalStatus,
         status,
-        setAbortController
+        setAbortController,
     } = useChatStore();
 
     const sendMessage = async (input: string, model: string = "sarvam-30b") => {
@@ -27,7 +27,11 @@ export const useChat = () => {
         updateGlobalStatus("streaming");
 
         try {
-            await streamChat(input, model, (chunk) => { appendToResponse(chunk) }, controller.signal);
+            const { messages: latestMessages } = useChatStore.getState();
+
+            const history =  latestMessages.map(msg => ({ role: msg.role, content: msg.content }));
+            const truncatedHistory = history.slice(-19);
+            await streamChat([...truncatedHistory], model, (chunk) => { appendToResponse(chunk) }, controller.signal);
             finalizeResponse();
         } catch (error) {
             if(controller.signal.aborted) {

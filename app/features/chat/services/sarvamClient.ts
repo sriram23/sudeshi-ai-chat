@@ -1,7 +1,6 @@
-import { json } from "stream/consumers";
 
 export async function streamChat(
-    message: string,
+    messages: { role: string; content: string }[],
     model: string = "sarvam-30b",
     onChunk: (chunk: string) => void,
     signal?: AbortSignal
@@ -9,7 +8,7 @@ export async function streamChat(
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     const res = await fetch("/api/chat", {
         method: "POST",
-        body: JSON.stringify({ message, model }),
+        body: JSON.stringify({ messages, model }),
         signal
     });
 
