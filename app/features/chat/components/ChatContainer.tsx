@@ -5,6 +5,7 @@ import { useState } from "react";
 import ChatInput from "./ChatInput";
 import { RotateCcw } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { MarkdownRenderer } from "./MarkdownRender";
 
 const ChatContainer = () => {
     const { sendMessage, stopStreaming } = useChat();
@@ -31,14 +32,13 @@ const ChatContainer = () => {
                                 </button>
                             )}
                             <div className={`p-2 m-1 rounded-lg ${msg.role === "user" ? "bg-zinc-300 self-end" : "self-start"}`}>
-                                {msg.content}
+                                <MarkdownRenderer content={msg.content} />
                             </div>
                         </div>
-                        
                     ))}
                     {currentResponse && (
                         <div className="p-2 my-1 rounded text-black self-start">
-                            {currentResponse}
+                            <MarkdownRenderer content={currentResponse} />
                         </div>
                     )}
                 </div>

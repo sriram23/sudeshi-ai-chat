@@ -47,7 +47,7 @@ export async function streamChat(
 
                 const text = json?.choices[0]?.delta?.content || json?.choices[0]?.message?.content || "";
                 if(text) {
-                    await delay(100);
+                    await delay(40);
                     onChunk(text);
                 }
             } catch (error) {
