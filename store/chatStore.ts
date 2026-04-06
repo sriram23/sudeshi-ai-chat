@@ -3,102 +3,183 @@ import { persist } from "zustand/middleware";
 import { Message, MessageStatus } from "@/app/features/chat/types/chat.types";
 
 type ChatStatus = "idle" | "streaming" | "error";
-
 type ChatModel = "sarvam-30b" | "sarvam-105b";
 
-type ChatControls = {
-  abortController?: AbortController;
+type Conversation = {
+  id: string;
+  title: string;
+  messages: Message[];
+  createdAt: number;
 };
 
 type ChatStore = {
-  messages: Message[];
+  conversations: Conversation[];
+  activeConversationId: string | null;
+
   currentResponse: string;
   status: ChatStatus;
+
   settings: {
     model: ChatModel;
   };
-  controls: ChatControls;
+
+  controls: {
+    abortController?: AbortController;
+  };
+
+  createConversation: (title?: string) => void;
+  setActiveConversation: (id: string) => void;
+
   addMessage: (message: Message) => void;
-  setSettings: (newSettings: { model: ChatModel }) => void;
   updateMessageStatus: (id: string, status: MessageStatus) => void;
-  updateGlobalStatus: (status: ChatStatus) => void;
+
   appendToResponse: (chunk: string) => void;
   finalizeResponse: () => void;
+
+  setSettings: (newSettings: Partial<{ model: ChatModel }>) => void;
+  setStatus: (status: ChatStatus) => void;
+
   setAbortController: (controller?: AbortController) => void;
+
   reset: () => void;
 };
 
-export const useChatStore = create<ChatStore>()(persist(
-  (set, get) => ({
-  messages: [],
-  currentResponse: "",
-  status: "idle",
-  settings: {
-    model: "sarvam-30b"
-  },
-  controls: {
-    abortController: undefined,
-  },
-    addMessage: (message: Message) => set((state) => ({ messages: [...state.messages, message] })),
-    updateMessageStatus: (id: string, status: MessageStatus) => set((state) => ({
-        messages: state.messages.map((msg) =>
-            msg.id === id ? { ...msg, status } : msg
-        ),
-    })),
+export const useChatStore = create<ChatStore>()(
+  persist(
+    (set, get) => ({
+      conversations: [],
+      activeConversationId: null,
 
-    updateGlobalStatus: (status: "idle" | "streaming" | "error") => set({ status }),
-    setSettings : (newSettings: { model: "sarvam-30b" | "sarvam-105b" }) => set( (state) => ({ settings: {
-        ...state.settings,
-        ...newSettings
-    } })),
-    appendToResponse: (chunk: string) => set((state) => ({
-        currentResponse: state.currentResponse + chunk
-    })),
-    finalizeResponse: () => {
-    const { currentResponse, messages } = get()
-
-    if (!currentResponse) return
-
-    const newMessage: Message = {
-      id: crypto.randomUUID(),
-      role: "assistant",
-      content: currentResponse,
-      createdAt: Date.now(),
-      status: "completed",
-    }
-
-    set({
-      messages: [...messages, newMessage],
       currentResponse: "",
       status: "idle",
-      controls: {
-        ...get().controls,
-        abortController: undefined,
-      },
-    })
-  },
 
-  setAbortController: (controller?: AbortController) =>
-    set((state) => ({
-      controls: {
-        ...state.controls,
-        abortController: controller,
+      settings: {
+        model: "sarvam-30b",
       },
-    })),
 
-  reset: () =>
-    set({
-      messages: [],
-      currentResponse: "",
-      status: "idle",
-      controls: {
-        abortController: undefined,
+      controls: {},
+
+      // create new conversation
+      createConversation: (title = "New Chat") =>
+        set((state) => {
+          const newConv: Conversation = {
+            id: crypto.randomUUID(),
+            title,
+            messages: [],
+            createdAt: Date.now(),
+          };
+
+          return {
+            conversations: [newConv, ...state.conversations],
+            activeConversationId: newConv.id,
+          };
+        }),
+
+      // switch chat
+      setActiveConversation: (id) =>
+        set({ activeConversationId: id }),
+
+      // add user message
+      addMessage: (message) =>
+        set((state) => {
+          if (!state.activeConversationId) return state;
+
+          return {
+            conversations: state.conversations.map((conv) =>
+              conv.id === state.activeConversationId
+                ? { ...conv, messages: [...conv.messages, message] }
+                : conv
+            ),
+          };
+        }),
+
+      updateMessageStatus: (id, status) =>
+        set((state) => {
+          if (!state.activeConversationId) return state;
+
+          return {
+            conversations: state.conversations.map((conv) =>
+              conv.id === state.activeConversationId
+                ? {
+                    ...conv,
+                    messages: conv.messages.map((msg) =>
+                      msg.id === id ? { ...msg, status } : msg
+                    ),
+                  }
+                : conv
+            ),
+          };
+        }),
+
+      // streaming buffer
+      appendToResponse: (chunk) =>
+        set((state) => ({
+          currentResponse: state.currentResponse + chunk,
+        })),
+
+      // finalize AI response
+      finalizeResponse: () => {
+        const { currentResponse, conversations, activeConversationId } = get();
+
+        if (!currentResponse || !activeConversationId) return;
+
+        const newMessage: Message = {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: currentResponse,
+          createdAt: Date.now(),
+          status: "completed",
+        };
+
+        set({
+          conversations: conversations.map((conv) =>
+            conv.id === activeConversationId
+              ? { ...conv, messages: [...conv.messages, newMessage] }
+              : conv
+          ),
+          currentResponse: "",
+          status: "idle",
+          controls: {
+            ...get().controls,
+            abortController: undefined,
+          },
+        });
       },
+
+      setSettings: (newSettings) =>
+        set((state) => ({
+          settings: {
+            ...state.settings,
+            ...newSettings,
+          },
+        })),
+
+      setStatus: (status) => set({ status }),
+
+      setAbortController: (controller) =>
+        set((state) => ({
+          controls: {
+            ...state.controls,
+            abortController: controller,
+          },
+        })),
+
+      reset: () =>
+        set({
+          conversations: [],
+          activeConversationId: null,
+          currentResponse: "",
+          status: "idle",
+          controls: {},
+        }),
     }),
-}),{
-  name: "sudeshi-chat-store",
-  partialize: (state) => ({
-    messages: state.messages,
-    settings: state.settings,
-  }),
-}))
+    {
+      name: "sudeshi-chat-store",
+      partialize: (state) => ({
+        conversations: state.conversations,
+        settings: state.settings,
+        activeConversationId: state.activeConversationId,
+      }),
+    }
+  )
+);
