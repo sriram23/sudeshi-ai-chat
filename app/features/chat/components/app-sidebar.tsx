@@ -4,9 +4,14 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useChatStore } from "@/store/chatStore";
+import { MessageSquare, Plus } from "lucide-react";
 
 export function AppSidebar(): React.ReactNode {
   const {conversations, activeConversationId, createConversation, setActiveConversation} = useChatStore();
@@ -15,23 +20,31 @@ export function AppSidebar(): React.ReactNode {
     createConversation(title);
   }
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup title="Welcome to Sudeshi" >
-          <h1 className="text-3xl">Sudeshi</h1>
-          <p className="text-sm text-gray-500">Your personal AI assistant</p>
-          <p className="text-sm">Powered by Sarvam AI</p>
+          <SidebarGroupLabel className="text-3xl">Sudeshi</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sm text-gray-500">Your personal AI assistant</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sm">Powered by Sarvam AI</SidebarGroupLabel>
         </SidebarGroup>
         <SidebarGroup title="New Chat" >
-          <button onClick={() => createNewConversation()} className="bg-zinc-800 rounded text-white h-10">New Conversation</button>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={() => createNewConversation()} className="bg-zinc-800 rounded text-white h-10"><Plus />New Conversation</SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup title="Conversations">
+          <SidebarMenu>
           {conversations.map(conv => (
-            <div onClick={() => setActiveConversation(conv.id)} key={conv.id} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-700 text-white' : 'bg-gray-200'}`}>
-              {conv.title}
-            </div>
+            <SidebarMenuItem key={conv.id}>
+              <SidebarMenuButton onClick={() => setActiveConversation(conv.id)} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-700 text-white' : 'bg-gray-200'}`}>
+                <MessageSquare />{conv.title}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           ))}
+          </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter />
