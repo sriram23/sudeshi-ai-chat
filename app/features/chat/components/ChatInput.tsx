@@ -6,6 +6,12 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
         textarea.style.height = "auto";
         textarea.style.height = `${textarea.scrollHeight}px`;
     }
+
+    const handleSend = () => {
+        if(!input.trim()) return;
+        sendMessage(input, settings.model);
+        setInput("");
+    }
     return (
         <div className="w-full flex flex-col relative">
             {status === "error" && (
@@ -13,7 +19,12 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
                     An error occurred while streaming. Please try again.
                 </div>
             )}
-            <textarea onInput={handleInputHeight} value={input} onChange={(e) => setInput(e.target.value)} rows={1} className="no-scrollbar focus-visible:ring-2 focus:outline-none focus-visible:ring-blue-500 mt-auto min-h-10 max-h-32 h-full p-2 border rounded resize-none" placeholder="Type your message..."/>
+            <textarea onKeyDown={(e) => {
+                if(e.key === "Enter" && !e.shiftKey){
+                    e.preventDefault()
+                    handleSend();
+                }
+            }} onInput={handleInputHeight} value={input} onChange={(e) => setInput(e.target.value)} rows={1} className="no-scrollbar focus-visible:ring-2 focus:outline-none focus-visible:ring-blue-500 mt-auto min-h-10 max-h-32 h-full p-2 border rounded resize-none" placeholder="Type your message..."/>
             <div className="absolute right-2 bottom-1">
                 <select onChange={(e) => setSettings({ model: e.target.value as "sarvam-30b" | "sarvam-105b" })} value={settings?.model} className="mr-2 p-1 border rounded">
                     <option value="sarvam-30b">Sarvam 30B</option>
