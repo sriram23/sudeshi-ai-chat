@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { Message, MessageStatus } from "@/app/features/chat/types/chat.types";
 
 type ChatStatus = "idle" | "streaming" | "error";
@@ -27,7 +28,8 @@ type ChatStore = {
   reset: () => void;
 };
 
-export const useChatStore = create<ChatStore>((set, get) => ({
+export const useChatStore = create<ChatStore>()(persist(
+  (set, get) => ({
   messages: [],
   currentResponse: "",
   status: "idle",
@@ -93,4 +95,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         abortController: undefined,
       },
     }),
+}),{
+  name: "sudeshi-chat-store",
+  partialize: (state) => ({
+    messages: state.messages,
+    settings: state.settings,
+  }),
 }))
