@@ -10,6 +10,7 @@ export const MarkdownRenderer = ({ content }: { content: string }) => {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
+        // @ts-ignore
         code({ node, inline, className, children, ...props }) {
           const match = /language-(\w+)/.exec(className || "");
 
