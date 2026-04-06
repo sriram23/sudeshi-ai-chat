@@ -8,6 +8,7 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
     }
 
     const handleSend = () => {
+        if (status === "streaming") return; // Prevent sending new messages while streaming
         if(!input.trim()) return;
         sendMessage(input, settings.model);
         setInput("");
