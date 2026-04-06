@@ -25,7 +25,7 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
                     e.preventDefault()
                     handleSend();
                 }
-            }} onInput={handleInputHeight} value={input} onChange={(e) => setInput(e.target.value)} rows={1} className="no-scrollbar focus-visible:ring-2 focus:outline-none focus-visible:ring-blue-500 mt-auto min-h-10 max-h-32 h-full p-2 border rounded resize-none" placeholder="Type your message..."/>
+            }} onInput={handleInputHeight} value={input} onChange={(e) => setInput(e.target.value)} rows={1} className="no-scrollbar focus-visible:ring-2 focus:outline-none focus-visible:ring-blue-500 mt-auto min-h-10 max-h-32 h-full p-2 border rounded-lg resize-none" placeholder="Type your message..."/>
             <div className="absolute right-2 bottom-1">
                 <select onChange={(e) => setSettings({ model: e.target.value as "sarvam-30b" | "sarvam-105b" })} value={settings?.model} className="mr-2 p-1 border rounded">
                     <option value="sarvam-30b">Sarvam 30B</option>
