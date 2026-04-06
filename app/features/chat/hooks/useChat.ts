@@ -20,16 +20,16 @@ export const useChat = () => {
 
     const store = useChatStore.getState();
 
-    // 🟢 ensure conversation exists
+    // ensure conversation exists
     if (!store.activeConversationId) {
       createConversation("New Chat");
     }
 
-    // 🟢 add user message
+    // add user message
     const userMessage = createMessage("user", input, "completed");
     addMessage(userMessage);
 
-    // 🟢 get latest state AFTER adding message
+    // get latest state AFTER adding message
     const {
       conversations,
       activeConversationId,
@@ -41,7 +41,7 @@ export const useChat = () => {
 
     const latestMessages = activeConversation?.messages || [];
 
-    // 🟢 build context
+    // build context
     const history = latestMessages.map((msg) => ({
       role: msg.role,
       content: msg.content,
@@ -49,7 +49,7 @@ export const useChat = () => {
 
     const truncatedHistory = history.slice(-20);
 
-    // 🟢 create controller AFTER guards
+    // create controller AFTER guards
     const controller = new AbortController();
     setAbortController(controller);
 
