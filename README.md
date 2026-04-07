@@ -6,13 +6,19 @@ AI-powered chat application with real-time streaming, built using Sarvam AI.
 - Streaming responses
 - Abortable requests
 - Context-aware conversations
-- Retry & error handling
+- Error handling
 - Model switching (Sarvam 30B / 105B)
+- Markdown rendering with syntax highlighting
+- Dark/Light theme support
 
 ## Tech Stack
 - Next.js (App Router)
+- TypeScript
 - Zustand
 - Tailwind CSS
+- next-themes
+- react-markdown
+- shadcn/ui
 - Sarvam AI
 
 ## Status
