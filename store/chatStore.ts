@@ -34,7 +34,7 @@ type ChatStore = {
   updateMessageStatus: (id: string, status: MessageStatus) => void;
 
   appendToResponse: (chunk: string) => void;
-  finalizeResponse: () => void;
+  finalizeResponse: (messageStatus?: MessageStatus) => void;
 
   setSettings: (newSettings: Partial<{ model: ChatModel }>) => void;
   setStatus: (status: ChatStatus) => void;
@@ -118,7 +118,7 @@ export const useChatStore = create<ChatStore>()(
         })),
 
       // finalize AI response
-      finalizeResponse: () => {
+      finalizeResponse: (messageStatus: MessageStatus="completed") => {
         const { currentResponse, conversations, activeConversationId } = get();
 
         if (!currentResponse || !activeConversationId) return;
@@ -128,7 +128,7 @@ export const useChatStore = create<ChatStore>()(
           role: "assistant",
           content: currentResponse,
           createdAt: Date.now(),
-          status: "completed",
+          status: messageStatus,
         };
 
         set({

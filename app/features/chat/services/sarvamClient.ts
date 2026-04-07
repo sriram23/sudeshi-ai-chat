@@ -5,7 +5,6 @@ export async function streamChat(
     onChunk: (chunk: string) => void,
     signal?: AbortSignal
 ) {
-    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     const res = await fetch("/api/chat", {
         method: "POST",
         body: JSON.stringify({ messages, model }),
@@ -47,7 +46,6 @@ export async function streamChat(
 
                 const text = json?.choices[0]?.delta?.content || json?.choices[0]?.message?.content || "";
                 if(text) {
-                    await delay(40);
                     onChunk(text);
                 }
             } catch (error) {

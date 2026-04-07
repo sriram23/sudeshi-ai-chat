@@ -67,7 +67,7 @@ export const useChat = () => {
       setStatus("idle");
     } catch (error) {
       if (controller.signal.aborted) {
-        finalizeResponse();
+        finalizeResponse("error");
         setStatus("idle");
       } else {
         console.error("Error during streaming:", error);

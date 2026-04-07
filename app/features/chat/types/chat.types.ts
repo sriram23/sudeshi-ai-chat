@@ -1,4 +1,4 @@
-export type MessageStatus = "pending" | "completed";
+export type MessageStatus = "pending" | "completed" | "error";
 export type Role = "user" | "assistant";
 
 export type Message = {

@@ -3,7 +3,7 @@ import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
 import { useState } from "react";
 import ChatInput from "./ChatInput";
-import { RotateCcw } from "lucide-react";
+import { CircleAlert, RotateCcw } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { MarkdownRenderer } from "./MarkdownRender";
 
@@ -25,17 +25,24 @@ const ChatContainer = () => {
             {conversations.filter(c => c.id === activeConversationId).map(conv => (
                 <div key={conv.id} className="flex-1 overflow-y-auto p-2 w-full">
                     {conv.messages.map((msg) => (
-                        <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                        <div key={msg.id} className={`flex items-center ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                             {msg.role === "user" && status === "idle" && (
                                 <button onClick={() => { sendMessage(msg.content); setInput(""); }}>
                                     <RotateCcw size={16} />
                                 </button>
                             )}
+                            {msg.role === "user" && status === "idle" && msg.status === "error" && <CircleAlert color="red" />}
                             <div className={`p-2 m-1 rounded-lg ${msg.role === "user" ? "bg-zinc-300 self-end" : "self-start"}`}>
                                 <MarkdownRenderer content={msg.content} />
                             </div>
+                            {msg.role !== "user" && status === "idle" && msg.status === "error" && <CircleAlert color="red" />}
                         </div>
                     ))}
+                    {status === "streaming" && (
+                        <div className="p-2 my-1 rounded text-black font-extralight italic self-start">
+                            <MarkdownRenderer content={currentResponse.length ?"Responding...":"Thinking..."} />
+                        </div>
+                    )}
                     {currentResponse && (
                         <div className="p-2 my-1 rounded text-black self-start">
                             <MarkdownRenderer content={currentResponse} />
