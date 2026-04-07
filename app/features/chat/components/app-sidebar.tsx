@@ -12,9 +12,11 @@ import {
 } from "@/components/ui/sidebar"
 import { useChatStore } from "@/store/chatStore";
 import { MessageSquare, Plus } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export function AppSidebar(): React.ReactNode {
   const {conversations, activeConversationId, createConversation, setActiveConversation} = useChatStore();
+  const { theme, setTheme } = useTheme();
   const createNewConversation = () => {
     const title = "New Chat " + Date.now().toString();
     createConversation(title);
@@ -47,7 +49,9 @@ export function AppSidebar(): React.ReactNode {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <button onClick={() => setTheme(theme === "dark"?"light":"dark")}>toggle theme</button>
+      </SidebarFooter>
     </Sidebar>
   )
 }

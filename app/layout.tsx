@@ -3,6 +3,7 @@ import { Nunito } from "next/font/google";
 import "./globals.css";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/app/features/chat/components/app-sidebar";
+import { ThemeProvider } from "next-themes";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -26,6 +27,7 @@ export default function RootLayout({
       className={`${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
@@ -34,6 +36,7 @@ export default function RootLayout({
             </main>
           </SidebarInset>
         </SidebarProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
