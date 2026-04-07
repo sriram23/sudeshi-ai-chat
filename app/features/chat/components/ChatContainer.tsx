@@ -13,7 +13,7 @@ const ChatContainer = () => {
     const [input, setInput] = useState("");
     return (
         <div className="flex flex-col min-h-screen h-full w-full m-0 p-4 flex-1">
-            <div className="flex items-top">
+            <div className="flex items-top sticky top-0 z-10 bg-white mb-4">
                 <SidebarTrigger className="mb-4" size="lg"/>
                 <h1 className="text-3xl font-bold ml-4">Sudeshi</h1>
             </div>
