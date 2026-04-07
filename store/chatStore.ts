@@ -17,6 +17,7 @@ type ChatStore = {
   activeConversationId: string | null;
 
   currentResponse: string;
+  currentUsage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
   status: ChatStatus;
 
   settings: {
@@ -40,6 +41,7 @@ type ChatStore = {
   setStatus: (status: ChatStatus) => void;
 
   setAbortController: (controller?: AbortController) => void;
+  setCurrentUsage: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => void;
 
   reset: () => void;
 };
@@ -51,6 +53,7 @@ export const useChatStore = create<ChatStore>()(
       activeConversationId: null,
 
       currentResponse: "",
+      currentUsage: undefined,
       status: "idle",
 
       settings: {
@@ -119,7 +122,7 @@ export const useChatStore = create<ChatStore>()(
 
       // finalize AI response
       finalizeResponse: (messageStatus: MessageStatus="completed") => {
-        const { currentResponse, conversations, activeConversationId } = get();
+        const { currentResponse, currentUsage, conversations, activeConversationId } = get();
 
         if (!currentResponse || !activeConversationId) return;
 
@@ -129,6 +132,7 @@ export const useChatStore = create<ChatStore>()(
           content: currentResponse,
           createdAt: Date.now(),
           status: messageStatus,
+          usage: currentUsage,
         };
 
         set({
@@ -138,6 +142,7 @@ export const useChatStore = create<ChatStore>()(
               : conv
           ),
           currentResponse: "",
+          currentUsage: undefined,
           status: "idle",
           controls: {
             ...get().controls,
@@ -164,11 +169,14 @@ export const useChatStore = create<ChatStore>()(
           },
         })),
 
+      setCurrentUsage: (usage) => set({ currentUsage: usage }),
+
       reset: () =>
         set({
           conversations: [],
           activeConversationId: null,
           currentResponse: "",
+          currentUsage: undefined,
           status: "idle",
           controls: {},
         }),

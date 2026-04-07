@@ -3,6 +3,7 @@ export async function streamChat(
     messages: { role: string; content: string }[],
     model: string = "sarvam-30b",
     onChunk: (chunk: string) => void,
+    onComplete?: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => void,
     signal?: AbortSignal
 ) {
     const res = await fetch("/api/chat", {
@@ -20,6 +21,7 @@ export async function streamChat(
     const decoder = new TextDecoder("utf-8");
 
     let buffer = "";
+    let usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number } | undefined;
 
     while(true) {
         const { done, value } = await reader.read();
@@ -39,6 +41,7 @@ export async function streamChat(
             const data = line.replace(/^data:\s*/, "");
             if (data === "[DONE]") {
                 console.log("Stream signaled done");
+                if (onComplete) onComplete(usage);
                 return;
             }
             try {
@@ -47,6 +50,11 @@ export async function streamChat(
                 const text = json?.choices[0]?.delta?.content || json?.choices[0]?.message?.content || "";
                 if(text) {
                     onChunk(text);
+                }
+
+                // Capture usage if present
+                if (json.usage) {
+                    usage = json.usage;
                 }
             } catch (error) {
                 console.error("Error parsing JSON:", error);

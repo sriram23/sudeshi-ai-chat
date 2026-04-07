@@ -12,6 +12,7 @@ export const useChat = () => {
     setAbortController,
     createConversation,
     settings,
+    setCurrentUsage,
   } = useChatStore();
 
   const sendMessage = async (input: string) => {
@@ -60,6 +61,7 @@ export const useChat = () => {
         truncatedHistory,
         settings.model,
         (chunk) => appendToResponse(chunk),
+        (usage) => setCurrentUsage(usage),
         controller.signal
       );
 

@@ -34,6 +34,11 @@ const ChatContainer = () => {
                             {msg.role === "user" && status === "idle" && msg.status === "error" && <CircleAlert color="red" />}
                             <div className={`p-2 m-1 rounded-lg ${msg.role === "user" ? "bg-zinc-300 self-end" : "self-start"}`}>
                                 <MarkdownRenderer content={msg.content} />
+                                {msg.role === "assistant" && msg.usage && (
+                                    <div className="text-xs text-gray-500 mt-1">
+                                        Tokens usage: {msg.usage.total_tokens} (Prompt: {msg.usage.prompt_tokens}, Completion: {msg.usage.completion_tokens})
+                                    </div>
+                                )}
                             </div>
                             {msg.role !== "user" && status === "idle" && msg.status === "error" && <CircleAlert color="red" />}
                         </div>

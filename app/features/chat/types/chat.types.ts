@@ -7,6 +7,11 @@ export type Message = {
   content: string;
   createdAt: number;
   status: MessageStatus;
+  usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
 };
 
 // Commenting for later use when we implement conversation management
