@@ -39,6 +39,11 @@ const ChatContainer = () => {
                                         Tokens usage: {msg.usage.total_tokens} (Prompt: {msg.usage.prompt_tokens}, Completion: {msg.usage.completion_tokens})
                                     </div>
                                 )}
+                                {conv.messages.length > 20 && msg.role === "user" && (
+                                    <div className="text-xs text-gray-500 mt-1">
+                                        Context trimmed to last 20 messages. Consider starting a new conversation for better performance.
+                                    </div>
+                                )}
                             </div>
                             {msg.role !== "user" && status === "idle" && msg.status === "error" && <CircleAlert color="red" />}
                         </div>
