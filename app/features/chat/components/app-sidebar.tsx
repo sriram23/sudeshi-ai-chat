@@ -19,6 +19,11 @@ export function AppSidebar(): React.ReactNode {
   const { theme, setTheme } = useTheme();
   const createNewConversation = () => {
     const title = "New Chat " + Date.now().toString();
+    const currentConv = conversations.find(c => c.id === activeConversationId);
+    if(currentConv && !currentConv.messages.length) {
+      setActiveConversation(currentConv.id);
+      return;
+    }
     createConversation(title);
   }
   return (
