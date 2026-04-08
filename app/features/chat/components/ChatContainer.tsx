@@ -1,7 +1,7 @@
 "use client";
 import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import ChatInput from "./ChatInput";
 import { CircleAlert, RotateCcw } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -11,6 +11,15 @@ const ChatContainer = () => {
     const { sendMessage, stopStreaming } = useChat();
     const { conversations, activeConversationId,  currentResponse, status, settings, setSettings } = useChatStore();
     const [input, setInput] = useState("");
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [currentResponse, status]);
     return (
         <div className="flex flex-col min-h-screen h-full w-full m-0 p-4 flex-1">
             <div className="flex items-top sticky top-0 z-10 bg-white mb-4">
@@ -58,6 +67,7 @@ const ChatContainer = () => {
                             <MarkdownRenderer content={currentResponse} />
                         </div>
                     )}
+                    <div ref={messagesEndRef} />
                 </div>
             ))}
             <div className="sticky bottom-0 p-4 w-full bg-white">
