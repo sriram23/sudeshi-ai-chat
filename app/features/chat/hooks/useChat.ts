@@ -1,6 +1,6 @@
 import { useChatStore } from "@/store/chatStore";
 import { createMessage } from "@/app/features/chat/utils/messageFactory";
-import { streamChat } from "../services/sarvamClient";
+import { streamChat, summarizeText } from "../services/sarvamClient";
 
 export const useChat = () => {
   const {
@@ -47,8 +47,10 @@ export const useChat = () => {
       role: msg.role,
       content: msg.content,
     }));
+    const oldMessages = history.slice(0, -19);
+    const summarizedContent = await summarizeText(oldMessages);
+    const truncatedHistory = history.slice(-19);
 
-    const truncatedHistory = history.slice(-20);
 
     // create controller AFTER guards
     const controller = new AbortController();
@@ -58,7 +60,7 @@ export const useChat = () => {
 
     try {
       await streamChat(
-        truncatedHistory,
+        [{ role: "system", content: summarizedContent }, ...truncatedHistory],
         settings.model,
         (chunk) => appendToResponse(chunk),
         (usage) => setCurrentUsage(usage),

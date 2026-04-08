@@ -62,3 +62,44 @@ export async function streamChat(
         }
     }
 }
+
+export async function summarizeText(
+    messages: { role: string; content: string }[],
+) {
+    const text = messages.map(m => m.content).join("\n");
+    const summaryPrompt = `You are a precise summarization engine.
+
+Your job is to compress a conversation into a structured summary that preserves context for future AI responses.
+
+Rules:
+- Capture key user intents and goals
+- Capture important facts and constraints
+- Capture decisions or conclusions made
+- Capture ongoing tasks or open questions
+- Remove repetition and irrelevant details
+- Do NOT add new information
+- Keep it concise but information-dense
+
+Output format:
+- Bullet points
+- Clear and structured
+- No fluff
+
+Summarize the following conversation:${text}`.trim();
+
+    if (messages.length < 6) {
+        // Returning the original text if the conversation is short.
+        return text;
+    }
+    try {
+        const res = await fetch("/api/summarize", {
+            method: "POST",
+            body: JSON.stringify({ text: summaryPrompt }),
+        });
+        const data = await res.json();
+        return data.summary;
+    } catch (error) {
+        console.error("Error summarizing text:", error);
+        return text;
+    }
+}
