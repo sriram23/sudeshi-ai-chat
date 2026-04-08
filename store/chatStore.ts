@@ -10,6 +10,8 @@ type Conversation = {
   title: string;
   messages: Message[];
   createdAt: number;
+  summary?: string;
+  summaryIndex?: number;
 };
 
 type ChatStore = {
@@ -31,8 +33,11 @@ type ChatStore = {
   createConversation: (title?: string) => void;
   setActiveConversation: (id: string) => void;
 
+  // Adds a new message to the active conversation
   addMessage: (message: Message) => void;
   updateMessageStatus: (id: string, status: MessageStatus) => void;
+
+  setSummary: (conversationId: string, summary: string, summaryIndex: number) => void;
 
   appendToResponse: (chunk: string) => void;
   finalizeResponse: (messageStatus?: MessageStatus) => void;
@@ -70,6 +75,8 @@ export const useChatStore = create<ChatStore>()(
             title,
             messages: [],
             createdAt: Date.now(),
+            summary: "",
+            summaryIndex: 0,
           };
 
           return {
@@ -170,6 +177,13 @@ export const useChatStore = create<ChatStore>()(
         })),
 
       setCurrentUsage: (usage) => set({ currentUsage: usage }),
+
+      setSummary: (conversationId, summary, summaryIndex) =>
+        set((state) => ({
+          conversations: state.conversations.map((conv) =>
+            conv.id === conversationId ? { ...conv, summary, summaryIndex } : conv
+          ),
+        })),
 
       reset: () =>
         set({

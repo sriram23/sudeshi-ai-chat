@@ -6,6 +6,7 @@ export async function streamChat(
     onComplete?: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => void,
     signal?: AbortSignal
 ) {
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     const res = await fetch("/api/chat", {
         method: "POST",
         body: JSON.stringify({ messages, model }),
@@ -49,6 +50,7 @@ export async function streamChat(
 
                 const text = json?.choices[0]?.delta?.content || json?.choices[0]?.message?.content || "";
                 if(text) {
+                    await delay(50); // slight delay to allow UI to catch up
                     onChunk(text);
                 }
 
@@ -65,8 +67,10 @@ export async function streamChat(
 
 export async function summarizeText(
     messages: { role: string; content: string }[],
+    availableSummary?: string
 ) {
-    const text = messages.map(m => m.content).join("\n");
+    messages = messages.slice(-20);
+    const text = messages.map(m => `${m.role}: ${m.content}`).join("\n");
     const summaryPrompt = `You are a precise summarization engine.
 
 Your job is to compress a conversation into a structured summary that preserves context for future AI responses.
@@ -85,7 +89,8 @@ Output format:
 - Clear and structured
 - No fluff
 
-Summarize the following conversation:${text}`.trim();
+Summarize the following conversation:${availableSummary ? `\n\nExisting summary:\n${availableSummary}\n\nConversation:\n${text}` : `\n\n${text}`}
+`.trim();
 
     if (messages.length < 6) {
         // Returning the original text if the conversation is short.

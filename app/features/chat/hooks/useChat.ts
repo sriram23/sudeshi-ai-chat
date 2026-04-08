@@ -13,6 +13,7 @@ export const useChat = () => {
     createConversation,
     settings,
     setCurrentUsage,
+    setSummary,
   } = useChatStore();
 
   const sendMessage = async (input: string) => {
@@ -41,26 +42,30 @@ export const useChat = () => {
     );
 
     const latestMessages = activeConversation?.messages || [];
-
+    const availableSummary = activeConversation?.summary;
     // build context
     const history = latestMessages.map((msg) => ({
       role: msg.role,
       content: msg.content,
     }));
     const oldMessages = history.slice(0, -19);
-    const summarizedContent = await summarizeText(oldMessages);
+    let summarizedContent = "";
+    const shouldSummarize = activeConversation?.summaryIndex !== undefined && history.length - activeConversation.summaryIndex > 19;
+    if(shouldSummarize) {
+      summarizedContent = await summarizeText(oldMessages, availableSummary);
+      setSummary(activeConversationId!, summarizedContent, history.length);
+    }
     const truncatedHistory = history.slice(-19);
-
+    const payload = shouldSummarize ? [{ role: "system", content: summarizedContent }, ...truncatedHistory] : truncatedHistory;
 
     // create controller AFTER guards
     const controller = new AbortController();
     setAbortController(controller);
 
     setStatus("streaming");
-
     try {
       await streamChat(
-        [{ role: "system", content: summarizedContent }, ...truncatedHistory],
+        payload,
         settings.model,
         (chunk) => appendToResponse(chunk),
         (usage) => setCurrentUsage(usage),

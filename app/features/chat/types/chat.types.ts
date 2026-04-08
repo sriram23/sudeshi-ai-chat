@@ -1,5 +1,5 @@
 export type MessageStatus = "pending" | "completed" | "error";
-export type Role = "user" | "assistant";
+export type Role = "user" | "assistant" | "system";
 
 export type Message = {
   id: string;
