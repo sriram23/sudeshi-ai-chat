@@ -1,0 +1,24 @@
+const GuideComponent = ({ onMessageSend }) => {
+    return (
+        <div className="p-4">
+            <h1 className="text-3xl font-bold mb-4 text-center">Welcome to Sudeshi Chat!</h1>
+            <p className="mb-2">Sudeshi is your personal AI assistant, powered by Sarvam AI. Here are some tips to get you started:</p>
+            <div className="grid grid-cols-2 gap-4">
+                <button className="p-4 bg-zinc-800 text-white rounded-lg" onClick={() => onMessageSend("நண்பா சென்னை பற்றி பேசலாமா? ")}>
+                    நண்பா சென்னை பற்றி பேசலாமா? 
+                </button>
+                <button className="p-4 bg-zinc-800 text-white rounded-lg" onClick={() => onMessageSend("Chennail la outing poga best edam ethu?")}>
+                    Chennail la outing poga best edam ethu?
+                </button>
+                <button className="p-4 bg-zinc-800 text-white rounded-lg" onClick={() => onMessageSend("दिल्ली मे मौसम कैसा है?")}>
+                    दिल्ली मे मौसम कैसा है?
+                </button>
+                <button className="p-4 bg-zinc-800 text-white rounded-lg" onClick={() => onMessageSend("What is the capital of France?")}>
+                    What is the capital of France?
+                </button>
+            </div>
+        </div>
+    );
+}
+
+export default GuideComponent;

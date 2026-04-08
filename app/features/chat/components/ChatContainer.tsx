@@ -6,6 +6,7 @@ import ChatInput from "./ChatInput";
 import { CircleAlert, RotateCcw } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { MarkdownRenderer } from "./MarkdownRender";
+import GuideComponent from "./GuideComponent";
 
 const ChatContainer = () => {
     const { sendMessage, stopStreaming } = useChat();
@@ -26,9 +27,12 @@ const ChatContainer = () => {
                 <SidebarTrigger className="mb-4" size="lg"/>
                 <h1 className="text-3xl font-bold ml-4">Sudeshi</h1>
             </div>
+            {
+                conversations.filter(c => c.id === activeConversationId).map(conv => !conv.messages.length ? (<div key={conv.id} className="flex-1 flex flex-col items-center justify-center text-gray-500 w-full"><GuideComponent onMessageSend={(msg) => {sendMessage(msg, settings?.model)} } /></div>):null)
+            }
             {conversations.length === 0 && (
                 <div className="flex-1 flex flex-col items-center justify-center text-gray-500 w-full">
-                    <p className="mb-4">No conversations yet. Start by sending a message!</p>
+                    <GuideComponent onMessageSend={(msg) => {sendMessage(msg, settings?.model)} } />
                 </div>
             )}
             {conversations.filter(c => c.id === activeConversationId).map(conv => (
