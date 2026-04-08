@@ -28,11 +28,11 @@ const ChatContainer = () => {
                 <h1 className="text-3xl font-bold ml-4">Sudeshi</h1>
             </div>
             {
-                conversations.filter(c => c.id === activeConversationId).map(conv => !conv.messages.length ? (<div key={conv.id} className="flex-1 flex flex-col items-center justify-center text-gray-500 w-full"><GuideComponent onMessageSend={(msg) => {sendMessage(msg, settings?.model)} } /></div>):null)
+                conversations.filter(c => c.id === activeConversationId).map(conv => !conv.messages.length ? (<div key={conv.id} className="flex-1 flex flex-col items-center justify-center text-gray-500 w-full"><GuideComponent onMessageSend={(msg: string) => {sendMessage(msg)} } /></div>):null)
             }
             {conversations.length === 0 && (
                 <div className="flex-1 flex flex-col items-center justify-center text-gray-500 w-full">
-                    <GuideComponent onMessageSend={(msg) => {sendMessage(msg, settings?.model)} } />
+                    <GuideComponent onMessageSend={(msg: string) => {sendMessage(msg)} } />
                 </div>
             )}
             {conversations.filter(c => c.id === activeConversationId).map(conv => (

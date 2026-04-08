@@ -1,6 +1,6 @@
 import { ArrowUp, Square } from "lucide-react";
 
-const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage, stopStreaming }:{ input: string; setInput: (value: string) => void; settings: { model: "sarvam-30b" | "sarvam-105b" }; setSettings: (newSettings: { model: "sarvam-30b" | "sarvam-105b" }) => void; status: string; sendMessage: (value: string, model: string) => void; stopStreaming: () => void }) => {
+const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage, stopStreaming }:{ input: string; setInput: (value: string) => void; settings: { model: "sarvam-30b" | "sarvam-105b" }; setSettings: (newSettings: { model: "sarvam-30b" | "sarvam-105b" }) => void; status: string; sendMessage: (value: string) => void; stopStreaming: () => void }) => {
     const handleInputHeight = (e: React.FormEvent<HTMLTextAreaElement>) => {
         const textarea = e.currentTarget;
         textarea.style.height = "auto";
@@ -10,7 +10,7 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
     const handleSend = () => {
         if (status === "streaming") return; // Prevent sending new messages while streaming
         if(!input.trim()) return;
-        sendMessage(input, settings.model);
+        sendMessage(input);
         setInput("");
     }
     return (
@@ -32,7 +32,7 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
                     <option value="sarvam-105b">Sarvam 105B</option>
                 </select>
                 {status === "idle" && (
-                    <button onClick={() => { sendMessage(input, settings.model); setInput(""); }} className="mt-2 p-2 rounded-full text-white bg-zinc-800">
+                    <button onClick={() => { sendMessage(input); setInput(""); }} className="mt-2 p-2 rounded-full text-white bg-zinc-800">
                         <ArrowUp size={16} />
                     </button>
                 )}
