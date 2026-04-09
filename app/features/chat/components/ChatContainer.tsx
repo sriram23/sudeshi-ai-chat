@@ -35,6 +35,11 @@ const ChatContainer = () => {
                     <GuideComponent onMessageSend={(msg: string) => {sendMessage(msg)} } />
                 </div>
             )}
+            {!activeConversationId && conversations.length > 0 && (
+                <div className="flex-1 flex flex-col items-center justify-center text-gray-500 w-full">
+                    <GuideComponent onMessageSend={(msg: string) => {sendMessage(msg)} } />
+                </div>)
+            }
             {conversations.filter(c => c.id === activeConversationId).map(conv => (
                 <div key={conv.id} className="flex-1 overflow-y-auto p-2 w-full">
                     {conv.messages.map((msg, ind) => (

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Message, MessageStatus } from "@/app/features/chat/types/chat.types";
+import { stat } from "fs";
 
 type ChatStatus = "idle" | "streaming" | "error";
 type ChatModel = "sarvam-30b" | "sarvam-105b";
@@ -33,6 +34,7 @@ type ChatStore = {
   createConversation: (title?: string) => void;
   setActiveConversation: (id: string) => void;
   renameConversation: (id: string, newTitle: string) => void;
+  deleteConversation: (id: string) => void;
 
   // Adds a new message to the active conversation
   addMessage: (message: Message) => void;
@@ -96,6 +98,19 @@ export const useChatStore = create<ChatStore>()(
             conv.id === id ? { ...conv, title: newTitle } : conv
           ),
         })),
+
+      deleteConversation: (id) =>
+        set((state) => {
+          const updated = state.conversations.filter((conv) => conv.id !== id);
+          const isDeletingActive = state.activeConversationId === id
+          console.log("sdjfnsljf: ", isDeletingActive ? updated[0]?.id ?? null : state.activeConversationId)
+          console.log(state)
+          return {
+            conversations: updated,
+            activeConversationId: isDeletingActive ? updated[0]?.id ?? null : state.activeConversationId,
+          }
+        }),
+
 
       // add user message
       addMessage: (message) =>

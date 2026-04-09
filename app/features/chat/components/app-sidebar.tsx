@@ -11,11 +11,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useChatStore } from "@/store/chatStore";
-import { MessageSquare, Moon, Plus, Sun } from "lucide-react";
+import { Moon, Pencil, Plus, Sun, Trash } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export function AppSidebar(): React.ReactNode {
-  const {conversations, activeConversationId, createConversation, setActiveConversation} = useChatStore();
+  const {conversations, activeConversationId, createConversation, setActiveConversation, status, renameConversation, deleteConversation} = useChatStore();
   const { theme, setTheme } = useTheme();
   const createNewConversation = () => {
     const title = "New Chat " + Date.now().toString();
@@ -26,6 +26,27 @@ export function AppSidebar(): React.ReactNode {
     }
     createConversation(title);
   }
+
+  const handleDelete = (e:React.MouseEvent<HTMLSpanElement>, id: string) => {
+    if(status === "streaming") return;
+    e.stopPropagation()
+    const confirmed = window.confirm("Are you sure you want to delete this conversation? This action cannot be undone.");
+    if(confirmed) {
+      // Implement delete logic here
+      deleteConversation(id);
+      
+    }
+  };
+
+  const handleEdit = (e: React.MouseEvent<HTMLSpanElement>, id: string) => {
+    if(status === "streaming") return;
+    e.stopPropagation()
+    const newTitle = window.prompt("Enter new title for the conversation");
+    if(newTitle) {
+      // Implement rename logic here
+      renameConversation(id, newTitle);
+    }
+  };
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader />
@@ -38,7 +59,7 @@ export function AppSidebar(): React.ReactNode {
         <SidebarGroup title="New Chat" >
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => createNewConversation()} className="bg-zinc-900 rounded text-white h-10"><Plus />New Conversation</SidebarMenuButton>
+              <SidebarMenuButton disabled={status === "streaming"} onClick={() => createNewConversation()} className="bg-zinc-900 rounded text-white h-10"><Plus />New Conversation</SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
@@ -46,8 +67,14 @@ export function AppSidebar(): React.ReactNode {
           <SidebarMenu>
           {conversations.map(conv => (
             <SidebarMenuItem key={conv.id}>
-              <SidebarMenuButton onClick={() => setActiveConversation(conv.id)} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-900 text-white' : 'bg-gray-200 dark:bg-zinc-700'}`}>
-                <MessageSquare />{conv.title}
+              <SidebarMenuButton title={conv.title} disabled={status === "streaming"} onClick={() => setActiveConversation(conv.id)} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-900 text-white' : 'bg-gray-200 dark:bg-zinc-700'}`}>
+                {/* <MessageSquare /> */}
+                <SidebarGroupLabel className="text-sm">{conv.title.length > 18 ? conv.title.slice(0, 18) + "..." : conv.title}</SidebarGroupLabel>
+                {/* {conv.title} */}
+                <div className="flex-1 justify-end flex gap-2 text-transparent hover:text-zinc-900 hover:dark:text-white">
+                  <span onClick={(e) => handleEdit(e, conv.id)} className="cursor-pointer rounded border border-transparent hover:border-white hover:bg-white hover:dark:bg-zinc-950 p-1"><Pencil /></span>
+                  <span onClick={(e) => handleDelete(e, conv.id)} className="cursor-pointer rounded border border-transparent hover:border-white hover:bg-white hover:dark:bg-zinc-950 p-1"><Trash /></span>
+                </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
@@ -56,7 +83,7 @@ export function AppSidebar(): React.ReactNode {
       </SidebarContent>
       <SidebarFooter>
         <div>
-          <button className="border p-1 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun />: <Moon />} </button>
+          <button className="border p-1 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun /> : <Moon />} </button>
         </div>
       </SidebarFooter>
     </Sidebar>
