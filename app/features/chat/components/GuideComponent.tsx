@@ -1,7 +1,7 @@
 const GuideComponent = ({ onMessageSend }: { onMessageSend: (message: string) => void }) => {
     return (
         <div className="p-4">
-            <h1 className="text-3xl font-bold mb-4 text-center">Welcome to Sudeshi Chat!</h1>
+            <h1 className="text-5xl font-bold mb-8 text-center text-zinc-950 dark:text-white">Welcome to Sudeshi Chat!</h1>
             <p className="mb-2">Sudeshi is your personal AI assistant, powered by Sarvam AI. Here are some tips to get you started:</p>
             <div className="grid grid-cols-2 gap-4">
                 <button className="p-4 bg-zinc-800 text-white rounded-lg" onClick={() => onMessageSend("நண்பா சென்னை பற்றி பேசலாமா? ")}>
