@@ -1,6 +1,6 @@
 import { useChatStore } from "@/store/chatStore";
 import { createMessage } from "@/app/features/chat/utils/messageFactory";
-import { streamChat, summarizeText } from "../services/sarvamClient";
+import { generateTitle, streamChat, summarizeText } from "../services/sarvamClient";
 
 export const useChat = () => {
   const {
@@ -14,7 +14,25 @@ export const useChat = () => {
     settings,
     setCurrentUsage,
     setSummary,
+    renameConversation,
   } = useChatStore();
+
+    const generateAndSetConversationTitle = async (conversationId: string) => {
+    const { conversations } = useChatStore.getState();
+    const conversation = conversations.find((c) => c.id === conversationId);
+    if (!conversation) return;
+
+    const messages = conversation.messages;
+    if (messages.length === 0) return;
+
+    try {
+      const title = await generateTitle(messages);
+      renameConversation(conversationId, title);
+    } catch (error) {
+      console.error("Error generating conversation title:", error);
+    }
+  };
+
 
   const sendMessage = async (input: string) => {
     if (!input.trim()) return;
@@ -41,6 +59,10 @@ export const useChat = () => {
       (c) => c.id === activeConversationId
     );
 
+    if(activeConversation?.title.includes("New Chat") && activeConversation.messages.length === 1) {
+      // Generate title for new conversation based on first user message
+      generateAndSetConversationTitle(activeConversation.id);
+    }
     const latestMessages = activeConversation?.messages || [];
     const availableSummary = activeConversation?.summary;
     // build context
@@ -92,5 +114,5 @@ export const useChat = () => {
     controls.abortController?.abort();
   };
 
-  return { sendMessage, stopStreaming };
+  return { sendMessage, stopStreaming, generateAndSetConversationTitle };
 }

@@ -108,3 +108,28 @@ Summarize the following conversation:${availableSummary ? `\n\nExisting summary:
         return text;
     }
 }
+
+export async function generateTitle(
+    messages: { role: string; content: string }[]
+) {
+    const text = messages.map(m => `${m.role}: ${m.content}`).join("\n");
+    const titlePrompt = `You are a helpful assistant that generates concise and descriptive titles for conversations.
+Rules:
+- Capture the main topic or theme of the conversation
+- Reflect the user's intent or goal
+- Be concise (ideally under 5 words)
+- Be descriptive enough to differentiate from other conversations
+Generate a title for the following conversation:\n\n${text}`.trim();
+
+    try {
+        const res = await fetch("/api/title", {
+            method: "POST",
+            body: JSON.stringify({ message: titlePrompt }),
+        });
+        const data = await res.json();
+        return data.title;
+    } catch (error) {
+        console.error("Error generating title:", error);
+        return "Untitled Conversation";
+    }
+}

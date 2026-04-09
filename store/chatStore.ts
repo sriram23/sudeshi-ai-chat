@@ -32,6 +32,7 @@ type ChatStore = {
 
   createConversation: (title?: string) => void;
   setActiveConversation: (id: string) => void;
+  renameConversation: (id: string, newTitle: string) => void;
 
   // Adds a new message to the active conversation
   addMessage: (message: Message) => void;
@@ -88,6 +89,13 @@ export const useChatStore = create<ChatStore>()(
       // switch chat
       setActiveConversation: (id) =>
         set({ activeConversationId: id }),
+
+      renameConversation: (id, newTitle) =>
+        set((state) => ({
+          conversations: state.conversations.map((conv) =>
+            conv.id === id ? { ...conv, title: newTitle } : conv
+          ),
+        })),
 
       // add user message
       addMessage: (message) =>
