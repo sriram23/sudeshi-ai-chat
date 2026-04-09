@@ -23,7 +23,7 @@ const ChatContainer = () => {
     }, [currentResponse, status]);
     return (
         <div className="flex flex-col min-h-screen h-full w-full m-0 p-4 flex-1">
-            <div className="flex items-top sticky top-0 z-10 bg-white mb-4">
+            <div className="flex items-top sticky top-0 z-10 bg-white dark:bg-zinc-950 mb-4">
                 <SidebarTrigger className="mb-4" size="lg"/>
                 <h1 className="text-3xl font-bold ml-4">Sudeshi</h1>
             </div>
@@ -45,7 +45,7 @@ const ChatContainer = () => {
                                 </button>
                             )}
                             {msg.role === "user" && status === "idle" && msg.status === "error" && <CircleAlert color="red" />}
-                            <div className={`p-2 m-1 rounded-lg ${msg.role === "user" ? "bg-zinc-300 self-end" : "self-start"}`}>
+                            <div className={`p-2 m-1 rounded-lg ${msg.role === "user" ? "bg-zinc-300 dark:bg-zinc-800 self-end" : "self-start"}`}>
                                 <MarkdownRenderer content={msg.content} />
                                 {msg.role === "assistant" && msg.usage && (
                                     <div className="text-xs text-gray-500 mt-1">
@@ -69,7 +69,7 @@ const ChatContainer = () => {
                     <div ref={messagesEndRef} />
                 </div>
             ))}
-            <div className="sticky bottom-0 p-4 w-full bg-white">
+            <div className="sticky bottom-0 p-4 w-full bg-gray-100 dark:bg-zinc-950">
                 <div className=" w-full">
                     <ChatInput input={input} setInput={setInput} settings={settings} setSettings={setSettings} status={status} sendMessage={sendMessage} stopStreaming={stopStreaming} />
                 </div>

@@ -1,3 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
+/* Fix for dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+    font-family: var(--font-nunito), -apple-system, BlinkMacSystemFont, sans-serif;
+}

@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useChatStore } from "@/store/chatStore";
-import { MessageSquare, Plus } from "lucide-react";
+import { MessageSquare, Moon, Plus, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export function AppSidebar(): React.ReactNode {
@@ -38,7 +38,7 @@ export function AppSidebar(): React.ReactNode {
         <SidebarGroup title="New Chat" >
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => createNewConversation()} className="bg-zinc-800 rounded text-white h-10"><Plus />New Conversation</SidebarMenuButton>
+              <SidebarMenuButton onClick={() => createNewConversation()} className="bg-zinc-900 rounded text-white h-10"><Plus />New Conversation</SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
@@ -46,7 +46,7 @@ export function AppSidebar(): React.ReactNode {
           <SidebarMenu>
           {conversations.map(conv => (
             <SidebarMenuItem key={conv.id}>
-              <SidebarMenuButton onClick={() => setActiveConversation(conv.id)} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-700 text-white' : 'bg-gray-200'}`}>
+              <SidebarMenuButton onClick={() => setActiveConversation(conv.id)} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-900 text-white' : 'bg-gray-200 dark:bg-zinc-700'}`}>
                 <MessageSquare />{conv.title}
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -55,7 +55,9 @@ export function AppSidebar(): React.ReactNode {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <button onClick={() => setTheme(theme === "dark"?"light":"dark")}>toggle theme</button>
+        <div>
+          <button className="border px-2 border-zinc-900 dark:border-zinc-600 rounded h-10" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun />: <Moon />} </button>
+        </div>
       </SidebarFooter>
     </Sidebar>
   )

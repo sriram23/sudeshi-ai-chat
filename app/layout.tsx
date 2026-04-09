@@ -25,8 +25,9 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${nunito.variable} h-full antialiased`}
+      suppressHydrationWarning={true}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-gray-100 dark:bg-zinc-950 text-gray-900 dark:text-gray-100">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <SidebarProvider>
           <AppSidebar />
