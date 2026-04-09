@@ -56,7 +56,7 @@ export function AppSidebar(): React.ReactNode {
       </SidebarContent>
       <SidebarFooter>
         <div>
-          <button className="border px-2 border-zinc-900 dark:border-zinc-600 rounded h-10" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun />: <Moon />} </button>
+          <button className="border p-1 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun />: <Moon />} </button>
         </div>
       </SidebarFooter>
     </Sidebar>

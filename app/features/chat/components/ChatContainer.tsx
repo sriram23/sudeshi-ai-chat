@@ -3,10 +3,10 @@ import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
 import { useState, useRef, useEffect } from "react";
 import ChatInput from "./ChatInput";
-import { CircleAlert, RotateCcw } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { MarkdownRenderer } from "./MarkdownRender";
 import GuideComponent from "./GuideComponent";
+import UserChatBubble from "./UserChatBubble";
+import AssistantChatBubble from "./AssistantChatBubble";
 
 const ChatContainer = () => {
     const { sendMessage, stopStreaming } = useChat();
@@ -23,7 +23,7 @@ const ChatContainer = () => {
     }, [currentResponse, status]);
     return (
         <div className="flex flex-col min-h-screen h-full w-full m-0 p-4 flex-1">
-            <div className="flex items-top sticky top-0 z-10 bg-white dark:bg-zinc-950 mb-4">
+            <div className="flex items-top sticky top-0 z-10 bg-gray-100 dark:bg-zinc-950 mb-4">
                 <SidebarTrigger className="mb-4" size="lg"/>
                 <h1 className="text-3xl font-bold ml-4">Sudeshi</h1>
             </div>
@@ -37,34 +37,19 @@ const ChatContainer = () => {
             )}
             {conversations.filter(c => c.id === activeConversationId).map(conv => (
                 <div key={conv.id} className="flex-1 overflow-y-auto p-2 w-full">
-                    {conv.messages.map((msg) => (
+                    {conv.messages.map((msg, ind) => (
                         <div key={msg.id} className={`flex items-center ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                            {msg.role === "user" && status === "idle" && (
-                                <button onClick={() => { sendMessage(msg.content); setInput(""); }}>
-                                    <RotateCcw size={16} />
-                                </button>
+                            {msg.role === "user" && (
+                                // Only show edit button for the last user message and when the status is idle (not streaming)
+                                <UserChatBubble message={msg.content} showEdit={status === "idle" && ind === conv.messages.length - 2} onEditSave={(newMessage) => sendMessage(newMessage)} />
                             )}
-                            {msg.role === "user" && status === "idle" && msg.status === "error" && <CircleAlert color="red" />}
-                            <div className={`p-2 m-1 rounded-lg ${msg.role === "user" ? "bg-zinc-300 dark:bg-zinc-800 self-end" : "self-start"}`}>
-                                <MarkdownRenderer content={msg.content} />
-                                {msg.role === "assistant" && msg.usage && (
-                                    <div className="text-xs text-gray-500 mt-1">
-                                        Tokens usage: {msg.usage.total_tokens} (Prompt: {msg.usage.prompt_tokens}, Completion: {msg.usage.completion_tokens})
-                                    </div>
-                                )}
-                            </div>
-                            {msg.role !== "user" && status === "idle" && msg.status === "error" && <CircleAlert color="red" />}
+                            {msg.role === "assistant" && (
+                                <AssistantChatBubble message={msg.content} error={msg.status === "error"} usage={msg.usage} status={status} />
+                            )}
                         </div>
                     ))}
                     {status === "streaming" && (
-                        <div className="p-2 my-1 rounded text-black font-extralight italic self-start">
-                            <MarkdownRenderer content={currentResponse.length ?"Responding...":"Thinking..."} />
-                        </div>
-                    )}
-                    {currentResponse && (
-                        <div className="p-2 my-1 rounded text-black self-start">
-                            <MarkdownRenderer content={currentResponse} />
-                        </div>
+                        <AssistantChatBubble currentResponse={currentResponse} status={status} />
                     )}
                     <div ref={messagesEndRef} />
                 </div>
