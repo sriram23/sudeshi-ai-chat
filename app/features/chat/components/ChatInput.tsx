@@ -38,7 +38,7 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
                     An error occurred while streaming. Please try again.
                 </div>
             )}
-            <div className="flex justify-between flex-1 w-full border p-4 rounded-xl">
+            <div className="flex justify-between items-end flex-1 w-full border p-4 rounded-xl">
                 <div className="flex-4">
                     <textarea style={{ width: "100%", border: "none"}} onKeyDown={(e) => {
                         if(e.key === "Enter" && !e.shiftKey){
