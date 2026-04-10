@@ -62,12 +62,12 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
                     </DropdownMenu>
                 </div>
                 {status === "idle" && (
-                    <button onClick={() => { sendMessage(input); setInput(""); }} className="my-1 p-2 rounded-full text-white bg-zinc-800">
+                    <button aria-label="Send Message" onClick={() => { sendMessage(input); setInput(""); }} className="my-1 p-2 rounded-full text-white bg-zinc-800">
                         <ArrowUp size={16} />
                     </button>
                 )}
                 {status === "streaming" && (
-                    <button onClick={stopStreaming} className="my-1 p-2 rounded bg-red-500 text-white">
+                    <button aria-label="Cancel Response" onClick={stopStreaming} className="my-1 p-2 rounded bg-red-500 text-white">
                         <Square size={16} />
                     </button>
                 )}

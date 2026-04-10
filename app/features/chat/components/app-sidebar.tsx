@@ -154,9 +154,10 @@ export function AppSidebar(): React.ReactNode {
             </div>
             <DialogFooter>
               <DialogClose render={
-                <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+                <button aria-label="Close Dialog" className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
               } />
               <button
+                aria-label="Rename Chat"
                 onClick={() => editDialogId && handleEdit(editDialogId)}
                 className="px-4 py-2 text-sm font-medium text-white bg-zinc-600 border border-transparent rounded-md hover:bg-zinc-700"
               >
@@ -168,7 +169,7 @@ export function AppSidebar(): React.ReactNode {
       ) : null}
       <SidebarFooter>
         <div>
-          <button className="border p-1 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun /> : <Moon />} </button>
+          <button aria-label="Theme toggle" className="border p-1 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun /> : <Moon />} </button>
         </div>
       </SidebarFooter>
     </Sidebar>

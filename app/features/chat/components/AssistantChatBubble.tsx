@@ -44,9 +44,9 @@ const AssistantChatBubble = ({ message, currentResponse, usage, status, error }:
             </div>
             {status === "idle" && (
                 <div className="flex gap-2 mx-1 px-4 mb-2">
-                    <button onClick={handleCopy}><Copy size={16}/></button>
-                    <button><ThumbsUp size={16} /></button>
-                    <button><ThumbsDown size={16} /></button>
+                    <button aria-label="Copy Response" onClick={handleCopy}><Copy size={16}/></button>
+                    <button aria-label="Like"><ThumbsUp size={16} /></button>
+                    <button aria-label="Dislike"><ThumbsDown size={16} /></button>
                 </div>
             )}
             {usage && (

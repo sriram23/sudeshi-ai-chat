@@ -13,9 +13,9 @@ const UserChatBubble = ({ message, showEdit=false, onEditSave }: { message: stri
         <div className="flex justify-end max-w-3xl">
             <div className="flex">
                 {/* Reusing the onEditSave function for refresh as well */}
-                <button className="m-1" onClick={() => onEditSave(message)}><RotateCcw size={16} /></button>
+                <button aria-label="Retry Message" className="m-1" onClick={() => onEditSave(message)}><RotateCcw size={16} /></button>
                 {showEdit && (
-                    <button className="m-1" onClick={() => setEdit(true)}><Pencil size={16} /></button>
+                    <button aria-label="Edit Message" className="m-1" onClick={() => setEdit(true)}><Pencil size={16} /></button>
                 )}
                 {!edit && (
                     <div className="bg-zinc-300 dark:bg-zinc-800 text-gray-900 dark:text-gray-100 p-2 m-1 rounded-lg max-w-xs">
@@ -25,8 +25,8 @@ const UserChatBubble = ({ message, showEdit=false, onEditSave }: { message: stri
                 {edit && (
                     <div>
                         <textarea value={editedMessage} onChange={(e) => setEditedMessage(e.target.value)} className="border p-1 rounded" />
-                        <button onClick={handleSave} className="ml-2 p-1 bg-green-500 text-white rounded"><Check size={16} /></button>
-                        <button onClick={() => setEdit(false)} className="ml-2 p-1 bg-red-500 text-white rounded"><X size={16} /></button>
+                        <button aria-label="Save Edited Message" onClick={handleSave} className="ml-2 p-1 bg-green-500 text-white rounded"><Check size={16} /></button>
+                        <button aria-label="Cancel Edit Message" onClick={() => setEdit(false)} className="ml-2 p-1 bg-red-500 text-white rounded"><X size={16} /></button>
                     </div>
                 )}
             </div>
