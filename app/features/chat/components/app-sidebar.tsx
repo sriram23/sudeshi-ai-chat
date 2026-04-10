@@ -16,11 +16,14 @@ import {
 import { useChatStore } from "@/store/chatStore";
 import { Ellipsis, Moon, Pencil, Plus, Sun, Trash } from "lucide-react";
 import { useTheme } from "next-themes";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export function AppSidebar(): React.ReactNode {
   const {conversations, activeConversationId, createConversation, setActiveConversation, status, renameConversation, deleteConversation} = useChatStore();
   const { theme, setTheme } = useTheme();
   const [deleteDialogId, setDeleteDialogId] = useState<string | null>(null);
+  const [editDialogId, setEditDialogId] = useState<string | null>(null);
+  const [newName, setNewName] = useState("")
 
   const [mounted, setMounted] = useState(false)
 
@@ -47,13 +50,12 @@ export function AppSidebar(): React.ReactNode {
     setDeleteDialogId(null);
   };
 
-  const handleEdit = (e: React.MouseEvent<HTMLSpanElement>, id: string) => {
+  const handleEdit = (id: string) => {
     if(status === "streaming") return;
-    e.stopPropagation()
-    const newTitle = window.prompt("Enter new title for the conversation");
-    if(newTitle) {
-      // Implement rename logic here
-      renameConversation(id, newTitle);
+    if(newName.trim()) {
+      renameConversation(id, newName.trim());
+      setEditDialogId(null);
+      setNewName("");
     }
   };
   return (
@@ -80,11 +82,18 @@ export function AppSidebar(): React.ReactNode {
                 <SidebarGroupLabel className="text-sm">{conv.title.length > 18 ? conv.title.slice(0, 18) + "..." : conv.title}</SidebarGroupLabel>
                 <div className="flex-1 justify-end flex gap-2 text-transparent hover:text-zinc-900 hover:dark:text-white">
                   <DropdownMenu>
-                    <DropdownMenuTrigger nativeButton={false} render={<div role="presentation"/>}><Ellipsis className="text-white"/></DropdownMenuTrigger>
+                    <DropdownMenuTrigger nativeButton={false} render={<div onClick={(e) => e.stopPropagation()} role="presentation"/>}><Ellipsis className="text-white"/></DropdownMenuTrigger>
                     <DropdownMenuContent className="bg-white dark:bg-zinc-900">
                       <DropdownMenuGroup>
-                        <DropdownMenuItem className="hover:bg-yellow-300" onClick={(e) => handleEdit(e, conv.id)}><Pencil/> Rename</DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-red-500" onClick={() => setDeleteDialogId(conv.id)}><Trash/> Delete Chat</DropdownMenuItem>
+                        <DropdownMenuItem className="hover:bg-yellow-300" onClick={(e) => {
+                          setNewName(conv.title);
+                          setEditDialogId(conv.id);
+                          e.stopPropagation();
+                        }}><Pencil/> Rename</DropdownMenuItem>
+                        <DropdownMenuItem className="hover:bg-red-500" onClick={(e) => {
+                          setDeleteDialogId(conv.id);
+                          e.stopPropagation();
+                        }}><Trash/> Delete Chat</DropdownMenuItem>
                       </DropdownMenuGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -113,10 +122,49 @@ export function AppSidebar(): React.ReactNode {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => deleteDialogId && handleDelete(deleteDialogId)}>Continue</AlertDialogAction>
+              <AlertDialogAction onClick={() => deleteDialogId && handleDelete(deleteDialogId)} className="px-4 py-2 text-sm font-medium text-white bg-zinc-600 border border-transparent rounded-md hover:bg-zinc-700">Continue</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+      ) : null}
+      {editDialogId ? (
+        <Dialog
+          open={Boolean(editDialogId)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setEditDialogId(null);
+              setNewName("");
+            }
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Rename Chat</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2">
+              <label htmlFor="chat-title" className="text-sm font-medium">New Chat Title</label>
+              <input
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                type="text"
+                id="chat-title"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-900"
+                placeholder="Enter new chat title"
+              />
+            </div>
+            <DialogFooter>
+              <DialogClose render={
+                <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+              } />
+              <button
+                onClick={() => editDialogId && handleEdit(editDialogId)}
+                className="px-4 py-2 text-sm font-medium text-white bg-zinc-600 border border-transparent rounded-md hover:bg-zinc-700"
+              >
+                Rename
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       ) : null}
       <SidebarFooter>
         <div>
