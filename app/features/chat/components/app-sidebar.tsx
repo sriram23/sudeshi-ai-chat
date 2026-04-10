@@ -1,4 +1,5 @@
 "use client";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +12,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useChatStore } from "@/store/chatStore";
-import { Moon, Pencil, Plus, Sun, Trash } from "lucide-react";
+import { Ellipsis, Moon, Pencil, Plus, Sun, Trash } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export function AppSidebar(): React.ReactNode {
@@ -68,12 +69,19 @@ export function AppSidebar(): React.ReactNode {
           {conversations.map(conv => (
             <SidebarMenuItem key={conv.id}>
               <SidebarMenuButton title={conv.title} disabled={status === "streaming"} onClick={() => setActiveConversation(conv.id)} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-900 text-white' : 'bg-gray-200 dark:bg-zinc-700'}`}>
-                {/* <MessageSquare /> */}
                 <SidebarGroupLabel className="text-sm">{conv.title.length > 18 ? conv.title.slice(0, 18) + "..." : conv.title}</SidebarGroupLabel>
-                {/* {conv.title} */}
                 <div className="flex-1 justify-end flex gap-2 text-transparent hover:text-zinc-900 hover:dark:text-white">
-                  <span onClick={(e) => handleEdit(e, conv.id)} className="cursor-pointer rounded border border-transparent hover:border-white hover:bg-white hover:dark:bg-zinc-950 p-1"><Pencil /></span>
-                  <span onClick={(e) => handleDelete(e, conv.id)} className="cursor-pointer rounded border border-transparent hover:border-white hover:bg-white hover:dark:bg-zinc-950 p-1"><Trash /></span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger><Ellipsis className="text-white"/></DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white dark:bg-zinc-900">
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem className="hover:bg-yellow-300" onClick={(e) => handleEdit(e, conv.id)}><Pencil/> Rename</DropdownMenuItem>
+                        <DropdownMenuItem className="hover:bg-red-500" onClick={(e) => handleDelete(e, conv.id)}><Trash /> Delete Chat</DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {/* <span onClick={(e) => handleEdit(e, conv.id)} className="cursor-pointer rounded border border-transparent hover:border-white hover:bg-white hover:dark:bg-zinc-950 p-1"><Pencil /></span>
+                  <span onClick={(e) => handleDelete(e, conv.id)} className="cursor-pointer rounded border border-transparent hover:border-white hover:bg-white hover:dark:bg-zinc-950 p-1"><Trash /></span> */}
                 </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
