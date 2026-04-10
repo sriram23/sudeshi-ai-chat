@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Message, MessageStatus } from "@/app/features/chat/types/chat.types";
-import { stat } from "fs";
 
 type ChatStatus = "idle" | "streaming" | "error";
 type ChatModel = "sarvam-30b" | "sarvam-105b";
@@ -31,7 +30,7 @@ type ChatStore = {
     abortController?: AbortController;
   };
 
-  createConversation: (title?: string) => void;
+  createConversation: (title?: string) => string;
   setActiveConversation: (id: string) => void;
   renameConversation: (id: string, newTitle: string) => void;
   deleteConversation: (id: string) => void;
@@ -71,10 +70,11 @@ export const useChatStore = create<ChatStore>()(
       controls: {},
 
       // create new conversation
-      createConversation: (title = "New Chat") =>
+      createConversation: (title = "New Chat") => {
+        const newId = crypto.randomUUID()
         set((state) => {
           const newConv: Conversation = {
-            id: crypto.randomUUID(),
+            id: newId,
             title,
             messages: [],
             createdAt: Date.now(),
@@ -86,11 +86,16 @@ export const useChatStore = create<ChatStore>()(
             conversations: [newConv, ...state.conversations],
             activeConversationId: newConv.id,
           };
-        }),
+        })
+        return newId
+      },
 
       // switch chat
       setActiveConversation: (id) =>
-        set({ activeConversationId: id }),
+        set((state) => ({
+          // checking if the id is a valid conversation id.
+          activeConversationId: state.conversations.filter(con => con.id === id).length ? id : null 
+        })),
 
       renameConversation: (id, newTitle) =>
         set((state) => ({
