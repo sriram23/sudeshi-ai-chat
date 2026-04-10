@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
@@ -21,6 +21,15 @@ export function AppSidebar(): React.ReactNode {
   const {conversations, activeConversationId, createConversation, setActiveConversation, status, renameConversation, deleteConversation} = useChatStore();
   const { theme, setTheme } = useTheme();
   const [deleteDialogId, setDeleteDialogId] = useState<string | null>(null);
+
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true)
+  }, [])
+
+  if(!mounted) return null
 
   const createNewConversation = () => {
     const title = "New Chat " + Date.now().toString();
@@ -71,7 +80,7 @@ export function AppSidebar(): React.ReactNode {
                 <SidebarGroupLabel className="text-sm">{conv.title.length > 18 ? conv.title.slice(0, 18) + "..." : conv.title}</SidebarGroupLabel>
                 <div className="flex-1 justify-end flex gap-2 text-transparent hover:text-zinc-900 hover:dark:text-white">
                   <DropdownMenu>
-                    <DropdownMenuTrigger><Ellipsis className="text-white"/></DropdownMenuTrigger>
+                    <DropdownMenuTrigger nativeButton={false} render={<div role="presentation"/>}><Ellipsis className="text-white"/></DropdownMenuTrigger>
                     <DropdownMenuContent className="bg-white dark:bg-zinc-900">
                       <DropdownMenuGroup>
                         <DropdownMenuItem className="hover:bg-yellow-300" onClick={(e) => handleEdit(e, conv.id)}><Pencil/> Rename</DropdownMenuItem>

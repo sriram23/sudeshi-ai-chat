@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/app/features/chat/components/app-sidebar";
-import { ThemeProvider } from "next-themes";
+import { Providers } from "./features/chat/components/Providers";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -28,16 +26,11 @@ export default function RootLayout({
       suppressHydrationWarning={true}
     >
       <body className="min-h-full flex flex-col bg-gray-100 dark:bg-zinc-950 text-gray-900 dark:text-gray-100">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <main>
-              {children}
-            </main>
-          </SidebarInset>
-        </SidebarProvider>
-        </ThemeProvider>
+        <Providers>
+              <main>
+                {children}
+              </main>
+        </Providers>
       </body>
     </html>
   );
