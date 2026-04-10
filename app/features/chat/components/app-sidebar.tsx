@@ -1,4 +1,6 @@
 "use client";
+import { useState } from "react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
@@ -18,6 +20,8 @@ import { useTheme } from "next-themes";
 export function AppSidebar(): React.ReactNode {
   const {conversations, activeConversationId, createConversation, setActiveConversation, status, renameConversation, deleteConversation} = useChatStore();
   const { theme, setTheme } = useTheme();
+  const [deleteDialogId, setDeleteDialogId] = useState<string | null>(null);
+
   const createNewConversation = () => {
     const title = "New Chat " + Date.now().toString();
     const currentConv = conversations.find(c => c.id === activeConversationId);
@@ -28,15 +32,10 @@ export function AppSidebar(): React.ReactNode {
     createConversation(title);
   }
 
-  const handleDelete = (e:React.MouseEvent<HTMLSpanElement>, id: string) => {
-    if(status === "streaming") return;
-    e.stopPropagation()
-    const confirmed = window.confirm("Are you sure you want to delete this conversation? This action cannot be undone.");
-    if(confirmed) {
-      // Implement delete logic here
-      deleteConversation(id);
-      
-    }
+  const handleDelete = (id: string) => {
+    if (status === "streaming") return;
+    deleteConversation(id);
+    setDeleteDialogId(null);
   };
 
   const handleEdit = (e: React.MouseEvent<HTMLSpanElement>, id: string) => {
@@ -76,7 +75,7 @@ export function AppSidebar(): React.ReactNode {
                     <DropdownMenuContent className="bg-white dark:bg-zinc-900">
                       <DropdownMenuGroup>
                         <DropdownMenuItem className="hover:bg-yellow-300" onClick={(e) => handleEdit(e, conv.id)}><Pencil/> Rename</DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-red-500" onClick={(e) => handleDelete(e, conv.id)}><Trash /> Delete Chat</DropdownMenuItem>
+                        <DropdownMenuItem className="hover:bg-red-500" onClick={() => setDeleteDialogId(conv.id)}><Trash/> Delete Chat</DropdownMenuItem>
                       </DropdownMenuGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -89,6 +88,27 @@ export function AppSidebar(): React.ReactNode {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      {deleteDialogId ? (
+        <AlertDialog
+          open={Boolean(deleteDialogId)}
+          onOpenChange={(open) => {
+            if (!open) setDeleteDialogId(null)
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your chat.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => deleteDialogId && handleDelete(deleteDialogId)}>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      ) : null}
       <SidebarFooter>
         <div>
           <button className="border p-1 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun /> : <Moon />} </button>
