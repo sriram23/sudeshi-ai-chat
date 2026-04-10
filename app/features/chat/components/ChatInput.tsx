@@ -1,4 +1,5 @@
-import { ArrowUp, Square } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ArrowUp, ChevronDown, Square } from "lucide-react";
 
 const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage, stopStreaming }:{ input: string; setInput: (value: string) => void; settings: { model: "sarvam-30b" | "sarvam-105b" }; setSettings: (newSettings: { model: "sarvam-30b" | "sarvam-105b" }) => void; status: string; sendMessage: (value: string) => void; stopStreaming: () => void }) => {
     const handleInputHeight = (e: React.FormEvent<HTMLTextAreaElement>) => {
@@ -47,10 +48,23 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
                         }
                     }} onFocus={handleInputHeight} onBlur={handleBlur} value={input} onChange={(e) => setInput(e.target.value)} rows={1} className="no-scrollbar focus-visible:ring-2 focus:outline-none focus-visible:ring-transparent mt-auto min-h-10 max-h-32 h-full p-2 border rounded-lg resize-none" placeholder="Type your message..."/>
                 </div>
-                <select onChange={(e) => setSettings({ model: e.target.value as "sarvam-30b" | "sarvam-105b" })} value={settings?.model} className="mr-2 p-1 border rounded">
+                <div className="m-2 px-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger render={<button className="border rounded-2xl p-2" />}>
+                            <span className="flex justify-between items-center">{settings.model === "sarvam-30b" ? "Sarvam 30B": settings.model === "sarvam-105b" ? "Sarvam 150B": settings.model} <ChevronDown/></span>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-white dark:bg-zinc-950">
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: "sarvam-30b"})}>Sarvam 30B</DropdownMenuItem>
+                                <DropdownMenuItem className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: "sarvam-105b"})}>Sarvam 150B</DropdownMenuItem>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+                {/* <select onChange={(e) => setSettings({ model: e.target.value as "sarvam-30b" | "sarvam-105b" })} value={settings?.model} className="mr-2 p-1 border rounded">
                     <option value="sarvam-30b">Sarvam 30B</option>
                     <option value="sarvam-105b">Sarvam 105B</option>
-                </select>
+                </select> */}
                 {status === "idle" && (
                     <button onClick={() => { sendMessage(input); setInput(""); }} className="mt-2 p-2 rounded-full text-white bg-zinc-800">
                         <ArrowUp size={16} />
