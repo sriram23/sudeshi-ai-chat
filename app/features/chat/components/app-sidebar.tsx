@@ -59,7 +59,7 @@ export function AppSidebar(): React.ReactNode {
     }
   };
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup title="Welcome to Sudeshi" >
@@ -113,7 +113,7 @@ export function AppSidebar(): React.ReactNode {
             if (!open) setDeleteDialogId(null)
           }}
         >
-          <AlertDialogContent>
+          <AlertDialogContent className="bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -137,7 +137,7 @@ export function AppSidebar(): React.ReactNode {
             }
           }}
         >
-          <DialogContent>
+          <DialogContent className="bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
             <DialogHeader>
               <DialogTitle>Rename Chat</DialogTitle>
             </DialogHeader>

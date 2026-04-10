@@ -22,8 +22,8 @@ const ChatContainer = () => {
         scrollToBottom();
     }, [currentResponse, status]);
     return (
-        <div className="flex flex-col min-h-screen h-full w-full m-0 p-4 flex-1">
-            <div className="flex items-top sticky top-0 z-10 bg-gray-100 dark:bg-zinc-950 mb-4">
+        <div className="flex flex-col min-h-screen h-full w-full m-0 flex-1 bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
+            <div className="flex items-top sticky top-0 z-10 pt-4 bg-zinc-100 dark:bg-zinc-950 mb-4">
                 <SidebarTrigger className="mb-4" size="lg"/>
                 <h1 className="text-3xl font-bold ml-4">Sudeshi</h1>
             </div>
@@ -59,8 +59,8 @@ const ChatContainer = () => {
                     <div ref={messagesEndRef} />
                 </div>
             ))}
-            <div className="sticky bottom-0 p-4 w-full bg-gray-100 dark:bg-zinc-950">
-                <div className=" w-full">
+            <div className="sticky bottom-0 p-4 w-full">
+                <div className=" w-full rounded-xl bg-zinc-100 dark:bg-zinc-950">
                     <ChatInput input={input} setInput={setInput} settings={settings} setSettings={setSettings} status={status} sendMessage={sendMessage} stopStreaming={stopStreaming} />
                 </div>
             </div>

@@ -39,7 +39,7 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
                     An error occurred while streaming. Please try again.
                 </div>
             )}
-            <div className="flex justify-between items-end flex-1 w-full border p-4 rounded-xl">
+            <div className="flex justify-between items-center flex-1 w-full border p-4 rounded-xl">
                 <div className="flex-4">
                     <textarea style={{ width: "100%", border: "none"}} onKeyDown={(e) => {
                         if(e.key === "Enter" && !e.shiftKey){
@@ -61,17 +61,13 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
-                {/* <select onChange={(e) => setSettings({ model: e.target.value as "sarvam-30b" | "sarvam-105b" })} value={settings?.model} className="mr-2 p-1 border rounded">
-                    <option value="sarvam-30b">Sarvam 30B</option>
-                    <option value="sarvam-105b">Sarvam 105B</option>
-                </select> */}
                 {status === "idle" && (
-                    <button onClick={() => { sendMessage(input); setInput(""); }} className="mt-2 p-2 rounded-full text-white bg-zinc-800">
+                    <button onClick={() => { sendMessage(input); setInput(""); }} className="my-1 p-2 rounded-full text-white bg-zinc-800">
                         <ArrowUp size={16} />
                     </button>
                 )}
                 {status === "streaming" && (
-                    <button onClick={stopStreaming} className="mt-2 p-2 rounded bg-red-500 text-white">
+                    <button onClick={stopStreaming} className="my-1 p-2 rounded bg-red-500 text-white">
                         <Square size={16} />
                     </button>
                 )}
