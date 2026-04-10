@@ -5,13 +5,18 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 
+type CodeProps = {
+ inline?:boolean,
+ className?: string,
+ children?:React.ReactNode
+}
+
 export const MarkdownRenderer = ({ content }: { content: string }) => {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        // @ts-ignore
-        code({ node, inline, className, children, ...props }) {
+        code({ inline, className, children }: CodeProps) {
           const match = /language-(\w+)/.exec(className || "");
 
           return !inline && match ? (
