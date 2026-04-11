@@ -108,8 +108,6 @@ export const useChatStore = create<ChatStore>()(
         set((state) => {
           const updated = state.conversations.filter((conv) => conv.id !== id);
           const isDeletingActive = state.activeConversationId === id
-          console.log("sdjfnsljf: ", isDeletingActive ? updated[0]?.id ?? null : state.activeConversationId)
-          console.log(state)
           return {
             conversations: updated,
             activeConversationId: isDeletingActive ? updated[0]?.id ?? null : state.activeConversationId,
