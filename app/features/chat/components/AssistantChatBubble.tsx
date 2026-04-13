@@ -1,8 +1,9 @@
 import { CircleAlert, Copy, Info, ThumbsDown, ThumbsUp } from "lucide-react";
 import { MarkdownRenderer } from "./MarkdownRender";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { useState } from "react";
-const AssistantChatBubble = ({ message, currentResponse, usage, status, error }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, status: string, error?: boolean }) => {
+import { useState, memo } from "react";
+const AssistantChatBubble = memo(({ message, currentResponse, usage, status, error }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, status: string, error?: boolean }) => {
+    console.log("Rendering bubble: ", message?.slice(0,20)+"...")
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState({type: "success", text: ""});
     const handleCopy = () => {
@@ -24,11 +25,6 @@ const AssistantChatBubble = ({ message, currentResponse, usage, status, error }:
 
     return (
         <div className="flex flex-col justify-start max-w-3xl">
-            {status === "streaming" && (
-                <div className="p-2 m-1 rounded font-extralight italic self-start">
-                    {currentResponse?.length ? "Responding..." : "Thinking..."}
-                </div>
-            )}
             <div className="flex items-center text-gray-900 dark:text-gray-100 px-2 m-1 rounded-lg">
                 {currentResponse && (
                     <div className="p-2 my-1 rounded self-start">
@@ -60,5 +56,8 @@ const AssistantChatBubble = ({ message, currentResponse, usage, status, error }:
         </div>
     );
 }
+);
+
+AssistantChatBubble.displayName = "AssistantChatBubble";
 
 export default AssistantChatBubble;

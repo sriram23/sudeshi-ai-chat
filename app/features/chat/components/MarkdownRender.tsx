@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -11,7 +12,7 @@ type CodeProps = {
  children?:React.ReactNode
 }
 
-export const MarkdownRenderer = ({ content }: { content: string }) => {
+export const MarkdownRenderer = memo(({ content }: { content: string }) => {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
@@ -38,4 +39,5 @@ export const MarkdownRenderer = ({ content }: { content: string }) => {
       {content}
     </ReactMarkdown>
   );
-};
+})
+MarkdownRenderer.displayName = "MarkdownRenderer"

@@ -1,12 +1,14 @@
 "use client";
 import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChatInput from "./ChatInput";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import GuideComponent from "./GuideComponent";
 import UserChatBubble from "./UserChatBubble";
 import AssistantChatBubble from "./AssistantChatBubble";
+import { Virtuoso } from "react-virtuoso";
+import { Spinner } from "@/components/ui/spinner";
 
 const ChatContainer = () => {
     const { sendMessage, stopStreaming } = useChat();
@@ -41,25 +43,39 @@ const ChatContainer = () => {
                 </div>)
             }
             {conversations.filter(c => c.id === activeConversationId).map(conv => (
-                <div key={conv.id} className="flex-1 overflow-y-auto p-2 w-full">
-                    {conv.messages.map((msg, ind) => (
-                        <div key={msg.id} className={`flex items-center ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                            {msg.role === "user" && (
-                                // Only show edit button for the last user message and when the status is idle (not streaming)
-                                <UserChatBubble message={msg.content} showEdit={status === "idle" && ind === conv.messages.length - 2} onEditSave={(newMessage) => sendMessage(newMessage)} />
-                            )}
-                            {msg.role === "assistant" && (
-                                <AssistantChatBubble message={msg.content} error={msg.status === "error"} usage={msg.usage} status={status} />
-                            )}
-                        </div>
-                    ))}
-                    {status === "streaming" && (
-                        <AssistantChatBubble currentResponse={currentResponse} status={status} />
-                    )}
-                    <div ref={messagesEndRef} />
-                </div>
+                <Virtuoso
+                    style={{ flex: 1, margin: "unset", padding: "unset" }}
+                    totalCount={conv.messages.length}
+                    key={conv.id}
+                    className="flex-1 overflow-y-auto w-full"
+                    followOutput={status === "streaming"}
+                    components={{
+                        Footer: () =>
+                            <div className={`flex-1 transition-all ${status === "streaming"? "min-h-10" : "h-0"}`}>
+                                {status === "streaming" ? (
+                                    <div className="p-2">
+                                        <AssistantChatBubble currentResponse={currentResponse} status={status} />
+                                    </div>
+                                ) : null}
+                            <div ref={messagesEndRef} />
+                            </div>
+                    }}
+                    itemContent={i => {
+                        const msg = conv.messages[i]
+                        return(
+                            <div className="flex flex-col">
+                                <div className={`flex items-center ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                                    {msg.role === "user"
+                                    ? <UserChatBubble key={msg.id} message={msg.content} showEdit={status === "idle" && i === conv.messages.length -2 } onEditSave={(newMessage) => sendMessage(newMessage)}/>
+                                    : <AssistantChatBubble message={msg.content} error={msg.status === "error"} usage={msg.usage} status={status} />}
+                                </div>
+                            </div>
+                        )
+                    }}
+                />
             ))}
             <div className="sticky bottom-0 p-4 w-full">
+                {status === "streaming" && (currentResponse.length === 0 ? <div className="text-gray-500 flex gap-2 items-center"><Spinner />Thinking...</div> : <div className="text-gray-500 flex gap-2 items-center"><Spinner />Answering...</div>)}
                 <div className=" w-full rounded-xl bg-zinc-100 dark:bg-zinc-950">
                     <ChatInput input={input} setInput={setInput} settings={settings} setSettings={setSettings} status={status} sendMessage={sendMessage} stopStreaming={stopStreaming} />
                 </div>

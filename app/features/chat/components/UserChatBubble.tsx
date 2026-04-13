@@ -1,8 +1,8 @@
 import { Check, Pencil, RotateCcw, X } from "lucide-react";
 import { MarkdownRenderer } from "./MarkdownRender";
-import { useState } from "react";
+import { useState, memo } from "react";
 
-const UserChatBubble = ({ message, showEdit=false, onEditSave }: { message: string, showEdit?: boolean, onEditSave: (newMessage: string) => void }) => {
+const UserChatBubble = memo(({ message, showEdit=false, onEditSave }: { message: string, showEdit?: boolean, onEditSave: (newMessage: string) => void }) => {
     const [edit, setEdit] = useState(false);
     const [editedMessage, setEditedMessage] = useState(message);
     const handleSave = () => {
@@ -32,6 +32,8 @@ const UserChatBubble = ({ message, showEdit=false, onEditSave }: { message: stri
             </div>
         </div>
     );
-}
+})
+
+UserChatBubble.displayName = "UserChatBubble"
 
 export default UserChatBubble
