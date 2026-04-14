@@ -1,14 +1,16 @@
 import { cn } from "@/lib/utils"
-import { Cog } from "lucide-react"
+import { Circle } from "lucide-react"
 
 const CustomSpinner = ({className, ...props}:{className: string, props?: unknown}) => {
     return (
-        <Cog
-            role="status"
-            aria-label="Loading"
-            className={cn("size-4 animate-spin text-gray-700", className)}
-            {...props}
-        />
+        <div>
+            <Circle
+                role="status"
+                aria-label="Loading"
+                className={cn("size-4 bg-zinc-950 rounded-full animate-ping m-0 p-0", className)}
+                {...props}
+            />
+        </div>
     )
 }
 export default CustomSpinner
