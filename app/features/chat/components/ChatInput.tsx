@@ -1,7 +1,9 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ArrowUp, ChevronDown, Square } from "lucide-react";
+import { ArrowUp, Square } from "lucide-react";
+import {memo, useState} from "react"
+import ModelSelect from "./ModelSelect";
 
-const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage, stopStreaming }:{ input: string; setInput: (value: string) => void; settings: { model: "sarvam-30b" | "sarvam-105b" }; setSettings: (newSettings: { model: "sarvam-30b" | "sarvam-105b" }) => void; status: string; sendMessage: (value: string) => void; stopStreaming: () => void }) => {
+const ChatInput = memo(({ settings, setSettings, status, sendMessage, stopStreaming }:{ settings: { model: "sarvam-30b" | "sarvam-105b" }; setSettings: (newSettings: { model: "sarvam-30b" | "sarvam-105b" }) => void; status: string; sendMessage: (value: string) => void; stopStreaming: () => void }) => {
+    const [input, setInput] = useState("")
     const handleInputHeight = (e: React.FormEvent<HTMLTextAreaElement>) => {
         const textarea = e.currentTarget;
         const parentDiv = textarea.parentElement;
@@ -49,17 +51,7 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
                     }} onFocus={handleInputHeight} onBlur={handleBlur} value={input} onChange={(e) => setInput(e.target.value)} rows={1} className="no-scrollbar focus-visible:ring-2 focus:outline-none focus-visible:ring-transparent mt-auto min-h-10 max-h-32 h-full p-2 border rounded-lg resize-none" placeholder="Type your message..."/>
                 </div>
                 <div className="m-2 px-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger render={<button className="border rounded-2xl p-2" />}>
-                            <span className="flex justify-between items-center">{settings.model === "sarvam-30b" ? "Sarvam 30B": settings.model === "sarvam-105b" ? "Sarvam 150B": settings.model} <ChevronDown/></span>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-white dark:bg-zinc-950">
-                            <DropdownMenuGroup>
-                                <DropdownMenuItem className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: "sarvam-30b"})}>Sarvam 30B</DropdownMenuItem>
-                                <DropdownMenuItem className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: "sarvam-105b"})}>Sarvam 150B</DropdownMenuItem>
-                            </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <ModelSelect settings={settings} setSettings={setSettings} />
                 </div>
                 {status === "idle" && (
                     <button aria-label="Send Message" onClick={() => { sendMessage(input); setInput(""); }} className="my-1 p-2 rounded-full text-white bg-zinc-800">
@@ -74,6 +66,8 @@ const ChatInput = ({ input, setInput, settings, setSettings, status, sendMessage
             </div>
         </div>
     )
-}
+})
+
+ChatInput.displayName="ChatInput"
 
 export default ChatInput;

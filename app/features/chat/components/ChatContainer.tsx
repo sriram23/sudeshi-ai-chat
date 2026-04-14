@@ -13,7 +13,6 @@ import { Spinner } from "@/components/ui/spinner";
 const ChatContainer = () => {
     const { sendMessage, stopStreaming } = useChat();
     const { conversations, activeConversationId,  currentResponse, status, settings, setSettings } = useChatStore();
-    const [input, setInput] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -77,7 +76,7 @@ const ChatContainer = () => {
             <div className="sticky bottom-0 p-4 w-full">
                 {status === "streaming" && (currentResponse.length === 0 ? <div className="text-gray-500 flex gap-2 items-center"><Spinner />Thinking...</div> : <div className="text-gray-500 flex gap-2 items-center"><Spinner />Answering...</div>)}
                 <div className=" w-full rounded-xl bg-zinc-100 dark:bg-zinc-950">
-                    <ChatInput input={input} setInput={setInput} settings={settings} setSettings={setSettings} status={status} sendMessage={sendMessage} stopStreaming={stopStreaming} />
+                    <ChatInput settings={settings} setSettings={setSettings} status={status} sendMessage={sendMessage} stopStreaming={stopStreaming} />
                 </div>
             </div>
         </div>

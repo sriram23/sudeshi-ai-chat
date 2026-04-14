@@ -2,6 +2,7 @@ import { CircleAlert, Copy, Info, ThumbsDown, ThumbsUp } from "lucide-react";
 import { MarkdownRenderer } from "./MarkdownRender";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { useState, memo } from "react";
+import CustomSpinner from "./CustomSpinner";
 const AssistantChatBubble = memo(({ message, currentResponse, usage, status, error }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, status: string, error?: boolean }) => {
     console.log("Rendering bubble: ", message?.slice(0,20)+"...")
     const [showAlert, setShowAlert] = useState(false);
@@ -28,7 +29,8 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, status, err
             <div className="flex items-center text-gray-900 dark:text-gray-100 px-2 m-1 rounded-lg">
                 {currentResponse && (
                     <div className="p-2 my-1 rounded self-start">
-                        <MarkdownRenderer content={currentResponse} />
+                        <span><MarkdownRenderer content={currentResponse} /></span>
+                        {status === "streaming" && <CustomSpinner className="text-gray-800" />}
                     </div>
                 )}
                 {message && (
