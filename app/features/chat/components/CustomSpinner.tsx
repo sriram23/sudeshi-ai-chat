@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { Cog } from "lucide-react"
 
-const CustomSpinner = ({className, ...props}:{className: string, props: unknown}) => {
+const CustomSpinner = ({className, ...props}:{className: string, props?: unknown}) => {
     return (
         <Cog
             role="status"
