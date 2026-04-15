@@ -1,5 +1,5 @@
 export async function processStream(stream:ReadableStream, onChunk: (chunk: string) => void, onComplete?:(usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => void) {
-    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    // const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
     const reader = stream.getReader()
     const decoder = new TextDecoder("utf-8");
 
@@ -32,7 +32,7 @@ export async function processStream(stream:ReadableStream, onChunk: (chunk: stri
 
                 const text = json?.choices[0]?.delta?.content || json?.choices[0]?.message?.content || "";
                 if(text) {
-                    await delay(50); // slight delay to allow UI to catch up
+                    // await delay(50); // slight delay to allow UI to catch up
                     onChunk(text);
                 }
 

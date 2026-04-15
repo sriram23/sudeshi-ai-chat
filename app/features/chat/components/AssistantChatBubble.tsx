@@ -3,8 +3,9 @@ import { MarkdownRenderer } from "./MarkdownRender";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { useState, memo } from "react";
 import CustomSpinner from "./CustomSpinner";
-const AssistantChatBubble = memo(({ message, currentResponse, usage, status, error }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, status: string, error?: boolean }) => {
-    console.log("Rendering bubble: ", message?.slice(0,20)+"...")
+import { Metrics } from "../types/chat.types";
+import SegmentComponent from "./SegmentComponent";
+const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, error, settings }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics, status: string, error?: boolean, settings?: {model: "sarvam-30b" | "sarvam-105b", showMetrics: boolean} }) => {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState({type: "success", text: ""});
     const handleCopy = () => {
@@ -47,9 +48,19 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, status, err
                     <button aria-label="Dislike"><ThumbsDown size={16} /></button>
                 </div>
             )}
-            {usage && (
-                <div className="mx-1 px-4 text-xs text-gray-500 mt-1">
-                    Tokens usage: {usage.total_tokens} (Prompt: {usage.prompt_tokens}, Completion: {usage.completion_tokens})
+            {usage && settings?.showMetrics && (
+                <div className="flex flex-col mx-1 px-4 text-xs text-gray-500 mt-1">
+                    <span>Usage & Metrics</span>
+                    <span>Tokens usage: {usage.total_tokens} (Prompt: {usage.prompt_tokens}, Completion: {usage.completion_tokens})</span>
+                    <span>Total Time: {metrics?.totalTime?.toFixed(0)} ms</span>
+                    <span>Timeline: First Chunk vs Streaming</span>
+                    <SegmentComponent
+                        left={metrics?.timeToFirstChunk && metrics?.totalTime ? ((metrics?.timeToFirstChunk/metrics?.totalTime) * 100).toFixed(2): "0"}
+                        right={metrics?.streamingTime && metrics.totalTime ? ((metrics.streamingTime/metrics.totalTime)*100).toFixed(2):"0"}
+                    />
+                    <span>First Chunk Time: {metrics?.timeToFirstChunk?.toFixed(0)} ms | {metrics?.timeToFirstChunk && metrics?.totalTime ? ((metrics?.timeToFirstChunk/metrics?.totalTime) * 100).toFixed(2): 0}%</span>
+                    <span>Stream Time: {metrics?.streamingTime?.toFixed(0)} ms | {metrics?.streamingTime && metrics.totalTime ? ((metrics.streamingTime/metrics.totalTime)*100).toFixed(2):0}%</span>
+                    <span>Token Speed: {metrics?.tokensPerSecond?.toFixed(2)}/s</span>
                 </div>
             )}
             <Alert className={`fixed max-w-md top-4 right-4 z-50 ${alertMessage.type === "destructive" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"} ${showAlert ? "block" : "hidden"}`}>

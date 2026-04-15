@@ -25,6 +25,7 @@ type ChatStore = {
 
   settings: {
     model: ChatModel;
+    showMetrics: boolean;
   };
 
   controls: {
@@ -67,6 +68,7 @@ export const useChatStore = create<ChatStore>()(
 
       settings: {
         model: "sarvam-30b",
+        showMetrics: false
       },
 
       controls: {},

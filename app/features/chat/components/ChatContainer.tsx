@@ -1,7 +1,7 @@
 "use client";
 import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import GuideComponent from "./GuideComponent";
@@ -66,7 +66,7 @@ const ChatContainer = () => {
                                 <div className={`flex items-center ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                                     {msg.role === "user"
                                     ? <UserChatBubble key={msg.id} message={msg.content} showEdit={status === "idle" && i === conv.messages.length -2 } onEditSave={(newMessage) => sendMessage(newMessage)}/>
-                                    : <AssistantChatBubble message={msg.content} error={msg.status === "error"} usage={msg.usage} status={status} />}
+                                    : <AssistantChatBubble message={msg.content} error={msg.status === "error"} usage={msg.usage} metrics={msg.metrics} status={status} settings={settings} />}
                                 </div>
                             </div>
                         )
