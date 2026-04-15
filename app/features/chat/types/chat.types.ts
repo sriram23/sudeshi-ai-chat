@@ -1,6 +1,18 @@
 export type MessageStatus = "pending" | "completed" | "error";
 export type Role = "user" | "assistant" | "system";
 
+export type Metrics = {
+  startTime: number
+  firstChunkTime?: number
+  endTime?: number
+
+  totalTime?: number
+  timeToFirstChunk?: number
+  streamingTime?: number
+  tokenCount?: number
+  tokensPerSecond?: number
+}
+
 export type Message = {
   id: string;
   role: Role;
@@ -12,6 +24,7 @@ export type Message = {
     completion_tokens: number;
     total_tokens: number;
   };
+  metrics?:Metrics
 };
 
 export type Conversation = {

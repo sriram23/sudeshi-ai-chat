@@ -1,10 +1,45 @@
+import { Metrics } from "../types/chat.types";
 import { processStream } from "../utils/processStream";
+
+
+const metrics: Metrics = {
+    startTime: performance.now()
+}
+
+const computeMetrics = (
+  newMetrics: Metrics,
+  usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number } | undefined
+): {totalTime:number, timeToFirstChunk?:number, streamingTime?:number, tokensPerSecond?:number} => {
+  const totalTime = newMetrics.endTime! - newMetrics.startTime;
+
+  const timeToFirstChunk = newMetrics.firstChunkTime
+    ? newMetrics.firstChunkTime - newMetrics.startTime
+    : undefined;
+
+  const streamingTime =
+    newMetrics.firstChunkTime && newMetrics.endTime
+      ? newMetrics.endTime - newMetrics.firstChunkTime
+      : undefined;
+
+  const tokens = usage?.completion_tokens;
+
+  const tokensPerSecond =
+    streamingTime && tokens
+      ? tokens / (streamingTime / 1000)
+      : undefined;
+  return {
+    totalTime,
+    timeToFirstChunk,
+    streamingTime,
+    tokensPerSecond,
+  };
+};
 
 export async function streamChat(
     messages: { role: string; content: string }[],
     model: string = "sarvam-30b",
     onChunk: (chunk: string) => void,
-    onComplete?: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => void,
+    onComplete?: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }, metrics?:Metrics) => void,
     signal?: AbortSignal
 ) {
     const res = await fetch("/api/chat", {
@@ -18,7 +53,21 @@ export async function streamChat(
     }
     console.log("Response received, starting to read stream...");
 
-    await processStream(res.body, onChunk, onComplete)
+    await processStream(res.body, (chunk) => {
+        const now = performance.now()
+        if(!metrics.firstChunkTime) {
+            metrics.firstChunkTime = now
+        }
+        onChunk(chunk)
+    }, (usage) => {
+        metrics.endTime = performance.now()
+        const {totalTime, timeToFirstChunk, streamingTime, tokensPerSecond,} = computeMetrics(metrics, usage)
+        metrics.totalTime = totalTime
+        metrics.timeToFirstChunk = timeToFirstChunk
+        metrics.streamingTime = streamingTime
+        metrics.tokensPerSecond = tokensPerSecond
+        return onComplete?.(usage, metrics)
+    })
 }
 
 export async function summarizeText(

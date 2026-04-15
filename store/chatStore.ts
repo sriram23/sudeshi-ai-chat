@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Message, MessageStatus } from "@/app/features/chat/types/chat.types";
+import { Message, MessageStatus, Metrics } from "@/app/features/chat/types/chat.types";
 
 type ChatStatus = "idle" | "streaming" | "error";
 type ChatModel = "sarvam-30b" | "sarvam-105b";
@@ -20,6 +20,7 @@ type ChatStore = {
 
   currentResponse: string;
   currentUsage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+  currentMetrics?: Metrics
   status: ChatStatus;
 
   settings: {
@@ -48,7 +49,7 @@ type ChatStore = {
   setStatus: (status: ChatStatus) => void;
 
   setAbortController: (controller?: AbortController) => void;
-  setCurrentUsage: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => void;
+  setCurrentUsage: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }, metrics?: Metrics) => void;
 
   reset: () => void;
 };
@@ -61,6 +62,7 @@ export const useChatStore = create<ChatStore>()(
 
       currentResponse: "",
       currentUsage: undefined,
+      currentMetrics: undefined,
       status: "idle",
 
       settings: {
@@ -155,7 +157,7 @@ export const useChatStore = create<ChatStore>()(
 
       // finalize AI response
       finalizeResponse: (messageStatus: MessageStatus="completed") => {
-        const { currentResponse, currentUsage, conversations, activeConversationId } = get();
+        const { currentResponse, currentUsage, currentMetrics, conversations, activeConversationId } = get();
 
         if (!currentResponse || !activeConversationId) return;
 
@@ -166,6 +168,7 @@ export const useChatStore = create<ChatStore>()(
           createdAt: Date.now(),
           status: messageStatus,
           usage: currentUsage,
+          metrics: currentMetrics
         };
 
         set({
@@ -176,6 +179,7 @@ export const useChatStore = create<ChatStore>()(
           ),
           currentResponse: "",
           currentUsage: undefined,
+          currentMetrics: undefined,
           status: "idle",
           controls: {
             ...get().controls,
@@ -202,7 +206,7 @@ export const useChatStore = create<ChatStore>()(
           },
         })),
 
-      setCurrentUsage: (usage) => set({ currentUsage: usage }),
+      setCurrentUsage: (usage, metrics) => set({ currentUsage: usage, currentMetrics: metrics }),
 
       setSummary: (conversationId, summary, summaryIndex) =>
         set((state) => ({
@@ -217,6 +221,7 @@ export const useChatStore = create<ChatStore>()(
           activeConversationId: null,
           currentResponse: "",
           currentUsage: undefined,
+          currentMetrics: undefined,
           status: "idle",
           controls: {},
         }),

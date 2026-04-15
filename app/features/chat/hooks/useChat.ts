@@ -90,7 +90,7 @@ export const useChat = () => {
         payload,
         settings.model,
         (chunk) => appendToResponse(chunk),
-        (usage) => setCurrentUsage(usage),
+        (usage, metrics) => setCurrentUsage(usage, metrics),
         controller.signal
       );
 
