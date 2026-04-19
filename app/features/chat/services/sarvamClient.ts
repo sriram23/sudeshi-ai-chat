@@ -1,11 +1,6 @@
 import { Metrics } from "../types/chat.types";
 import { processStream } from "../utils/processStream";
 
-
-const metrics: Metrics = {
-    startTime: performance.now()
-}
-
 const computeMetrics = (
   newMetrics: Metrics,
   usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number } | undefined
@@ -42,6 +37,9 @@ export async function streamChat(
     onComplete?: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }, metrics?:Metrics) => void,
     signal?: AbortSignal
 ) {
+    const metrics: Metrics = {
+        startTime: performance.now()
+    }
     const res = await fetch("/api/chat", {
         method: "POST",
         body: JSON.stringify({ messages, model }),
