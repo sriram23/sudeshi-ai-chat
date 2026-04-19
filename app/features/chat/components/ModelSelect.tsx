@@ -4,13 +4,13 @@ import { memo } from "react";
 const ModelSelect = memo(({settings, setSettings}:{settings: { model: "sarvam-30b" | "sarvam-105b", showMetrics?: boolean }; setSettings: (newSettings: { model: "sarvam-30b" | "sarvam-105b", showMetrics?: boolean }) => void;}) => {
     return(
         <DropdownMenu>
-            <DropdownMenuTrigger render={<button className="border rounded-2xl p-2" />}>
+            <DropdownMenuTrigger render={<button className="border rounded-xl p-2" />}>
                 <span className="flex justify-between items-center">{settings?.model === "sarvam-30b" ? "Sarvam 30B": settings?.model === "sarvam-105b" ? "Sarvam 150B": settings?.model} <ChevronDown/></span>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white dark:bg-zinc-950">
                 <DropdownMenuGroup>
                     <DropdownMenuItem className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: "sarvam-30b", showMetrics: settings.showMetrics})}>Sarvam 30B</DropdownMenuItem>
-                    <DropdownMenuItem className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: "sarvam-105b", showMetrics: settings.showMetrics})}>Sarvam 150B</DropdownMenuItem>
+                    <DropdownMenuItem className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: "sarvam-105b", showMetrics: settings.showMetrics})}>Sarvam 105B</DropdownMenuItem>
                 </DropdownMenuGroup>
             </DropdownMenuContent>
         </DropdownMenu>

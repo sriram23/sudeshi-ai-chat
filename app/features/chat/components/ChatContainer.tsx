@@ -3,16 +3,16 @@ import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
 import { useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import GuideComponent from "./GuideComponent";
 import UserChatBubble from "./UserChatBubble";
 import AssistantChatBubble from "./AssistantChatBubble";
 import { Virtuoso } from "react-virtuoso";
 import { Spinner } from "@/components/ui/spinner";
+import ChatHeader from "./ChatHeader";
 
 const ChatContainer = () => {
     const { sendMessage, stopStreaming } = useChat();
-    const { conversations, activeConversationId,  currentResponse, status, settings, setSettings } = useChatStore();
+    const { conversations, activeConversationId,  currentResponse, status, settings } = useChatStore();
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -23,10 +23,9 @@ const ChatContainer = () => {
         scrollToBottom();
     }, [currentResponse, status]);
     return (
-        <div className="flex flex-col min-h-screen h-full w-full m-0 flex-1 bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
+        <div className="flex flex-col min-h-screen h-full w-full m-0 flex-1 bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
             <div className="flex items-top sticky top-0 z-10 pt-4 bg-zinc-100 dark:bg-zinc-950 mb-4">
-                <SidebarTrigger className="mb-4" size="lg"/>
-                <h1 className="text-3xl font-bold ml-4">Sudeshi</h1>
+                <ChatHeader />
             </div>
             {
                 conversations.filter(c => c.id === activeConversationId).map(conv => !conv.messages.length ? (<div key={conv.id} className="flex-1 flex flex-col items-center justify-center text-gray-500 w-full"><GuideComponent onMessageSend={(msg: string) => {sendMessage(msg)} } /></div>):null)
@@ -76,7 +75,7 @@ const ChatContainer = () => {
             <div className="sticky bottom-0 p-4 w-full">
                 {status === "streaming" && (currentResponse.length === 0 ? <div className="text-gray-500 flex gap-2 items-center"><Spinner />Thinking...</div> : <div className="text-gray-500 flex gap-2 items-center"><Spinner />Answering...</div>)}
                 <div className=" w-full rounded-xl bg-zinc-100 dark:bg-zinc-950">
-                    <ChatInput settings={settings} setSettings={setSettings} status={status} sendMessage={sendMessage} stopStreaming={stopStreaming} />
+                    <ChatInput status={status} sendMessage={sendMessage} stopStreaming={stopStreaming} />
                 </div>
             </div>
         </div>

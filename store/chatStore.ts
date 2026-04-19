@@ -46,7 +46,7 @@ type ChatStore = {
   appendToResponse: (chunk: string) => void;
   finalizeResponse: (messageStatus?: MessageStatus) => void;
 
-  setSettings: (newSettings: Partial<{ model: ChatModel }>) => void;
+  setSettings: (newSettings: Partial<{ model: ChatModel, showMetrics: boolean }>) => void;
   setStatus: (status: ChatStatus) => void;
 
   setAbortController: (controller?: AbortController) => void;

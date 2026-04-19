@@ -1,8 +1,7 @@
 import { ArrowUp, Square } from "lucide-react";
 import {memo, useState} from "react"
-import ModelSelect from "./ModelSelect";
 
-const ChatInput = memo(({ settings, setSettings, status, sendMessage, stopStreaming }:{ settings: { model: "sarvam-30b" | "sarvam-105b", showMetrics?: boolean }; setSettings: (newSettings: { model: "sarvam-30b" | "sarvam-105b", showMetrics?: boolean }) => void; status: string; sendMessage: (value: string) => void; stopStreaming: () => void }) => {
+const ChatInput = memo(({ status, sendMessage, stopStreaming }:{ status: string; sendMessage: (value: string) => void; stopStreaming: () => void }) => {
     const [input, setInput] = useState("")
     const handleInputHeight = (e: React.FormEvent<HTMLTextAreaElement>) => {
         const textarea = e.currentTarget;
@@ -49,15 +48,6 @@ const ChatInput = memo(({ settings, setSettings, status, sendMessage, stopStream
                             handleSend();
                         }
                     }} onFocus={handleInputHeight} onBlur={handleBlur} value={input} onChange={(e) => setInput(e.target.value)} rows={1} className="no-scrollbar focus-visible:ring-2 focus:outline-none focus-visible:ring-transparent mt-auto min-h-10 max-h-32 h-full p-2 border rounded-lg resize-none" placeholder="Type your message..."/>
-                </div>
-                <div className="m-2 px-2">
-                    <ModelSelect settings={settings} setSettings={setSettings} />
-                </div>
-                <div>
-                    <button onClick={() => setSettings({
-                        showMetrics: !settings.showMetrics,
-                        model: settings.model
-                    })}>{settings.showMetrics?"Hide Metrics":"Show Metrics"}</button>
                 </div>
                 {status === "idle" && (
                     <button aria-label="Send Message" onClick={() => { sendMessage(input); setInput(""); }} className="my-1 p-2 rounded-full text-white bg-zinc-800">
