@@ -1,7 +1,7 @@
 "use client";
 import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChatInput from "./ChatInput";
 import GuideComponent from "./GuideComponent";
 import UserChatBubble from "./UserChatBubble";
@@ -9,6 +9,7 @@ import AssistantChatBubble from "./AssistantChatBubble";
 import { Virtuoso } from "react-virtuoso";
 import { Spinner } from "@/components/ui/spinner";
 import ChatHeader from "./ChatHeader";
+import OfflineComponent from "./OfflineComponent";
 
 const ChatContainer = () => {
     const { sendMessage, stopStreaming } = useChat();
@@ -78,6 +79,7 @@ const ChatContainer = () => {
                     <ChatInput status={status} sendMessage={sendMessage} stopStreaming={stopStreaming} />
                 </div>
             </div>
+            <OfflineComponent />
         </div>
     );
 }
