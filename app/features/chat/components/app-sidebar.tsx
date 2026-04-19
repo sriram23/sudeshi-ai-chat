@@ -14,9 +14,12 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useChatStore } from "@/store/chatStore";
-import { Ellipsis, Moon, Pencil, Plus, Sun, Trash } from "lucide-react";
+import { ArrowUpRight, Ellipsis, Moon, Pencil, Plus, Sun, Trash } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import Image from "next/image";
+import LOGO from "@/app/assets/images/Sudeshi_Chat.png"
+import Link from "next/link";
 
 export function AppSidebar(): React.ReactNode {
   const {conversations, activeConversationId, createConversation, setActiveConversation, status, renameConversation, deleteConversation} = useChatStore();
@@ -64,9 +67,23 @@ export function AppSidebar(): React.ReactNode {
         <SidebarHeader>
           <SidebarContent>
             <SidebarGroup title="Welcome to Sudeshi" >
-            <SidebarGroupLabel className="text-3xl">Sudeshi</SidebarGroupLabel>
-            <SidebarGroupLabel className="text-sm text-zinc-600">Your personal AI assistant</SidebarGroupLabel>
-            <SidebarGroupLabel className="text-sm">Powered by Sarvam AI</SidebarGroupLabel>
+            <SidebarGroupLabel className="flex items-center justify-center mt-2">
+              <span>
+                <Image src={LOGO} alt="Sudeshi Logo" width={80} height={80} />
+              </span>
+              {/* <h2 className="text-2xl font-bold">Sudeshi</h2> */}
+            </SidebarGroupLabel>
+            <SidebarGroupLabel className="text-sm text-zinc-600 text-center">
+              <span className="flex items-center justify-center w-full">Your personal AI assistant</span>
+            </SidebarGroupLabel>
+            <SidebarGroupLabel className="text-sm text-center">
+              <div className="flex items-center justify-center w-full">
+                Powered by
+                <Link className="border-b border-dashed mx-2 flex items-center" href="https://www.sarvam.ai/">
+                  Sarvam AI <ArrowUpRight size={16}/>
+                </Link>
+              </div>
+            </SidebarGroupLabel>
           </SidebarGroup>
           </SidebarContent>
         </SidebarHeader>
