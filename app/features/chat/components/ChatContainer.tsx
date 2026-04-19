@@ -1,7 +1,7 @@
 "use client";
 import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import ChatInput from "./ChatInput";
 import GuideComponent from "./GuideComponent";
 import UserChatBubble from "./UserChatBubble";

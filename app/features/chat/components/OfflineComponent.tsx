@@ -27,16 +27,11 @@ const OfflineComponent = () => {
         }}>
             <DialogContent showCloseButton={false} className="bg-zinc-100 dark:bg-zinc-950">
                 <DialogHeader>
-                    {/* <OctagonAlert color="red"/> */}
                     <DialogTitle className="flex gap-2 items-center"><WifiOff color="red"/>You&apos;re Offline!</DialogTitle>
                 </DialogHeader>
                 <DialogDescription>
                     You are offline. Please check your network and try again later.
                 </DialogDescription>
-                {/* <AlertTitle className="text-red-500">You&apos;re Offline!</AlertTitle>
-                <AlertDescription>
-                    You are offline. Please check your network and try again later.
-                </AlertDescription> */}
             </DialogContent>
         </Dialog>
     )
