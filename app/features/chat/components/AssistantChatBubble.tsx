@@ -5,7 +5,7 @@ import { useState, memo } from "react";
 import CustomSpinner from "./CustomSpinner";
 import { Metrics } from "../types/chat.types";
 import MetricsCard from "./MetricsCard";
-const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, error, settings }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics, status: string, error?: boolean, settings?: {model: "sarvam-30b" | "sarvam-105b", showMetrics: boolean} }) => {
+const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, error, settings }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics, status: string, error?: boolean, settings?: {model: string, showMetrics: boolean} }) => {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState({type: "success", text: ""});
     const handleCopy = () => {
