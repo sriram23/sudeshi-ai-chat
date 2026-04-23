@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 import { Message, MessageStatus, Metrics } from "@/app/features/chat/types/chat.types";
 
 type ChatStatus = "idle" | "streaming" | "error";
-type ChatModel = "sarvam-30b" | "sarvam-105b";
+type ChatModel = string;
 
 type Conversation = {
   id: string;
@@ -22,7 +22,7 @@ type ChatStore = {
   currentUsage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
   currentMetrics?: Metrics
   status: ChatStatus;
-
+  availableModels?: ChatModel[];
   settings: {
     model: ChatModel;
     showMetrics: boolean;
@@ -51,6 +51,7 @@ type ChatStore = {
 
   setAbortController: (controller?: AbortController) => void;
   setCurrentUsage: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }, metrics?: Metrics) => void;
+  setModels: (models: ChatModel[]) => void;
 
   reset: () => void;
 };
@@ -66,6 +67,7 @@ export const useChatStore = create<ChatStore>()(
       currentMetrics: undefined,
       status: "idle",
 
+      availableModels: ["sarvam-30b", "sarvam-105b"],
       settings: {
         model: "sarvam-30b",
         showMetrics: false
@@ -216,6 +218,8 @@ export const useChatStore = create<ChatStore>()(
             conv.id === conversationId ? { ...conv, summary, summaryIndex } : conv
           ),
         })),
+
+      setModels: (newModels) => set((state) => ({ availableModels: [...newModels, ...(state.availableModels ?? [])] })),
 
       reset: () =>
         set({

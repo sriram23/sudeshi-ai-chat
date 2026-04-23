@@ -1,7 +1,28 @@
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { useChatStore } from "@/store/chatStore";
 import { ChevronDown } from "lucide-react"
-import { memo } from "react";
-const ModelSelect = memo(({settings, setSettings}:{settings: { model: "sarvam-30b" | "sarvam-105b", showMetrics?: boolean }; setSettings: (newSettings: { model: "sarvam-30b" | "sarvam-105b", showMetrics?: boolean }) => void;}) => {
+import { memo, useCallback, useEffect } from "react";
+import { fetchAvailableModels } from "../services/sarvamClient";
+const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, showMetrics?: boolean }; setSettings: (newSettings: { model: string, showMetrics?: boolean }) => void;}) => {
+    const {availableModels, setModels} = useChatStore();
+
+    const fetchModels = useCallback(async () => {
+        try {
+            const models = await fetchAvailableModels();
+            console.log("Fetched models: ", models);
+            const modelArray = models.map((model: { name?: string }) => model?.name)
+            console.log("Extracted model names: ", modelArray);
+            setModels(modelArray);
+        } catch (error) {
+            console.error("Error fetching models: ", error);
+        }
+    }, [setModels]);
+
+    useEffect(() => {
+        // Fetch available models from the server
+        fetchModels();
+    }, [fetchModels]);
+
     return(
         <DropdownMenu>
             <DropdownMenuTrigger render={<button className="border rounded-xl p-2" />}>
@@ -9,8 +30,9 @@ const ModelSelect = memo(({settings, setSettings}:{settings: { model: "sarvam-30
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white dark:bg-zinc-950">
                 <DropdownMenuGroup>
-                    <DropdownMenuItem className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: "sarvam-30b", showMetrics: settings.showMetrics})}>Sarvam 30B</DropdownMenuItem>
-                    <DropdownMenuItem className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: "sarvam-105b", showMetrics: settings.showMetrics})}>Sarvam 105B</DropdownMenuItem>
+                    {availableModels?.map((model) => (
+                        <DropdownMenuItem key={model} className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: model, showMetrics: settings.showMetrics})}>{model === "sarvam-30b" ? "Sarvam 30B": model === "sarvam-105b" ? "Sarvam 150B": model}</DropdownMenuItem>
+                    ))}
                 </DropdownMenuGroup>
             </DropdownMenuContent>
         </DropdownMenu>

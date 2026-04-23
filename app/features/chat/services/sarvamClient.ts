@@ -136,3 +136,17 @@ Generate a title for the following conversation:\n\n${text}`.trim();
         return "Untitled Conversation";
     }
 }
+
+export async function fetchAvailableModels() {
+    try {
+        const response = await fetch("/api/checkOllama");
+        if (!response.ok) {
+            throw new Error("Failed to fetch available models");
+        }
+        const data = await response.json();
+        return data.models;
+    } catch (error) {
+        console.error("Error fetching available models:", error);
+        return [];
+    }
+}
