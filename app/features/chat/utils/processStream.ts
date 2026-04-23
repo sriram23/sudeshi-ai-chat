@@ -1,5 +1,18 @@
-export async function processStream(stream:ReadableStream, onChunk: (chunk: string) => void, onComplete?:(usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => void) {
-    // const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+type Usage = {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+};
+
+type ParserResult = {
+  text?: string;
+  done?: boolean;
+  usage?: Usage;
+};
+
+type StreamParser = (line: string) => ParserResult | null;
+
+export async function processStream(stream:ReadableStream, parser:StreamParser, onChunk: (chunk: string) => void, onComplete?:(usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => void) {
     const reader = stream.getReader()
     const decoder = new TextDecoder("utf-8");
 
@@ -19,30 +32,67 @@ export async function processStream(stream:ReadableStream, onChunk: (chunk: stri
         buffer = lines.pop() || "";
 
         for (const line of lines) {
-            if(!line.startsWith("data:")) continue
+            const result = parser(line.trim())
+            if(!result) continue
 
-            const data = line.replace(/^data:\s*/, "");
-            if (data === "[DONE]") {
-                console.log("Stream signaled done");
-                if (onComplete) onComplete(usage);
-                return;
+            if(result.text) {
+                onChunk(result.text)
             }
-            try {
-                const json = JSON.parse(data);
 
-                const text = json?.choices[0]?.delta?.content || json?.choices[0]?.message?.content || "";
-                if(text) {
-                    // await delay(50); // slight delay to allow UI to catch up
-                    onChunk(text);
-                }
-
-                // Capture usage if present
-                if (json.usage) {
-                    usage = json.usage;
-                }
-            } catch (error) {
-                console.error("Error parsing JSON:", error);
+            if(result.usage) {
+                usage = result.usage
+            }
+            if(result.done) {
+                onComplete?.(usage)
+                return
             }
         }
+    }
+}
+
+export const sseParser:StreamParser = (line) => {
+    if(!line.startsWith("data:")) return null
+
+    const data = line.replace(/^data:\s*/, "");
+    if (data === "[DONE]") {
+        return {done: true};
+    }
+    try {
+        const json = JSON.parse(data);
+
+        const text = json?.choices[0]?.delta?.content || json?.choices[0]?.message?.content || "";
+        const usage = json?.usage
+        return {
+            text,
+            usage
+        }
+
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+        return null
+    }
+}
+
+export const ollamaParser: StreamParser = (line) => {
+    if(!line) return null
+    try {
+        const json = JSON.parse(line)
+        const text = json?.message?.content
+        const done = json?.done
+        const usage = json?.eval_count
+        ? {
+            prompt_tokens: json.prompt_eval_count || 0,
+            completion_tokens: json.eval_count || 0,
+            total_tokens: (json.prompt_eval_count || 0) + (json.eval_count || 0)
+        }
+        : undefined
+        return {
+            text,
+            done,
+            usage
+        }
+    } catch(error) {
+        console.log("Error parsing JSON: ", error)
+        return null
     }
 }

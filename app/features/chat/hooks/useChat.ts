@@ -87,6 +87,7 @@ export const useChat = () => {
     setStatus("streaming");
     try {
       await streamChat(
+        !(settings.model === "sarvam-30b" || settings.model === "sarvam-105b"),
         payload,
         settings.model,
         (chunk) => appendToResponse(chunk),
