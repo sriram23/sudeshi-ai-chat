@@ -219,7 +219,7 @@ export const useChatStore = create<ChatStore>()(
           ),
         })),
 
-      setModels: (newModels) => set((state) => ({ availableModels: [...newModels, ...(state.availableModels ?? [])] })),
+      setModels: (newModels) => set((state) => ({ availableModels: [...new Set(newModels), ...(state.availableModels ?? [])] })),
 
       reset: () =>
         set({
