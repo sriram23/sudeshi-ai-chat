@@ -1,4 +1,4 @@
-import { processStream } from "@/app/features/chat/utils/processStream"
+import { processStream, sseParser } from "@/app/features/chat/utils/processStream"
 import { describe, expect, it } from "vitest"
 
 export function createSSEStream(events: string[]){
@@ -26,7 +26,7 @@ describe("Stream", () => {
         ])
         let result = ""
 
-        await processStream(stream, (chunk) => {
+        await processStream(stream, sseParser, (chunk) => {
             result += chunk
         })
 
@@ -41,7 +41,7 @@ describe("Stream", () => {
 
         const calls: string[] = []
 
-        await processStream(stream, (chunk) => {
+        await processStream(stream, sseParser, (chunk) => {
             calls.push(chunk)
         })
 
@@ -56,7 +56,7 @@ describe("Stream", () => {
 
         let result = ""
 
-        await processStream(stream, (chunk) => {
+        await processStream(stream, sseParser, (chunk) => {
             result += chunk
         })
 
@@ -71,7 +71,7 @@ describe("Stream", () => {
 
         let usage:{ prompt_tokens: number, completion_tokens: number, total_tokens: number}
 
-        await processStream(stream, () => {}, u => {usage = u})
+        await processStream(stream, sseParser, () => {}, u => {usage = u})
         expect(usage).toBeDefined()
         expect(usage!.total_tokens).toBe(1693)
     })
@@ -92,7 +92,7 @@ describe("Stream", () => {
 
         let result = "";
 
-        await processStream(stream, (chunk) => {
+        await processStream(stream, sseParser, (chunk) => {
             result += chunk;
         });
 
@@ -106,7 +106,7 @@ describe("Stream", () => {
 
         let result = "";
 
-        await processStream(stream, (chunk) => {
+        await processStream(stream, sseParser, (chunk) => {
             result += chunk;
         });
 
@@ -128,7 +128,7 @@ describe("Stream", () => {
 
         let result = ""
 
-        await processStream(stream, (chunk) => {
+        await processStream(stream, sseParser, (chunk) => {
             result += chunk
         })
 
