@@ -12,12 +12,6 @@ const ChatHeader = () => {
             </div>
             <div className="flex gap-2 items-center">
                 <ModelSelect settings={settings} setSettings={setSettings} />
-                <div>
-                    <button onClick={() => setSettings({
-                        showMetrics: !settings.showMetrics,
-                        model: settings.model
-                    })}>Metrics {settings.showMetrics?(<span className="text-green-500">On</span>):(<span className="text-red-500">Off</span>)}</button>
-                </div>
             </div>
         </div>
     )

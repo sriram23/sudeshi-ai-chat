@@ -36,6 +36,7 @@ export async function streamChat(
     model: string = "sarvam-30b",
     onChunk: (chunk: string) => void,
     onComplete?: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }, metrics?:Metrics) => void,
+    endpoint?: string,
     signal?: AbortSignal
 ) {
     const metrics: Metrics = {
@@ -44,7 +45,7 @@ export async function streamChat(
     const res = isLocal
         ? await fetch("/api/ollama", {
             method: "POST",
-            body: JSON.stringify({messages, model}),
+            body: JSON.stringify({messages, model, endpoint}),
             signal
         })
         : await fetch("/api/chat", {
@@ -149,17 +150,22 @@ Generate a title for the following conversation:\n\n${text}`.trim();
     }
 }
 
-export async function fetchAvailableModels() {
-    try {
-        const response = await fetch("/api/checkOllama");
-        if (!response.ok) {
-            throw new Error("Failed to fetch available models");
+export async function fetchAvailableModels(endpoint: string) {
+    if(endpoint) {
+        try {
+            const response = await fetch("/api/checkOllama", {
+                method: "POST",
+                body: JSON.stringify({endpoint: endpoint})
+            });
+            if (!response.ok) {
+                throw new Error("Failed to fetch available models");
+            }
+            const data = await response.json();
+            return data.models;
+        } catch (error) {
+            console.error("Error fetching available models:", error);
+            return [];
         }
-        const data = await response.json();
-        return data.models;
-    } catch (error) {
-        console.error("Error fetching available models:", error);
-        return [];
     }
 }
 

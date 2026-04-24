@@ -10,6 +10,8 @@ import { Virtuoso } from "react-virtuoso";
 import { Spinner } from "@/components/ui/spinner";
 import ChatHeader from "./ChatHeader";
 import OfflineComponent from "./OfflineComponent";
+import CustomDialog from "./Dialog";
+import SettingsComponent from "./SettingsComponent";
 
 const ChatContainer = () => {
     const { sendMessage, stopStreaming } = useChat();

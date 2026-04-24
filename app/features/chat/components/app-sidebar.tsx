@@ -14,12 +14,14 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useChatStore } from "@/store/chatStore";
-import { ArrowUpRight, Ellipsis, Moon, Pencil, Plus, Sun, Trash } from "lucide-react";
+import { ArrowUpRight, Ellipsis, Moon, Pencil, Plus, Settings, Sun, Trash } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Image from "next/image";
 import LOGO from "@/app/assets/images/Sudeshi_Chat.png"
 import Link from "next/link";
+import CustomDialog from "./Dialog";
+import SettingsComponent from "./SettingsComponent";
 
 export function AppSidebar(): React.ReactNode {
   const {conversations, activeConversationId, createConversation, setActiveConversation, status, renameConversation, deleteConversation} = useChatStore();
@@ -29,6 +31,7 @@ export function AppSidebar(): React.ReactNode {
   const [newName, setNewName] = useState("")
 
   const [mounted, setMounted] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -187,8 +190,13 @@ export function AppSidebar(): React.ReactNode {
           </Dialog>
         ) : null}
         <SidebarFooter>
-          <div>
+          <div className="flex gap-2">
             <button aria-label="Theme toggle" className="border p-1 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun /> : <Moon />} </button>
+            <button aria-label="Theme toggle" className="border p-1 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setShowSettings(true)}><Settings /></button>
+            {/* TODO: Yet to write the dialog open close logic */}
+            <CustomDialog title="Settings" shouldOpen={showSettings} onDialogOpenChange={(o)=>setShowSettings(o)}>
+                <SettingsComponent />
+            </CustomDialog>
           </div>
         </SidebarFooter>
       </Sidebar>

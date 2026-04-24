@@ -3,20 +3,22 @@ import { useChatStore } from "@/store/chatStore";
 import { ChevronDown } from "lucide-react"
 import { memo, useCallback, useEffect } from "react";
 import { fetchAvailableModels } from "../services/sarvamClient";
-const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, showMetrics?: boolean }; setSettings: (newSettings: { model: string, showMetrics?: boolean }) => void;}) => {
-    const {availableModels, setModels} = useChatStore();
+const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, showMetrics?: boolean, baseUrl?: string }; setSettings: (newSettings: { model: string, showMetrics?: boolean, baseUrl?: string }) => void;}) => {
+    const {availableModels, setModels,} = useChatStore();
 
     const fetchModels = useCallback(async () => {
-        try {
-            const models = await fetchAvailableModels();
-            console.log("Fetched models: ", models);
-            const modelArray = models.map((model: { name?: string }) => model?.name)
-            console.log("Extracted model names: ", modelArray);
-            setModels(modelArray);
-        } catch (error) {
-            console.error("Error fetching models: ", error);
+        if(settings.baseUrl){
+            try {
+                const models = await fetchAvailableModels(settings?.baseUrl);
+                console.log("Fetched models: ", models);
+                const modelArray = models?.map((model: { name?: string }) => model?.name)
+                console.log("Extracted model names: ", modelArray);
+                if(modelArray?.length) setModels(modelArray);
+            } catch (error) {
+                console.error("Error fetching models: ", error);
+            }
         }
-    }, [setModels]);
+    }, [setModels, settings]);
 
     useEffect(() => {
         // Fetch available models from the server
