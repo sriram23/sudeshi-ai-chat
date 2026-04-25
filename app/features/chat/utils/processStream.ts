@@ -86,19 +86,29 @@ export const ollamaParser: StreamParser = (line) => {
         const json = JSON.parse(line)
         const text = json?.message?.content
         const done = json?.done
-        const usage = json?.eval_count
+        const usage = json?.eval_count != null
         ? {
             prompt_tokens: json.prompt_eval_count || 0,
             completion_tokens: json.eval_count || 0,
             total_tokens: (json.prompt_eval_count || 0) + (json.eval_count || 0)
         }
         : undefined
-        const metrics = {
-            totalTime: json?.total_duration / 1e6,
-            timeToFirstChunk: (json?.total_duration - json?.eval_duration)/1e6,
-            streamingTime: json?.eval_duration/1e6,
-            tokensPerSecond: json?.eval_count/(json?.eval_duration/1e6)
-        }
+        const metrics: Metrics | undefined = json?.total_duration != null
+            ? (() => {
+                const totalTime = json.total_duration / 1e6
+                const endTime = performance.now()
+                return {
+                    startTime: endTime - totalTime,
+                    endTime,
+                    totalTime,
+                    timeToFirstChunk: (json.total_duration - json.eval_duration) / 1e6,
+                    streamingTime: json.eval_duration / 1e6,
+                    tokensPerSecond: json.eval_duration
+                        ? json.eval_count / (json.eval_duration / 1e9)
+                        : undefined,
+                }
+            })()
+            : undefined
         return {
             text,
             done,
