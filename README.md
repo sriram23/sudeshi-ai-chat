@@ -1,140 +1,163 @@
-# Sudeshi AI Chat
+Sudeshi AI Chat
 
-A high-performance, real-time AI chat application built with Next.js, designed to deliver low-latency streaming experiences and efficiently handle long-running conversations at scale.
+Sudeshi AI Chat is a multi-provider AI chat client built with Next.js,
+supporting both hosted (Sarvam) and self-hosted (Ollama) models. It
+delivers low-latency streaming responses and is designed with a
+pluggable architecture for future AI integrations.
 
----
+------------------------------------------------------------------------
 
-## 🔥 Key Highlights
+🔥 Key Highlights
 
-- Built a **real-time streaming chat system** with ~300–500ms first-token latency using SSE
-- Designed a **state-machine-driven architecture** to manage async streaming safely
-- Implemented **context compression (summarization)** to handle long conversations without token explosion
-- Engineered **resilient streaming pipelines** with graceful error recovery and request abortion
-- Optimized rendering using **virtualization and memoization** for large chat histories
+-   Real-time streaming chat with ~300–500ms first-token latency using
+    SSE
+-   Multi-provider support: Sarvam (hosted) + Ollama (self-hosted /
+    remote)
+-   Pluggable adapter architecture for integrating AI providers
+-   Context compression via summarization to manage long conversations
+-   Virtualized rendering for performance with large chat histories
 
----
+------------------------------------------------------------------------
 
-## ⚡ Core Features
+⚡ Core Features
 
-### 💬 Chat & Conversation Management
-- Real-time AI responses via **ReadableStream + SSE parsing**
-- Multi-conversation support (create, rename, delete, switch)
-- Automatic **AI-generated conversation titles**
-- Persistent chat history using Zustand (survives refresh)
+💬 Chat & Conversation Management
 
-### 🧠 AI Capabilities
-- Integration with **Sarvam AI (30B & 150B models)**
-- Multilingual support (Tamil, Hindi, English)
-- Token usage tracking (prompt / completion / total)
-- Context-aware summarization (retains last 19 messages)
+-   Real-time AI responses via ReadableStream + SSE parsing
+-   Multi-conversation support (create, rename, delete, switch)
+-   AI-generated conversation titles
+-   Persistent chat history using Zustand
 
-### 🎨 User Experience
-- Virtualized chat rendering using **react-virtuoso**
-- Markdown + syntax-highlighted responses
-- Auto-resizing input with keyboard shortcuts
-- Dark/Light theme (system-aware)
-- Responsive UI (mobile + desktop)
-- Loading states, streaming indicators, and welcome prompts
+🔌 Multi-Provider AI Support
 
----
+-   Supports Sarvam AI and Ollama models
+-   Dynamic model fetching from Ollama /api/tags
+-   Configurable Ollama endpoint via user-provided base URL
+-   Provider selection handled via adapter system
 
-## 🧱 Architecture & Engineering
+🧠 AI Capabilities
 
-### State Machine Design
-- Enforced lifecycle: **idle → streaming → error**
-- Prevents race conditions and inconsistent UI states
-- Ensures safe async transitions and request isolation
+-   Token usage tracking (prompt / completion / total)
+-   Context-aware summarization (sliding window + compression)
 
-### Streaming Engine
-- Custom SSE parser with:
-  - Chunk buffering
-  - Boundary-safe JSON parsing
-  - Multi-event handling per chunk
-- Handles incomplete streams and missing termination signals (`[DONE]`)
+------------------------------------------------------------------------
 
-### Context Management
-- Sliding window of active messages (last 19)
-- Older messages compressed via summarization API
-- Reduces payload size while preserving semantic continuity
+🧱 Architecture & Engineering
 
-### Code Organization
-- Feature-based modular architecture
-- Custom hooks (`useChat`) for reusable logic
-- Utility-driven design for message creation and stream handling
-- Fully typed with TypeScript for maintainability
+AI Provider Architecture
 
----
+-   AIAdapter interface standardizes provider behavior
+-   SarvamAdapter and OllamaAdapter implement provider-specific logic
+-   AdapterManager dynamically selects provider at runtime
 
-## ⚙️ Performance Optimizations
+Streaming Engine
 
-- Virtual scrolling for large chat histories
-- Streaming UI updates to avoid blocking renders
-- Optimized re-renders using `React.memo`
-- Efficient global state updates with Zustand
-- Reduced API payload via context summarization
+-   Handles different streaming formats:
+    -   Sarvam: SSE-based structured responses
+    -   Ollama: JSON-line streaming responses
+-   Shared processStream pipeline normalizes responses
 
----
+State Management
 
-## 💣 Complex Problems Solved
+-   Zustand store with persistence
+-   Stores model and endpoint configuration
+-   Provider inferred from selected model
 
-- Reliable SSE parsing across fragmented network chunks
-- Handling partial AI responses without breaking UI
-- Preventing stale updates during concurrent async streams
-- Safe cancellation of in-flight requests using AbortController
-- Maintaining UI consistency during failures and retries
+Context Management
 
----
+-   Sliding window of recent messages (last 19)
+-   Older messages compressed via summarization API
 
-## 🧪 Testing & Code Quality
+------------------------------------------------------------------------
 
-- Unit testing with **Vitest**
-- Component testing using **React Testing Library**
-- Store and stream-processing test coverage
-- ESLint for code quality enforcement
-- Husky pre-commit hooks for consistency
+⚙️ Performance Optimizations
 
----
+-   Virtual scrolling using react-virtuoso
+-   Streaming UI updates to avoid blocking renders
+-   Optimized re-renders using React.memo
+-   Efficient global state updates with Zustand
 
-## 🧰 Tech Stack
+------------------------------------------------------------------------
 
-### Frontend
-- Next.js (App Router), React, TypeScript
-- Tailwind CSS, shadcn/ui, Lucide Icons
+💣 Complex Problems Solved
 
-### State & Performance
-- Zustand (with persistence middleware)
-- react-virtuoso (virtualization)
+-   Normalizing different provider response formats into a unified
+    stream
+-   Handling fragmented streaming responses safely
+-   Managing async state transitions with a state-machine approach
+-   Preventing stale updates during concurrent streams
+-   Safe request cancellation using AbortController
 
-### AI & Streaming
-- Sarvam AI APIs
-- ReadableStream + Server-Sent Events (SSE)
+------------------------------------------------------------------------
 
-### Rendering
-- react-markdown + remark-gfm
-- react-syntax-highlighter
+🧪 Testing & Code Quality
 
-### Testing & Tooling
-- Vitest, jsdom
-- ESLint, Husky
+-   Unit testing with Vitest
+-   Component testing using React Testing Library
+-   ESLint for code quality
+-   Husky pre-commit hooks
 
----
+------------------------------------------------------------------------
 
-## 🔌 API Endpoints
+🧰 Tech Stack
 
-- `/api/chat` → Streaming AI responses
-- `/api/summarize` → Conversation compression
-- `/api/title` → AI-generated titles
+Frontend
 
----
+-   Next.js (App Router), React, TypeScript
+-   Tailwind CSS, shadcn/ui
 
-## 🚀 Deployment
+State & Performance
 
-- Vercel-ready (serverless)
-- Environment-based configuration (`SARVAM_API_KEY`)
-- Optimized Next.js production build
+-   Zustand (with persistence middleware)
+-   react-virtuoso
 
----
+AI & Streaming
 
-## 🔗 Live Demo
+-   Sarvam AI APIs
+-   Ollama (self-hosted / remote models)
+-   ReadableStream + Server-Sent Events (SSE)
+
+Rendering
+
+-   react-markdown + remark-gfm
+-   react-syntax-highlighter
+
+------------------------------------------------------------------------
+
+🔌 API Endpoints
+
+-   /api/chat → Sarvam streaming responses
+-   /api/ollama → Ollama proxy streaming
+-   /api/checkOllama → Fetch available models from Ollama
+-   /api/summarize → Conversation compression
+-   /api/title → AI-generated titles
+
+------------------------------------------------------------------------
+
+🧩 Extensibility
+
+The system is designed to support additional AI providers.
+
+To add a new provider: 1. Implement the AIAdapter interface 2. Register
+it in AdapterManager 3. Handle provider-specific streaming logic
+
+------------------------------------------------------------------------
+
+⚠️ Current Limitations
+
+-   Provider detection is based on model naming conventions
+-   No strict validation for custom Ollama endpoints
+-   Error handling is generic across providers
+
+------------------------------------------------------------------------
+
+🚀 Deployment
+
+-   Vercel-ready (serverless)
+-   Environment-based configuration for Sarvam API key
+
+------------------------------------------------------------------------
+
+🔗 Live Demo
 
 https://sudeshi-ai-chat.vercel.app
