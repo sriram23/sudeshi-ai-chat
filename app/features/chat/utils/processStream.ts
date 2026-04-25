@@ -1,3 +1,5 @@
+import { Metrics } from "../types/chat.types";
+
 type Usage = {
   prompt_tokens: number;
   completion_tokens: number;
@@ -8,11 +10,13 @@ type ParserResult = {
   text?: string;
   done?: boolean;
   usage?: Usage;
+  metrics?: Metrics
 };
 
 type StreamParser = (line: string) => ParserResult | null;
 
-export async function processStream(stream:ReadableStream, parser:StreamParser, onChunk: (chunk: string) => void, onComplete?:(usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }) => void) {
+export async function processStream(stream:ReadableStream, parser:StreamParser, onChunk: (chunk: string) => void, onComplete?:(usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }, metrics?: Metrics) => void) {
+    console.log("In the process Stream: ", stream, parser)
     const reader = stream.getReader()
     const decoder = new TextDecoder("utf-8");
 
@@ -21,6 +25,7 @@ export async function processStream(stream:ReadableStream, parser:StreamParser, 
 
     while(true) {
         const { done, value } = await reader.read();
+        console.log("Stream values: ", done, value)
         if (done) {
             console.log("Stream complete");
             break;
@@ -28,6 +33,7 @@ export async function processStream(stream:ReadableStream, parser:StreamParser, 
         buffer += decoder.decode(value, { stream: true });
 
         const lines = buffer.split("\n");
+        console.log("Lines: ", lines)
 
         buffer = lines.pop() || "";
 
@@ -36,6 +42,7 @@ export async function processStream(stream:ReadableStream, parser:StreamParser, 
             if(!result) continue
 
             if(result.text) {
+                console.log("Result: ", result.text)
                 onChunk(result.text)
             }
 
@@ -43,7 +50,7 @@ export async function processStream(stream:ReadableStream, parser:StreamParser, 
                 usage = result.usage
             }
             if(result.done) {
-                onComplete?.(usage)
+                onComplete?.(usage, result?.metrics)
                 return
             }
         }
@@ -86,10 +93,17 @@ export const ollamaParser: StreamParser = (line) => {
             total_tokens: (json.prompt_eval_count || 0) + (json.eval_count || 0)
         }
         : undefined
+        const metrics = {
+            totalTime: json?.total_duration / 1e6,
+            timeToFirstChunk: (json?.total_duration - json?.eval_duration)/1e6,
+            streamingTime: json?.eval_duration/1e6,
+            tokensPerSecond: json?.eval_count/(json?.eval_duration/1e6)
+        }
         return {
             text,
             done,
-            usage
+            usage,
+            metrics
         }
     } catch(error) {
         console.log("Error parsing JSON: ", error)

@@ -1,7 +1,7 @@
 import { Metrics } from "../types/chat.types";
-import { ollamaParser, processStream, sseParser } from "../utils/processStream";
+import { getAdapter } from "./adapters/AdapterManager";
 
-const computeMetrics = (
+export const computeMetrics = (
   newMetrics: Metrics,
   usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number } | undefined
 ): {totalTime:number, timeToFirstChunk?:number, streamingTime?:number, tokensPerSecond?:number} => {
@@ -31,54 +31,15 @@ const computeMetrics = (
 };
 
 export async function streamChat(
-    isLocal: boolean = false,
-    messages: { role: string; content: string }[],
-    model: string = "sarvam-30b",
-    onChunk: (chunk: string) => void,
-    onComplete?: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }, metrics?:Metrics) => void,
-    endpoint?: string,
-    signal?: AbortSignal
+    config: { provider: "ollama" | "sarvam";model: string;endpoint?: string },
+    message: {role: string; content: string}[],
+    onChunk: (chunk:string) => void,
+    onComplete: (usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics) => void,
+    signal: AbortSignal
 ) {
-    const metrics: Metrics = {
-        startTime: performance.now()
-    }
-    const res = isLocal
-        ? await fetch("/api/ollama", {
-            method: "POST",
-            body: JSON.stringify({messages, model, endpoint}),
-            signal
-        })
-        : await fetch("/api/chat", {
-            method: "POST",
-            body: JSON.stringify({ messages, model }),
-            signal
-        });
+    const adapter = getAdapter(config)
 
-    if (!res.ok || !res.body) {
-        throw new Error("Network response was not ok");
-    }
-    console.log("Response received, starting to read stream...");
-    if(isLocal) {
-        await processStream(res.body, ollamaParser, (chunk) => {
-            onChunk(chunk)
-        })
-    } else {
-        await processStream(res.body, sseParser, (chunk) => {
-            const now = performance.now()
-            if(!metrics.firstChunkTime) {
-                metrics.firstChunkTime = now
-            }
-            onChunk(chunk)
-        }, (usage) => {
-            metrics.endTime = performance.now()
-            const {totalTime, timeToFirstChunk, streamingTime, tokensPerSecond,} = computeMetrics(metrics, usage)
-            metrics.totalTime = totalTime
-            metrics.timeToFirstChunk = timeToFirstChunk
-            metrics.streamingTime = streamingTime
-            metrics.tokensPerSecond = tokensPerSecond
-            return onComplete?.(usage, metrics)
-        })
-    }
+    await adapter.streamChat(message, onChunk, onComplete, signal)
 }
 
 export async function summarizeText(
@@ -168,19 +129,3 @@ export async function fetchAvailableModels(endpoint: string) {
         }
     }
 }
-
-// export async function streamLocalModels(prompt : string, model: string, onChunk: (chunk: string) => void, onComplete?: unknown, signal?: AbortSignal) {
-//     const res = await fetch("/api/ollama", {
-//         method: "POST",
-//         body: JSON.stringify({
-//             prompt,
-//             model,
-//             signal
-//         })
-//     })
-//     if (!res.ok || !res.body) {
-//         throw new Error("Network response was not ok");
-//     }
-//     console.log("Response received, starting to read stream...");
-//     await processStream(res.body, (chunk)=>onChunk(chunk))
-// }

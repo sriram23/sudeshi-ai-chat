@@ -87,14 +87,16 @@ export const useChat = () => {
     setStatus("streaming");
     try {
       await streamChat(
-        !(settings.model === "sarvam-30b" || settings.model === "sarvam-105b"),
+        {
+          provider: (settings.model === "sarvam-30b" || settings.model === "sarvam-105b") ? "sarvam" : "ollama",
+          model: settings.model,
+          endpoint: settings.baseUrl
+        },
         payload,
-        settings.model,
         (chunk) => appendToResponse(chunk),
         (usage, metrics) => setCurrentUsage(usage, metrics),
-        settings.baseUrl,
         controller.signal
-      );
+      )
 
       finalizeResponse();
       setStatus("idle");
