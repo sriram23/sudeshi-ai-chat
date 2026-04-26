@@ -1,9 +1,10 @@
+import { useIsMobile } from "@/hooks/use-mobile";
 import { ArrowUp, Square } from "lucide-react";
 import {memo, useState} from "react"
 
 const ChatInput = memo(({ status, sendMessage, stopStreaming }:{ status: string; sendMessage: (value: string) => void; stopStreaming: () => void }) => {
     const [input, setInput] = useState("")
-    const isMobile = typeof window !== undefined && window.innerWidth < 768
+    const isMobile = useIsMobile()
     const handleInputHeight = (e: React.FormEvent<HTMLTextAreaElement>) => {
         const textarea = e.currentTarget;
         const parentDiv = textarea.parentElement;

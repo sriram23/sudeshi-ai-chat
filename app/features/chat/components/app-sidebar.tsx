@@ -135,7 +135,7 @@ export function AppSidebar(): React.ReactNode {
               if (!open) setDeleteDialogId(null)
             }}
           >
-            <AlertDialogContent className="bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
+            <AlertDialogContent className="bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
@@ -159,7 +159,7 @@ export function AppSidebar(): React.ReactNode {
               }
             }}
           >
-            <DialogContent className="bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
+            <DialogContent className="bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
               <DialogHeader>
                 <DialogTitle>Rename Chat</DialogTitle>
               </DialogHeader>
