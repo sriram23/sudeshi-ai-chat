@@ -159,7 +159,7 @@ const AppSidebar = memo((): React.ReactNode => {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => deleteDialogId && handleDelete(deleteDialogId)} className="px-4 py-2 text-sm font-medium text-white bg-zinc-600 border border-transparent rounded-md hover:bg-zinc-700">Continue</AlertDialogAction>
+                <AlertDialogAction onClick={() => deleteDialogId && handleDelete(deleteDialogId)} className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700">Delete</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -196,7 +196,7 @@ const AppSidebar = memo((): React.ReactNode => {
                 <button
                   aria-label="Rename Chat"
                   onClick={() => editDialogId && handleEdit(editDialogId)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-zinc-600 border border-transparent rounded-md hover:bg-zinc-700"
+                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
                 >
                   Rename
                 </button>
