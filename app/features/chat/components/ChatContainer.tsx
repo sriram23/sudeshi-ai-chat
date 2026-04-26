@@ -1,7 +1,7 @@
 "use client";
 import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import ChatInput from "./ChatInput";
 import GuideComponent from "./GuideComponent";
 import UserChatBubble from "./UserChatBubble";
@@ -15,10 +15,15 @@ import { ArrowDown } from "lucide-react";
 const ChatContainer = () => {
     const [isAtBottom, setIsAtBottom] = useState(true);
     const { sendMessage, stopStreaming } = useChat();
-    const { conversations, activeConversationId,  currentResponse, status, settings } = useChatStore();
+    const conversations = useChatStore(s => s.conversations)
+    const activeConversationId = useChatStore(s=>s.activeConversationId)
+    const currentResponse = useChatStore(s => s.currentResponse)
+    const status = useChatStore(s => s.status)
+    const settings = useChatStore(s => s.settings)
+
     const virtuosoRef = useRef<VirtuosoHandle | null>(null)
 
-    const activeConversation = conversations.find(c => c.id === activeConversationId);
+    const activeConversation = useMemo(() => conversations.find(c => c.id === activeConversationId),[conversations, activeConversationId]);
 
     const messages = activeConversation?.messages || [];
 
