@@ -3,6 +3,7 @@ import {memo, useState} from "react"
 
 const ChatInput = memo(({ status, sendMessage, stopStreaming }:{ status: string; sendMessage: (value: string) => void; stopStreaming: () => void }) => {
     const [input, setInput] = useState("")
+    const isMobile = typeof window !== undefined && window.innerWidth < 768
     const handleInputHeight = (e: React.FormEvent<HTMLTextAreaElement>) => {
         const textarea = e.currentTarget;
         const parentDiv = textarea.parentElement;
@@ -43,6 +44,7 @@ const ChatInput = memo(({ status, sendMessage, stopStreaming }:{ status: string;
             <div className="flex justify-between items-center flex-1 w-full border p-4 rounded-xl">
                 <div className="flex-4">
                     <textarea style={{ width: "100%", border: "none"}} onKeyDown={(e) => {
+                        if(isMobile) return
                         if(e.key === "Enter" && !e.shiftKey){
                             e.preventDefault()
                             handleSend();
