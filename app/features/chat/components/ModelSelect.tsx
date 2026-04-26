@@ -1,27 +1,29 @@
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { useChatStore } from "@/store/chatStore";
 import { ChevronDown } from "lucide-react"
-import { memo, useCallback, useEffect } from "react";
+import { memo, useEffect } from "react";
 import { fetchAvailableModels } from "../services/sarvamClient";
 const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, showMetrics?: boolean, baseUrl?: string }; setSettings: (newSettings: { model: string, showMetrics?: boolean, baseUrl?: string }) => void;}) => {
     const {availableModels, setModels,} = useChatStore();
 
-    const fetchModels = useCallback(async () => {
-        if(settings.baseUrl){
+    const baseUrl = settings.baseUrl
+    useEffect(() => {
+        if(!baseUrl) return
+        const fetchModels = async () => {
             try {
-                const models = await fetchAvailableModels(settings?.baseUrl);
-                const modelArray = models?.map((model: { name?: string }) => model?.name)
-                if(modelArray?.length) setModels(modelArray);
-            } catch (error) {
-                console.error("Error fetching models: ", error);
+                const models = await fetchAvailableModels(baseUrl)
+                const modelArray = models.map((model: { name?: string }) => model?.name)
+
+                if(modelArray.length) {
+                    setModels(modelArray)
+                }
+            } catch(error) {
+                console.error("Error fetching models: ", error)
             }
         }
-    }, [setModels, settings]);
-
-    useEffect(() => {
         // Fetch available models from the server
         fetchModels();
-    }, [fetchModels]);
+    }, [baseUrl, setModels]);
 
     return(
         <DropdownMenu>
