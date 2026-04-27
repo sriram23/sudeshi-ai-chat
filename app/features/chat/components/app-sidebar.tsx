@@ -86,12 +86,13 @@ const AppSidebar = memo((): React.ReactNode => {
           <SidebarContent>
             <SidebarGroup title="Welcome to Sudeshi" >
             <SidebarGroupLabel className="flex items-center justify-center mt-2">
-              <span>
-                <Image src={LOGO} alt="Sudeshi Logo" width={80} height={80} />
-              </span>
+              <div className="m-2 flex flex-col items-center">
+                <Image className="m-1 dark:invert" src={LOGO} alt="Sudeshi Logo" width={30} height={30} />
+                <p className="text-lg font-extrabold">Sudeshi</p>
+              </div>
               {/* <h2 className="text-2xl font-bold">Sudeshi</h2> */}
             </SidebarGroupLabel>
-            <SidebarGroupLabel className="text-sm text-zinc-600 text-center">
+            <SidebarGroupLabel className="text-sm text-zinc-600 text-center mt-2">
               <span className="flex items-center justify-center w-full">Your personal AI assistant</span>
             </SidebarGroupLabel>
             <SidebarGroupLabel className="text-sm text-center">

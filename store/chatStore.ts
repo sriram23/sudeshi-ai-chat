@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Message, MessageStatus, Metrics } from "@/app/features/chat/types/chat.types";
-import { error } from "console";
 
 type ChatStatus = "idle" | "streaming" | "error";
 type ChatModel = string;

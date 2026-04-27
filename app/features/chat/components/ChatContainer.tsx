@@ -85,7 +85,7 @@ const ChatContainer = () => {
                                     ) : (
                                         <AssistantChatBubble
                                             message={msg.content}
-                                            error={msg.status === "error"}
+                                            msgStatus={msg.status}
                                             usage={msg.usage}
                                             metrics={msg.metrics}
                                             status={status}
