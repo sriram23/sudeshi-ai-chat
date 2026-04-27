@@ -122,10 +122,12 @@ export async function fetchAvailableModels(endpoint: string) {
                 throw new Error("Failed to fetch available models");
             }
             const data = await response.json();
-            return data.models;
+            return { models: data.models, error: null }
         } catch (error) {
-            console.error("Error fetching available models:", error);
-            return [];
+            return {
+                models: [],
+                error: error instanceof Error ? error.message : "unknown error"
+            }
         }
     }
 }
