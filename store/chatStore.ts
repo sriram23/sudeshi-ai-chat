@@ -33,6 +33,8 @@ type ChatStore = {
     abortController?: AbortController;
   };
 
+  error: string;
+
   createConversation: (title?: string) => string;
   setActiveConversation: (id: string) => void;
   renameConversation: (id: string, newTitle: string) => void;
@@ -53,6 +55,7 @@ type ChatStore = {
   setAbortController: (controller?: AbortController) => void;
   setCurrentUsage: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }, metrics?: Metrics) => void;
   setModels: (models: ChatModel[]) => void;
+  setError: (error: string) => void
 
   reset: () => void;
 };
@@ -76,6 +79,8 @@ export const useChatStore = create<ChatStore>()(
       },
 
       controls: {},
+
+      error: "",
 
       // create new conversation
       createConversation: (title = "New Chat") => {
@@ -222,6 +227,8 @@ export const useChatStore = create<ChatStore>()(
         })),
 
       setModels: (newModels) => set((state) => ({ availableModels: [...new Set(newModels), ...(state.availableModels ?? [])] })),
+
+      setError: (error:string) => set({ error }),
 
       reset: () =>
         set({

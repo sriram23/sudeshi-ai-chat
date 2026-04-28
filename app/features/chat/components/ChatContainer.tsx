@@ -1,7 +1,7 @@
 "use client";
 import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import ChatInput from "./ChatInput";
 import GuideComponent from "./GuideComponent";
 import UserChatBubble from "./UserChatBubble";
@@ -13,12 +13,23 @@ import OfflineComponent from "./OfflineComponent";
 import { ArrowDown } from "lucide-react";
 
 const ChatContainer = () => {
+    const [ready, setReady] = useState(false)
     const [isAtBottom, setIsAtBottom] = useState(true);
     const { sendMessage, stopStreaming } = useChat();
-    const { conversations, activeConversationId,  currentResponse, status, settings } = useChatStore();
+    const conversations = useChatStore(s => s.conversations)
+    const activeConversationId = useChatStore(s=>s.activeConversationId)
+    const currentResponse = useChatStore(s => s.currentResponse)
+    const status = useChatStore(s => s.status)
+    const settings = useChatStore(s => s.settings)
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setReady(true)
+    }, [])
+
     const virtuosoRef = useRef<VirtuosoHandle | null>(null)
 
-    const activeConversation = conversations.find(c => c.id === activeConversationId);
+    const activeConversation = useMemo(() => conversations.find(c => c.id === activeConversationId),[conversations, activeConversationId]);
 
     const messages = activeConversation?.messages || [];
 
@@ -37,7 +48,7 @@ const ChatContainer = () => {
             ) : null}
 
             {/* Chat list */}
-            {activeConversation && messages.length > 0 && (
+            {ready && activeConversation && messages.length > 0 && (
                 <Virtuoso
                     ref={virtuosoRef}
                     style={{ flex: 1 }}
@@ -80,7 +91,7 @@ const ChatContainer = () => {
                                     ) : (
                                         <AssistantChatBubble
                                             message={msg.content}
-                                            error={msg.status === "error"}
+                                            msgStatus={msg.status}
                                             usage={msg.usage}
                                             metrics={msg.metrics}
                                             status={status}

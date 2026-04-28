@@ -2,10 +2,11 @@
 "use client";
 
 import { ThemeProvider } from "next-themes";
-import { AppSidebar } from "./app-sidebar";
+import AppSidebar from "./app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { memo } from "react"
 
-export function Providers({ children }: { children: React.ReactNode }) {
+const ProvidersComponent = function ({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <SidebarProvider>
@@ -16,4 +17,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
     </ThemeProvider>
   );
-}
+};
+
+ProvidersComponent.displayName = "Providers";
+
+export const Providers = memo(ProvidersComponent);

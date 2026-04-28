@@ -1,4 +1,4 @@
-export type MessageStatus = "pending" | "completed" | "error";
+export type MessageStatus = "pending" | "completed" | "error" | "cancelled";
 export type Role = "user" | "assistant" | "system";
 
 export type Metrics = {

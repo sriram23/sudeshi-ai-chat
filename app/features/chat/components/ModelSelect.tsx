@@ -5,25 +5,31 @@ import { memo, useEffect } from "react";
 import { fetchAvailableModels } from "../services/sarvamClient";
 const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, showMetrics?: boolean, baseUrl?: string }; setSettings: (newSettings: { model: string, showMetrics?: boolean, baseUrl?: string }) => void;}) => {
     const {availableModels, setModels,} = useChatStore();
+    const setError = useChatStore(s => s.setError)
 
     const baseUrl = settings.baseUrl
     useEffect(() => {
         if(!baseUrl) return
         const fetchModels = async () => {
             try {
-                const models = await fetchAvailableModels(baseUrl)
-                const modelArray = models.map((model: { name?: string }) => model?.name)
+                const res = await fetchAvailableModels(baseUrl)
+                if(res?.error === null) {
+                    const models = res.models
+                    const modelArray = models.map((model: { name?: string }) => model?.name)
 
-                if(modelArray.length) {
-                    setModels(modelArray)
+                    if(modelArray.length) {
+                        setModels(modelArray)
+                    }
+                } else {
+                    setError(res?.error ?? "Unknown error")
                 }
             } catch(error) {
-                console.error("Error fetching models: ", error)
+                setError(error instanceof Error ? error.message : "Unknown error")
             }
         }
         // Fetch available models from the server
         fetchModels();
-    }, [baseUrl, setModels]);
+    }, [baseUrl, setModels, setError]);
 
     return(
         <DropdownMenu>
