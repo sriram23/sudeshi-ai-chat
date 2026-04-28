@@ -22,6 +22,8 @@ import LOGO from "@/app/assets/images/Sudeshi_Chat.png"
 import Link from "next/link";
 import CustomDialog from "./Dialog";
 import SettingsComponent from "./SettingsComponent";
+import SideBarSkeleton from "./SideBarSkeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 const AppSidebar = memo((): React.ReactNode => {
   const conversationsRaw = useChatStore(s => s.conversations)
   const activeConversationId = useChatStore(s => s.activeConversationId)
@@ -48,12 +50,20 @@ const AppSidebar = memo((): React.ReactNode => {
   const [mounted, setMounted] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
 
+  const isMobile = useIsMobile()
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
   }, [])
 
-  if(!mounted) return null
+  if(!mounted && !isMobile) {
+    return (
+      <div className="w-64 h-screen">
+        <SideBarSkeleton />
+      </div>
+    )
+  }
 
   const createNewConversation = () => {
     const title = "New Chat " + Date.now().toString();
