@@ -1,7 +1,7 @@
 "use client";
 import { useChatStore } from "@/store/chatStore";
 import { useChat } from "../hooks/useChat";
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import ChatInput from "./ChatInput";
 import GuideComponent from "./GuideComponent";
 import UserChatBubble from "./UserChatBubble";
@@ -13,6 +13,7 @@ import OfflineComponent from "./OfflineComponent";
 import { ArrowDown } from "lucide-react";
 
 const ChatContainer = () => {
+    const [ready, setReady] = useState(false)
     const [isAtBottom, setIsAtBottom] = useState(true);
     const { sendMessage, stopStreaming } = useChat();
     const conversations = useChatStore(s => s.conversations)
@@ -20,6 +21,11 @@ const ChatContainer = () => {
     const currentResponse = useChatStore(s => s.currentResponse)
     const status = useChatStore(s => s.status)
     const settings = useChatStore(s => s.settings)
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setReady(true)
+    }, [])
 
     const virtuosoRef = useRef<VirtuosoHandle | null>(null)
 
@@ -42,7 +48,7 @@ const ChatContainer = () => {
             ) : null}
 
             {/* Chat list */}
-            {activeConversation && messages.length > 0 && (
+            {ready && activeConversation && messages.length > 0 && (
                 <Virtuoso
                     ref={virtuosoRef}
                     style={{ flex: 1 }}

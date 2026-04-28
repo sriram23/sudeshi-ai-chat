@@ -3,8 +3,9 @@ import ModelSelect from "./ModelSelect"
 import { useChatStore } from "@/store/chatStore"
 import { BadgeAlert, BadgeCheck } from "lucide-react"
 import { useIsMobile } from "@/hooks/use-mobile"
+import {memo} from "react"
 
-const ChatHeader = () => {
+const ChatHeader = memo(() => {
     const { settings, setSettings, error } = useChatStore()
     const isMobile = useIsMobile()
     return (
@@ -21,6 +22,7 @@ const ChatHeader = () => {
             </div>
         </div>
     )
-}
+})
+ChatHeader.displayName = "Chat Header"
 
 export default ChatHeader
