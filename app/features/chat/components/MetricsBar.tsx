@@ -4,7 +4,7 @@ const MetricsBar = ({metrics}: {metrics: { percentage: number, label: string, co
             <div className="flex w-full my-1 rounded-full overflow-x-hidden ring-1 ring-white/10">
                 {metrics?.map(m => {
                     return (
-                        <span key={m.label} style={{width: Math.max(m.percentage, 6)+"%"}} className={`bg-${m.color}-500 px-2 text-center`}>{m.percentage > 12 ? m.label : ""}</span>
+                        <span key={m.label} style={{width: Math.max(m.percentage, 6)+"%"}} className={`bg-${m.color}-500 px-2 text-center text-xs h-2`}></span>
                     )
                 })}
             </div>
