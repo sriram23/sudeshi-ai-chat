@@ -25,7 +25,6 @@ type ChatStore = {
   availableModels?: ChatModel[];
   settings: {
     model: ChatModel;
-    showMetrics: boolean;
     baseUrl?: string;
   };
 
@@ -49,7 +48,7 @@ type ChatStore = {
   appendToResponse: (chunk: string) => void;
   finalizeResponse: (messageStatus?: MessageStatus) => void;
 
-  setSettings: (newSettings: Partial<{ model: ChatModel, showMetrics: boolean, baseUrl?: string }>) => void;
+  setSettings: (newSettings: Partial<{ model: ChatModel, baseUrl?: string }>) => void;
   setStatus: (status: ChatStatus) => void;
 
   setAbortController: (controller?: AbortController) => void;
@@ -74,7 +73,6 @@ export const useChatStore = create<ChatStore>()(
       availableModels: ["sarvam-30b", "sarvam-105b"],
       settings: {
         model: "sarvam-30b",
-        showMetrics: false,
         baseUrl: "",
       },
 

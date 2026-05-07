@@ -3,7 +3,7 @@ import { useChatStore } from "@/store/chatStore";
 import { ChevronDown } from "lucide-react"
 import { memo, useEffect } from "react";
 import { fetchAvailableModels } from "../services/sarvamClient";
-const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, showMetrics?: boolean, baseUrl?: string }; setSettings: (newSettings: { model: string, showMetrics?: boolean, baseUrl?: string }) => void;}) => {
+const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, baseUrl?: string }; setSettings: (newSettings: { model: string, baseUrl?: string }) => void;}) => {
     const {availableModels, setModels,} = useChatStore();
     const setError = useChatStore(s => s.setError)
 
@@ -39,7 +39,7 @@ const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, sh
             <DropdownMenuContent className="bg-white dark:bg-zinc-950">
                 <DropdownMenuGroup>
                     {availableModels?.map((model) => (
-                        <DropdownMenuItem key={model} className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: model, showMetrics: settings.showMetrics})}>{model === "sarvam-30b" ? "Sarvam 30B": model === "sarvam-105b" ? "Sarvam 150B": model}</DropdownMenuItem>
+                        <DropdownMenuItem key={model} className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: model})}>{model === "sarvam-30b" ? "Sarvam 30B": model === "sarvam-105b" ? "Sarvam 105B": model}</DropdownMenuItem>
                     ))}
                 </DropdownMenuGroup>
             </DropdownMenuContent>
