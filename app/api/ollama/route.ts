@@ -21,7 +21,6 @@ export async function POST(req: NextRequest) {
                 stream: true
             }),
             redirect: "error",
-            signal: AbortSignal.timeout(10000)
         })
         return new Response(response.body, {
             headers: {
