@@ -1,12 +1,13 @@
-import { BadgeCheck,  ClockAlert, Copy, Info, OctagonAlert, ThumbsDown, ThumbsUp, TriangleAlert } from "lucide-react";
+import { BadgeCheck,  ChartNoAxesColumnIncreasing,  ClockAlert, Copy, Info, OctagonAlert, ThumbsDown, ThumbsUp, TriangleAlert } from "lucide-react";
 import { MarkdownRenderer } from "./MarkdownRender";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { useState, memo } from "react";
 import CustomSpinner from "./CustomSpinner";
 import { MessageStatus, Metrics } from "../types/chat.types";
 import MetricsCard from "./MetricsCard";
-const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, msgStatus, settings }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics, status: string, msgStatus?: MessageStatus, settings?: {model: string, showMetrics: boolean} }) => {
+const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, msgStatus }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics, status: string, msgStatus?: MessageStatus }) => {
     const [showAlert, setShowAlert] = useState(false);
+    const [showMetric, setShowMetric] = useState(false)
     const [alertMessage, setAlertMessage] = useState({type: "success", text: ""});
     const handleCopy = () => {
         if (message) {
@@ -42,9 +43,10 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
             </div>
             {status === "idle" && (
                 <div className="flex gap-2 mx-1 px-4 mb-2">
-                    <button aria-label="Copy Response" onClick={handleCopy}><Copy size={16}/></button>
-                    <button aria-label="Like"><ThumbsUp size={16} /></button>
-                    <button aria-label="Dislike"><ThumbsDown size={16} /></button>
+                    <button title="Copy Response" aria-label="Copy Response" className="hover:bg-zinc-200 p-1 rounded-lg" onClick={handleCopy}><Copy size={16}/></button>
+                    <button title="Like" aria-label="Like" className="hover:bg-zinc-200 p-1 rounded-lg"><ThumbsUp size={16} /></button>
+                    <button title="Dislike" aria-label="Dislike" className="hover:bg-zinc-200 p-1 rounded-lg"><ThumbsDown size={16} /></button>
+                    {usage && <button title="Metrics" aria-label="Metrics" className={`${showMetric ? "bg-zinc-200 " : ""}hover:bg-zinc-200 p-1 rounded-lg`} onClick={() => setShowMetric(!showMetric)}><ChartNoAxesColumnIncreasing size={16} /></button>}
                     <div title={msgStatus}>
                         {msgStatus === "pending"
                             ? <ClockAlert className="text-yellow-400" />
@@ -56,7 +58,7 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
                     </div>
                 </div>
             )}
-            {usage && settings?.showMetrics && (
+            {usage && showMetric && (
                 <div className="flex flex-col m-4 max-w-xl">
                     <MetricsCard totalToken={usage.total_tokens} promptToken={usage.prompt_tokens} completionToken={usage.completion_tokens} totalTime={metrics?.totalTime} tokenSpeed={metrics?.tokensPerSecond} firstChunk={metrics?.timeToFirstChunk} streaming={metrics?.streamingTime}  />
                 </div>

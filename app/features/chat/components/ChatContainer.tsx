@@ -20,7 +20,6 @@ const ChatContainer = () => {
     const activeConversationId = useChatStore(s=>s.activeConversationId)
     const currentResponse = useChatStore(s => s.currentResponse)
     const status = useChatStore(s => s.status)
-    const settings = useChatStore(s => s.settings)
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -95,7 +94,6 @@ const ChatContainer = () => {
                                             usage={msg.usage}
                                             metrics={msg.metrics}
                                             status={status}
-                                            settings={settings}
                                         />
                                     )}
                                 </div>

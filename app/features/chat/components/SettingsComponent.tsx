@@ -16,12 +16,6 @@ const SettingsComponent = () => {
     }
     return (
         <div className="flex flex-col">
-            <div>
-                <button className="w-35 bg-black hover:bg-zinc-900 text-white border border-zinc-950 p-2 my-2 rounded-lg" onClick={() => setSettings({
-                    showMetrics: !settings.showMetrics,
-                    model: settings.model
-                })}>Metrics {settings.showMetrics?(<span className="text-green-500">On</span>):(<span className="text-red-500">Off</span>)}</button>
-            </div>
             <div className="flex flex-col gap-2">
                 <input disabled={inputDisabled} className="border border-zinc-950 my-2 p-2 rounded-lg disabled:bg-zinc-300" type="url" placeholder="Enter the model url" value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)}/>
                 <select disabled={inputDisabled} className="border border-zinc-950 rounded-lg p-2 my-2 disabled:bg-zinc-300">
