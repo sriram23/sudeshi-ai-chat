@@ -34,7 +34,7 @@ const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, ba
     return(
         <DropdownMenu>
             <DropdownMenuTrigger render={<button className="border rounded-xl p-2" />}>
-                <span className="flex justify-between items-center">{settings?.model === "sarvam-30b" ? "Sarvam 30B": settings?.model === "sarvam-105b" ? "Sarvam 150B": settings?.model} <ChevronDown/></span>
+                <span className="flex justify-between items-center">{settings?.model === "sarvam-30b" ? "Sarvam 30B": settings?.model === "sarvam-105b" ? "Sarvam 105B": settings?.model} <ChevronDown/></span>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white dark:bg-zinc-950">
                 <DropdownMenuGroup>
