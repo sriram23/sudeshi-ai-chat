@@ -1,84 +1,267 @@
 # Sudeshi AI Chat
 
-Real-time AI chat application with multi-provider support and low-latency streaming architecture.
+Production-style multilingual AI chat application focused on low-latency streaming, provider abstraction, and scalable frontend architecture.
 
-Supports both hosted (Sarvam) and self-hosted (Ollama) models with a pluggable system for future integrations.
+Supports both hosted and self-hosted models through a unified streaming pipeline.
 
-🔗 Live: https://sudeshi-ai-chat.vercel.app
-
----
-
-## 🔥 Highlights
-
-- ~300–500ms time-to-first-token using SSE streaming
-- Multi-provider architecture (Sarvam + Ollama)
-- Pluggable adapter system for AI integrations
-- Virtualized rendering for large chat histories
-- Context compression for long conversations
+🔗 Live Demo: [Sudeshi AI Chat](https://sudeshi-ai-chat.vercel.app?utm_source=chatgpt.com)
 
 ---
 
-## 💣 Engineering Challenges Solved
+## Overview
 
-- Normalized different provider streaming formats (SSE vs JSON stream)
-- Handled fragmented streaming responses safely
-- Designed state-machine-based async handling for streaming flows
-- Prevented stale updates during concurrent requests
-- Implemented safe request cancellation using AbortController
+Sudeshi was built to explore the engineering challenges behind real-time AI chat systems:
+
+* Streaming responses with low latency
+* Normalizing multiple provider protocols
+* Managing long-running conversations efficiently
+* Preventing stale UI updates during concurrent requests
+* Supporting self-hosted and hosted models through a unified interface
+
+Unlike simple AI wrappers, Sudeshi focuses heavily on streaming architecture, extensibility, rendering performance, and runtime observability.
 
 ---
 
-## 🧱 Architecture
+## Key Features
 
-### AI Provider Layer
-- `AIAdapter` interface standardizes provider behavior  
-- `SarvamAdapter` and `OllamaAdapter` handle provider-specific logic  
-- `AdapterManager` dynamically selects provider at runtime  
+### Unified Multi-Provider Architecture
 
-### Streaming Engine
-- Unified streaming pipeline for different response formats  
-- Normalizes structured SSE and JSON-line streams  
+* Supports both hosted (`Sarvam AI`) and self-hosted (`Ollama`) models
+* Adapter-driven architecture for future providers
+* Runtime provider selection through a shared interface
+
+### Real-Time Streaming
+
+* Handles SSE and JSONL streaming formats
+* Safe chunk buffering for fragmented responses
+* Abortable requests using `AbortController`
+
+### Scalable Chat Rendering
+
+* Virtualized message rendering using `react-virtuoso`
+* Optimized for long-running conversations
+* Prevents DOM bloat and excessive re-renders
+
+### Context Compression
+
+* Sliding context window for recent messages
+* Automatic summarization of older conversations
+* Reduces token usage while preserving continuity
+
+### Runtime Metrics
+
+Tracks:
+
+* Time-to-first-token
+* Stream duration
+* Token throughput
+* Total generation time
+
+### Security-Conscious Ollama Integration
+
+* Endpoint validation
+* Restricted ports
+* HTTPS enforcement
+* Timeout protection against hanging requests
+
+---
+
+## Engineering Challenges Solved
+
+### Streaming Normalization
+
+Different providers expose different streaming protocols:
+
+| Provider | Format |
+| -------- | ------ |
+| Sarvam   | SSE    |
+| Ollama   | JSONL  |
+
+Sudeshi normalizes both into a unified streaming pipeline so the UI remains provider-agnostic.
+
+### Fragmented Stream Handling
+
+Streaming chunks may arrive partially or split mid-JSON.
+
+The streaming engine:
+
+* Buffers incomplete chunks
+* Safely reconstructs payloads
+* Prevents malformed parsing
+
+### Concurrent Request Safety
+
+Implemented protections against:
+
+* stale stream updates
+* race conditions
+* overlapping requests
+* incomplete cancellation flows
+
+### Long Conversation Performance
+
+Large chats can degrade rendering performance significantly.
+
+Sudeshi mitigates this through:
+
+* virtualization
+* selective Zustand subscriptions
+* memoized components
+* streaming-based incremental rendering
+
+---
+
+## Architecture
+
+```text
+UI Components
+    ↓
+useChat Hook
+    ↓
+Zustand Store
+    ↓
+AdapterManager
+    ↓
+AIAdapter Interface
+    ↓
+┌───────────────┬───────────────┐
+│ SarvamAdapter │ OllamaAdapter │
+└───────────────┴───────────────┘
+    ↓
+Streaming Parser Layer
+    ↓
+SSE / JSONL Processing
+```
+
+---
+
+## Tech Stack
+
+### Frontend
+
+* Next.js 16
+* React 19
+* TypeScript
+* Tailwind CSS 4
+* shadcn/ui
+
+### State & Rendering
+
+* Zustand
+* react-virtuoso
+
+### Streaming & AI
+
+* ReadableStream API
+* Server-Sent Events (SSE)
+* Ollama
+* Sarvam AI APIs
+
+### Testing
+
+* Vitest
+* Testing Library
+
+---
+
+## Performance Optimizations
+
+### Rendering
+
+* Virtualized message lists
+* `React.memo` for isolated updates
+* Granular Zustand selectors
+
+### Streaming
+
+* Incremental chunk rendering
+* Non-blocking UI updates
+* Buffered parsing pipeline
 
 ### State Management
-- Zustand store with persistence  
-- Handles conversations, models, and provider configuration  
 
-### Context Handling
-- Sliding window for recent messages  
-- Older messages compressed via summarization API  
+* Optimistic updates
+* Minimal state subscriptions
+* Persistent conversations
 
 ---
 
-## ⚡ Performance
+## Security Considerations
 
-- Virtualized rendering using `react-virtuoso`
-- Optimized re-renders using `React.memo`
-- Streaming UI updates to avoid blocking renders
-- Efficient global state updates with Zustand
+### Ollama Endpoint Validation
 
----
+To reduce SSRF risks:
 
-## 🧰 Tech Stack
+* HTTPS enforced for remote endpoints
+* Restricted allowed ports
 
-- Next.js (App Router), React, TypeScript  
-- Zustand, react-virtuoso  
-- Tailwind CSS, shadcn/ui  
-- Sarvam AI APIs, Ollama  
-- SSE, ReadableStream  
+### Request Lifecycle Safety
+
+* Abortable streams
+* Controlled cleanup
+* Safe async state transitions
 
 ---
 
-## ⚠️ Limitations
+## Local Development
 
-- Provider detection based on model naming  
-- Limited validation for custom endpoints  
-- Generic error handling across providers  
+```bash
+git clone <repo>
+cd sudeshi-ai-chat
+
+npm install
+npm run dev
+```
+
+Create `.env.local`
+
+```env
+SARVAM_API_KEY=your_key
+```
 
 ---
 
-## 🚀 Extensibility
+## Extending Providers
 
 To add a new provider:
-1. Implement `AIAdapter`  
-2. Register in `AdapterManager`  
-3. Handle provider-specific streaming logic  
+
+1. Implement `AIAdapter`
+2. Add parser logic if required
+3. Register adapter in `AdapterManager`
+
+The UI layer remains unchanged.
+
+---
+
+## Tradeoffs & Current Limitations
+
+* Provider detection is currently model-name driven
+* Conversation summaries may lose fine-grained context
+* No server-side conversation persistence
+* Limited validation for custom provider schemas
+
+---
+
+## Future Improvements
+
+* Web search integration
+* Multi-modal support
+* Conversation export
+* Shared conversations
+* IndexedDB persistence layer
+* Advanced observability dashboard
+* Streaming retry/recovery mechanisms
+
+---
+
+## Why This Project Matters
+
+Sudeshi is primarily an exploration of:
+
+* streaming systems
+* frontend scalability
+* provider abstraction
+* runtime performance
+* resilient async UI architecture
+
+The goal was not just to build another AI chat UI, but to design a maintainable and extensible streaming platform.
