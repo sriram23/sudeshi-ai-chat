@@ -21,24 +21,24 @@ const MetricsCard = ({totalToken, promptToken, completionToken, totalTime=0, tok
             <div className="flex items-center justify-between"><div className="font-bold">Usage & Metrics</div>{getBadge(firstChunk, streaming, firstChunkPercent, streamingPercent)}</div>
             <div className="flex flex-col my-2">
                 <span className="font-bold">Tokens</span>
-                <span className="text-sm text-black">{totalToken} Total</span>
+                <span className="text-sm text-black dark:text-zinc-100">{totalToken} Total</span>
                 <div className="flex gap-2 items-center">
-                    <div className="text-sm "><span className="text-black">{promptToken}</span> prompt</div>
+                    <div className="text-sm "><span className="text-black dark:text-zinc-100">{promptToken}</span> prompt</div>
                     •
-                    <div className="text-sm "><span className="text-black">{completionToken}</span> completion</div>
+                    <div className="text-sm "><span className="text-black dark:text-zinc-100">{completionToken}</span> completion</div>
                 </div>
             </div>
             <div className="flex flex-col my-2">
                 <span className="font-bold">Performance</span>
-                <div className="text-sm">Total Time: <span className="text-black">{totalTime.toFixed(0)} ms</span></div>
-                <div className="text-sm">Token Speed: <span className="text-black">{tokenSpeed.toFixed(0)} tok/s</span></div>
+                <div className="text-sm">Total Time: <span className="text-black dark:text-zinc-100">{totalTime.toFixed(0)} ms</span></div>
+                <div className="text-sm">Token Speed: <span className="text-black dark:text-zinc-100">{tokenSpeed.toFixed(0)} tok/s</span></div>
             </div>
             <div className="flex flex-col my-2">
                 <span className="font-bold">Response Timeline</span>
                 <div className="text-slate-500 text-xs">{getInsight(firstChunkPercent, streamingPercent)}</div>
                 <MetricsBar metrics={createMetricVisual(firstChunkPercent, streamingPercent)} />
-                <div className="flex gap-2 items-center text-sm"><div className="flex items-center gap-2 min-w-36"><div className="w-2 h-2 bg-slate-500"/> Time to First Token:</div> <span className="text-black min-w-20">{firstChunk.toFixed(0)} ms</span> ({firstChunkPercent.toFixed(0)}%)</div>
-                <div className="flex gap-2 items-center text-sm"><div className="flex items-center gap-2 min-w-36"><div className="w-2 h-2 bg-cyan-500"/> Streaming:</div> <span className="text-black min-w-20">{streaming.toFixed(0)} ms</span> ({streamingPercent.toFixed(0)}%)</div>
+                <div className="flex gap-2 items-center text-sm"><div className="flex items-center gap-2 min-w-36"><div className="w-2 h-2 bg-slate-500"/> Time to First Token:</div> <span className="text-black dark:text-zinc-100  min-w-20">{firstChunk.toFixed(0)} ms</span> ({firstChunkPercent.toFixed(0)}%)</div>
+                <div className="flex gap-2 items-center text-sm"><div className="flex items-center gap-2 min-w-36"><div className="w-2 h-2 bg-cyan-500"/> Streaming:</div> <span className="text-black dark:text-zinc-100 min-w-20">{streaming.toFixed(0)} ms</span> ({streamingPercent.toFixed(0)}%)</div>
             </div>
         </div>
     )

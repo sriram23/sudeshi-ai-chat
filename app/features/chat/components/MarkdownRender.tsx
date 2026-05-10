@@ -19,19 +19,26 @@ export const MarkdownRenderer = memo(({ content }: { content: string }) => {
       components={{
         code({ inline, className, children }: CodeProps) {
           const match = /language-(\w+)/.exec(className || "");
+          if(inline) {
+            return (
+              <code className="bg-red-500 px-1 rounded max-w-2xl overflow-auto">
+                {children}
+              </code>
+            )
+          }
 
-          return !inline && match ? (
+          return (
             <SyntaxHighlighter
               style={oneDark}
-              language={match[1]}
+              language={match && match[1] || "bash"}
               PreTag="div"
+              customStyle={{
+                overflowX: "auto",
+                maxWidth: "100%"
+              }}
             >
               {String(children).replace(/\n$/, "")}
             </SyntaxHighlighter>
-          ) : (
-            <code className="bg-gray-200 px-1 rounded">
-              {children}
-            </code>
           );
         },
       }}
