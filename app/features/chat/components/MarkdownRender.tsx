@@ -30,7 +30,7 @@ export const MarkdownRenderer = memo(({ content }: { content: string }) => {
               PreTag="div"
               wrapLongLines
               customStyle={{
-                overflowX: "hidden",
+                overflowX: "auto",
                 whiteSpace: "pre-wrap",
                 wordBreak: "break-word",
                 maxWidth: "100%",
