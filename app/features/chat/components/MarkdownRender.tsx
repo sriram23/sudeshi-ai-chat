@@ -6,32 +6,38 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 
-type CodeProps = {
- inline?:boolean,
- className?: string,
- children?:React.ReactNode
-}
-
 export const MarkdownRenderer = memo(({ content }: { content: string }) => {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        code({ inline, className, children }: CodeProps) {
+        code(props) {
+          const { children, className, node} = props
           const match = /language-(\w+)/.exec(className || "");
+          const isInline = node?.position?.start.line === node?.position?.end.line
+          if(isInline && !match) {
+            return (
+              <code className="inline bg-zinc-700 text-zinc-100 px-1 rounded">
+                {children}
+              </code>
+            )
+          }
 
-          return !inline && match ? (
+          return (
             <SyntaxHighlighter
               style={oneDark}
-              language={match[1]}
+              language={match && match[1] || "text"}
               PreTag="div"
+              wrapLongLines
+              customStyle={{
+                overflowX: "auto",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+                maxWidth: "100%",
+              }}
             >
               {String(children).replace(/\n$/, "")}
             </SyntaxHighlighter>
-          ) : (
-            <code className="bg-gray-200 px-1 rounded">
-              {children}
-            </code>
           );
         },
       }}
