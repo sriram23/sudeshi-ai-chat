@@ -4,7 +4,7 @@ Production-style multilingual AI chat application focused on low-latency streami
 
 Supports both hosted and self-hosted models through a unified streaming pipeline.
 
-🔗 Live Demo: [Sudeshi AI Chat](https://sudeshi-ai-chat.vercel.app?utm_source=chatgpt.com)
+🔗 Live Demo: [Sudeshi AI Chat](https://sudeshi-ai-chat.vercel.app?utm_source=github.com)
 
 ---
 
