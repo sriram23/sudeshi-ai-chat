@@ -23,14 +23,27 @@ jobs:
               run: |
                 pwd
                 ls -la
-            - name: Read TruffleHog Report
+            - name: Create comment
               id: comment
+              if: always()
               run: |
                 {
                     echo 'body<<EOF'
-                    cat trufflehog-report.json
-                    echo 'EOF'
-                } >> "$GITHUB_OUTPUT"
+
+                    if [ "${{ job.status }}" == "success" ]; then
+                        echo "## 🔒 Secret Scan"
+                        echo ""
+                        echo "✅ No secrets found"
+                    else
+                        echo "## 🔒 Secret Scan"
+                        echo ""
+                        echo "❌ Potential Secret found"
+                        echo ""
+                        echo "Check workflow logs for more details"
+                    fi
+
+                    echo "EOF"
+                } >> $GITHUB_OUTPUT
             - name: Comment on Pull Request
               if: github.event_name == 'pull_request'
               uses: actions/github-script@v9
