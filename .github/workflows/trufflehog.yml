@@ -1,0 +1,61 @@
+name: TruffleHog
+on: [push, pull_request]
+
+jobs:
+    trufflehog:
+        permissions:
+            contents: read
+            pull-requests: write
+            issues: write
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+            - name: Run TruffleHog OSS
+              uses: trufflesecurity/trufflehog@v3.95.5
+              with:
+                path: ./
+                base: ${{ github.event.pull_request.base.sha || github.event.before }}
+                head: ${{ github.event.pull_request.head.sha || github.sha }}
+                output: 'trufflehog-report.json'
+            - name: Inspect TruffleHog Output
+              run: |
+                echo '${{toJson(steps)}}'
+            - name: Inspect workspace
+              run: |
+                pwd
+                ls -la
+            - name: Create comment
+              id: comment
+              if: always()
+              run: |
+                {
+                    echo 'body<<EOF'
+
+                    if [ "${{ job.status }}" == "success" ]; then
+                        echo "## 🔒 Secret Scan"
+                        echo ""
+                        echo "✅ No secrets found"
+                    else
+                        echo "## 🔒 Secret Scan"
+                        echo ""
+                        echo "❌ Potential Secret found"
+                        echo ""
+                        echo "Check workflow logs for more details"
+                    fi
+
+                    echo "EOF"
+                } >> $GITHUB_OUTPUT
+            - name: Comment on Pull Request
+              if: github.event_name == 'pull_request'
+              uses: actions/github-script@v9
+              with:
+                script: |
+                    github.rest.issues.createComment({
+                        issue_number: context.issue.number,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        body: `${{ steps.comment.outputs.body }}`
+                    })
