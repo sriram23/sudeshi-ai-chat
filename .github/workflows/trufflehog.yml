@@ -1,0 +1,15 @@
+name: TruffleHog
+on: [push, pull_request]
+
+jobs:
+    trufflehog:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Run TruffleHog
+              uses: trufflesecurity/trufflehog-action@master
+              with:
+                path: ./
+                base: ${{ github.event.repository.default_branch }}
+                head: HEAD
