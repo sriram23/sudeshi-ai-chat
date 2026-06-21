@@ -9,7 +9,7 @@ jobs:
             - name: Install Node
               uses: actions/setup-node@v3
               with:
-                  node-version: 24
+                  node-version: 22
             - name: Install dependencies
               run: npm install
             - name: Run tests
@@ -20,10 +20,10 @@ jobs:
               if: always()
               run: |
                 {
-                    echo 'body<<EOF'
+                    echo "body<<EOF"
                     cat test.txt
-                    echo 'EOF'
-                } >> $GITHUB_OUTPUT
+                    echo "EOF"
+                } >> "$GITHUB_OUTPUT"
             - name: Comment on Pull Request
               uses: actions/github-script@v9
               with:
