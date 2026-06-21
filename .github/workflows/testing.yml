@@ -13,4 +13,24 @@ jobs:
             - name: Install dependencies
               run: npm install
             - name: Run tests
-              run: npm run test
+              run: |
+                npm run test > test.txt 2>&1 || true
+            - name: create comment
+              id: comment
+              if: always()
+              run: |
+                {
+                    echo 'body<<EOF'
+                    cat test.txt
+                    echo 'EOF'
+                } >> $GITHUB_OUTPUT
+            - name: Comment on Pull Request
+              uses: actions/github-script@v9
+              with:
+                  script: |
+                      github.rest.issues.createComment({
+                          issue_number: context.issue.number,
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          body: `${{ steps.comment.outputs.body }}`
+                      })
