@@ -25,12 +25,20 @@ jobs:
                     echo "EOF"
                 } >> "$GITHUB_OUTPUT"
             - name: Comment on Pull Request
+              if: always()
               uses: actions/github-script@v9
+              env:
+                TEST_RESULT: ${{ steps.comment.outputs.body }}
               with:
                   script: |
-                      github.rest.issues.createComment({
-                          issue_number: context.issue.number,
+                      await github.rest.issues.createComment({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
-                          body: `${{ steps.comment.outputs.body }}`
+                          issue_number: context.issue.number,
+                          body: `
+                          ## Test Result
+
+                          \'\'\'
+                          ${{ steps.comment.outputs.body }}`
+                          \'\'\'
                       })
