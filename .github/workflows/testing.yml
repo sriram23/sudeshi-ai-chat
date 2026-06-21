@@ -15,30 +15,23 @@ jobs:
             - name: Run tests
               run: |
                 npm run test > test.txt 2>&1 || true
-            - name: create comment
-              id: comment
-              if: always()
+            - name: Run tests
               run: |
-                {
-                    echo "body<<EOF"
-                    cat test.txt
-                    echo "EOF"
-                } >> "$GITHUB_OUTPUT"
-            - name: Comment on Pull Request
+                npm run test > test.txt 2>&1 || true
+
+            - name: Comment
               if: always()
               uses: actions/github-script@v9
-              env:
-                TEST_RESULT: ${{ steps.comment.outputs.body }}
               with:
-                  script: |
-                      await github.rest.issues.createComment({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          issue_number: context.issue.number,
-                          body: `
-                          ## Test Result
+                script: |
+                    const fs = require("fs");
 
-                          "```"
-                          ${{ env.TEST_RESULT }}`
-                          "```"
-                      })
+                    const result =
+                        fs.readFileSync("test.txt", "utf8");
+
+                    await github.rest.issues.createComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.issue.number,
+                        body: `## Test Result\n\n\`\`\`\n${result}\n\`\`\``
+                    })
