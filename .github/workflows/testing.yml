@@ -38,7 +38,7 @@ jobs:
                           body: `
                           ## Test Result
 
-                          \'\'\'
-                          ${{ steps.comment.outputs.body }}`
-                          \'\'\'
+                          "```"
+                          ${{ env.TEST_RESULT }}`
+                          "```"
                       })
