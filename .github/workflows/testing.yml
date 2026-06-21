@@ -44,7 +44,7 @@ jobs:
                     ## ${icon} Test ${status}
 
                     View logs: ${url}
-
+                    `
                     await github.rest.issues.createComment({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
