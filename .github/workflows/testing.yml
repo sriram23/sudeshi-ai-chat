@@ -18,10 +18,8 @@ jobs:
             - name: Cache Dependencies
               uses: actions/cache@v3
               with:
-                  path: ~/.npm
+                  path: node_modules
                   key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
-                  restore-keys: |
-                      ${{ runner.os }}-node-
 
             - name: Install dependencies
               run: npm install
