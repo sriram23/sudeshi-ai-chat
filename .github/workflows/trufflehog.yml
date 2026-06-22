@@ -1,5 +1,5 @@
 name: TruffleHog
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
     trufflehog:
