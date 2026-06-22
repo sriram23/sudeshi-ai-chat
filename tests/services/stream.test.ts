@@ -1,4 +1,4 @@
-import { processStream, sseParser } from "@/app/features/chat/utils/processStream"
+import { processStream, sseParser, ollamaParser } from "@/app/features/chat/utils/processStream"
 import { describe, expect, it } from "vitest"
 
 export function createSSEStream(events: string[]){
@@ -17,7 +17,23 @@ export function createSSEStream(events: string[]){
     })
 }
 
-describe("Stream", () => {
+export function createOllamaStream(events: string[]){
+    let index=0
+    return new ReadableStream({
+        pull(controller) {
+            if(index < events.length){
+                controller.enqueue(
+                    new TextEncoder().encode(events[index] + '\n')
+                )
+                index++
+            } else {
+                controller.close()
+            }
+        }
+    })
+}
+
+describe("SSE Stream", () => {
     it("should process streamed chunk in order", async() => {
         const stream = createSSEStream([
             'data: {"choices":[{"delta":{"content":"Hel"}}]}',
@@ -135,4 +151,108 @@ describe("Stream", () => {
         expect(result).toBe("AB")
     })
 
+})
+
+describe("Ollama Stream", () => {
+    it("should call onchunk for each Ollama chunk", async () => {
+        const stream = createOllamaStream([
+            '{"message": {"content": "A"}}',
+            '{"message": {"content": "B"}, "done": true}',
+        ])
+
+        const calls: string[] = []
+
+        await processStream(stream, ollamaParser, (chunk) => {
+            calls.push(chunk)
+        })
+
+        expect(calls).toEqual(["A", "B"])
+    })
+    it("should ignore invalid Ollama JSON", async () => {
+        const stream = createOllamaStream([
+            'asdfghjkl',
+            '{"message": {"content": "A"}, "done": true}',
+        ])
+
+        let result = ""
+
+        await processStream(stream, ollamaParser, (chunk) => {
+            result += chunk
+        })
+
+        expect(result).toBe("A")
+    })
+    it("should handle chunk boundaries", async () => {
+        const encoder = new TextEncoder()
+        const full = '{"message": {"content": "Hello"}, "done": true}\n';
+        const stream = new ReadableStream({
+
+            start(controller) {
+                controller.enqueue(encoder.encode(full.slice(0, 20)));
+                controller.enqueue(encoder.encode(full.slice(20)));
+                controller.close()
+            }
+        })
+        let result = ""
+
+        await processStream(stream, ollamaParser, (chunk) => {
+            result += chunk
+        })
+        expect(result).toBe("Hello")
+    })
+    it("should process multiple JSON events in a single chunk", async () => {
+        const encode = new TextEncoder()
+        const combined = 
+            '{"message": {"content": "A"}}\n' +
+            '{"message": {"content": "B"}}\n' +
+            '{"message": {"content": "C"}, "done": true}\n';
+        const stream = new ReadableStream({
+            start(controller) {
+                controller.enqueue(encode.encode(combined))
+                controller.close()
+            }
+        })
+
+        let result = ""
+        await processStream(stream, ollamaParser, (chunk) => {
+            result += chunk
+        })
+
+        expect(result).toBe("ABC")
+    })
+    it("should complete when stream ends without done=true", async () => {
+        const stream = createOllamaStream([
+            '{"message": {"content": "Hello"}}'
+        ])
+        let result = ""
+
+        await processStream(stream, ollamaParser, (chunk) => {
+            result += chunk
+        })
+
+        expect(result).toBe("Hello")
+    })
+    it("should ignore empty message content", async () => {
+        const stream = createOllamaStream([
+            '{"message": {"content": ""}}',
+            '{"message": {"content": "Hello"}, "done": true}'
+        ])
+        
+        let result = ""
+        await processStream(stream, ollamaParser, (chunk) => {
+            result += chunk
+        })
+        expect(result).toBe("Hello")
+    })
+    it("should handle done=true without content", async () => {
+        const stream = createOllamaStream([
+            '{"done": true}'
+        ])
+
+        let result = ""
+        await processStream(stream, ollamaParser, (chunk) => {
+            result += chunk
+        })
+        expect(result).toBe("")
+    })
 })
