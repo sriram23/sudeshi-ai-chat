@@ -1,0 +1,54 @@
+name: Testing
+on: pull_request
+jobs:
+    test:
+        permissions:
+            contents: read
+            pull-requests: write
+            issues: write
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+            - name: Cache Dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Run tests
+              id: test
+              continue-on-error: true
+              run: |
+                npm run test
+
+            - name: Comment
+              if: always()
+              uses: actions/github-script@v9
+              with:
+                script: |
+                    const passed = "${{ steps.test.outcome }}" === "success";
+                    const icon = passed ? "✅" : "❌";
+                    const status = passed ? "PASSED" : "FAILED";
+                    const url = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+                    const body = `
+                    ## ${icon} Test ${status}
+
+                    View logs: ${url}
+                    `;
+                    await github.rest.issues.createComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.issue.number,
+                        body
+                    });
