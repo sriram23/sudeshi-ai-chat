@@ -20,6 +20,7 @@ const ChatContainer = () => {
     const activeConversationId = useChatStore(s=>s.activeConversationId)
     const currentResponse = useChatStore(s => s.currentResponse)
     const status = useChatStore(s => s.status)
+    const isSummarizingContext = useChatStore(s => s.isSummarizingContext)
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -119,6 +120,7 @@ const ChatContainer = () => {
 
             {/* Input */}
             <div className="sticky bottom-0 p-4 w-full">
+                {isSummarizingContext && <div className="text-gray-500 flex gap-2 items-center mb-2"><Spinner />Summarizing context...</div>}
                 {status === "streaming" && (currentResponse.length === 0 ? <div className="text-gray-500 flex gap-2 items-center"><Spinner />Thinking...</div> : <div className="text-gray-500 flex gap-2 items-center"><Spinner />Answering...</div>)}
                 <div className=" w-full rounded-xl bg-zinc-100 dark:bg-zinc-950">
                     <ChatInput status={status} sendMessage={(msg) => {

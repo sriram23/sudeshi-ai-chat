@@ -23,6 +23,7 @@ export const useChat = () => {
     setCurrentUsage,
     setSummary,
     setContextThresholdExceeded,
+    setIsSummarizingContext,
     renameConversation,
   } = useChatStore();
 
@@ -31,7 +32,11 @@ export const useChat = () => {
     const conversation = conversations.find((c) => c.id === conversationId);
     if (!conversation) return;
 
-    const messages = conversation.messages;
+    const messages = conversation.messages.map((msg) => ({
+      role: msg.role,
+      content: msg.content,
+    }));
+
     if (messages.length === 0) return;
 
     try {
@@ -87,10 +92,10 @@ export const useChat = () => {
     const preservedHistory = history.slice(-9);
     const summarizedTargets = history.length > preservedHistory.length ? history.slice(0, -9) : history;
 
-    const contextThresholdExceeded =
-      currentTokenCount > SUMMARIZE_TOKEN_THRESHOLD;
-
-    setContextThresholdExceeded(activeConversationId!, contextThresholdExceeded);
+    const contextThresholdExceeded = currentTokenCount > SUMMARIZE_TOKEN_THRESHOLD;
+    if (activeConversationId) {
+      setContextThresholdExceeded(activeConversationId, contextThresholdExceeded);
+    }
 
     let summarizedContent = "";
     const shouldSummarize =
@@ -99,8 +104,15 @@ export const useChat = () => {
       summarizedTargets.length > 0;
 
     if (shouldSummarize) {
-      summarizedContent = await summarizeText(summarizedTargets, availableSummary);
-      setSummary(activeConversationId!, summarizedContent, history.length);
+      setIsSummarizingContext(true);
+      try {
+        summarizedContent = await summarizeText(summarizedTargets, availableSummary);
+        if (activeConversationId) {
+          setSummary(activeConversationId, summarizedContent, history.length);
+        }
+      } finally {
+        setIsSummarizingContext(false);
+      }
     }
 
     const payload = shouldSummarize

@@ -58,10 +58,11 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
                     <div title={msgStatus && (contextThresholdExceeded ? "Summarized history due to high token usage" : "completed") }>
                         {msgStatus === "pending"
                             ? <ClockAlert className="text-yellow-400" />
-                            : msgStatus === "cancelled" || msgStatus === "error"
+                            : msgStatus === "cancelled" ? 
+                                <TriangleAlert className="text-yellow-500" /> : msgStatus === "error"
                                 ? <OctagonAlert className="text-red-500" />
                                 : contextThresholdExceeded
-                                    ? <TrendingUp className="text-yellow-500" />
+                                    ? <TrendingUp className="text-orange-500" />
                                     : <BadgeCheck className="text-green-500"/>}
                     </div>
                 </div>
