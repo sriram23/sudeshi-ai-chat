@@ -2,6 +2,14 @@ import { useChatStore } from "@/store/chatStore";
 import { createMessage } from "@/app/features/chat/utils/messageFactory";
 import { generateTitle, streamChat, summarizeText } from "../services/sarvamClient";
 
+const SUMMARIZE_TOKEN_THRESHOLD = 1200;
+
+const estimateTokenCount = (text: string) => {
+  const trimmed = text.trim();
+  if (!trimmed) return 0;
+  return Math.max(1, Math.ceil(new TextEncoder().encode(trimmed).length / 4));
+};
+
 export const useChat = () => {
   const {
     addMessage,
@@ -14,6 +22,7 @@ export const useChat = () => {
     settings,
     setCurrentUsage,
     setSummary,
+    setContextThresholdExceeded,
     renameConversation,
   } = useChatStore();
 
@@ -70,15 +79,35 @@ export const useChat = () => {
       role: msg.role,
       content: msg.content,
     }));
-    const oldMessages = history.slice(0, -19);
+    const currentContextText = history
+      .map((msg) => `${msg.role}: ${msg.content}`)
+      .join("\n");
+    const currentTokenCount = estimateTokenCount(currentContextText);
+
+    const preservedHistory = history.slice(-9);
+    const summarizedTargets = history.length > preservedHistory.length ? history.slice(0, -9) : history;
+
+    const contextThresholdExceeded =
+      currentTokenCount > SUMMARIZE_TOKEN_THRESHOLD;
+
+    setContextThresholdExceeded(activeConversationId!, contextThresholdExceeded);
+
     let summarizedContent = "";
-    const shouldSummarize = activeConversation?.summaryIndex !== undefined && history.length - activeConversation.summaryIndex > 19;
-    if(shouldSummarize) {
-      summarizedContent = await summarizeText(oldMessages, availableSummary);
+    const shouldSummarize =
+      activeConversation?.summaryIndex !== undefined &&
+      contextThresholdExceeded &&
+      summarizedTargets.length > 0;
+
+    if (shouldSummarize) {
+      summarizedContent = await summarizeText(summarizedTargets, availableSummary);
       setSummary(activeConversationId!, summarizedContent, history.length);
     }
-    const truncatedHistory = history.slice(-19);
-    const payload = shouldSummarize ? [{ role: "system", content: summarizedContent }, ...truncatedHistory] : truncatedHistory;
+
+    const payload = shouldSummarize
+      ? summarizedTargets.length === history.length
+        ? [{ role: "system", content: summarizedContent }]
+        : [{ role: "system", content: summarizedContent }, ...preservedHistory]
+      : history;
 
     // create controller AFTER guards
     const controller = new AbortController();

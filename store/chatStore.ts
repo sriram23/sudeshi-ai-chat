@@ -12,6 +12,7 @@ type Conversation = {
   createdAt: number;
   summary?: string;
   summaryIndex?: number;
+  contextThresholdExceeded?: boolean;
 };
 
 type ChatStore = {
@@ -44,6 +45,7 @@ type ChatStore = {
   updateMessageStatus: (id: string, status: MessageStatus) => void;
 
   setSummary: (conversationId: string, summary: string, summaryIndex: number) => void;
+  setContextThresholdExceeded: (conversationId: string, exceeded: boolean) => void;
 
   appendToResponse: (chunk: string) => void;
   finalizeResponse: (messageStatus?: MessageStatus) => void;
@@ -91,6 +93,7 @@ export const useChatStore = create<ChatStore>()(
             createdAt: Date.now(),
             summary: "",
             summaryIndex: 0,
+            contextThresholdExceeded: false,
           };
 
           return {
@@ -221,6 +224,13 @@ export const useChatStore = create<ChatStore>()(
         set((state) => ({
           conversations: state.conversations.map((conv) =>
             conv.id === conversationId ? { ...conv, summary, summaryIndex } : conv
+          ),
+        })),
+
+      setContextThresholdExceeded: (conversationId, exceeded) =>
+        set((state) => ({
+          conversations: state.conversations.map((conv) =>
+            conv.id === conversationId ? { ...conv, contextThresholdExceeded: exceeded } : conv
           ),
         })),
 

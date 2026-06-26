@@ -48,6 +48,8 @@ export async function summarizeText(
 ) {
     messages = messages.slice(-20);
     const text = messages.map(m => `${m.role}: ${m.content}`).join("\n");
+    const tokenCount = Math.max(0, Math.ceil(new TextEncoder().encode(text.trim()).length / 4));
+
     const summaryPrompt = `You are a precise summarization engine.
 
 Your job is to compress a conversation into a structured summary that preserves context for future AI responses.
@@ -69,8 +71,8 @@ Output format:
 Summarize the following conversation:${availableSummary ? `\n\nExisting summary:\n${availableSummary}\n\nConversation:\n${text}` : `\n\n${text}`}
 `.trim();
 
-    if (messages.length < 6) {
-        // Returning the original text if the conversation is short.
+    if (tokenCount < 100) {
+        // Returning the original text if the conversation is still small.
         return text;
     }
     try {

@@ -1,11 +1,19 @@
-import { BadgeCheck,  ChartNoAxesColumnIncreasing,  ClockAlert, Copy, Info, OctagonAlert, ThumbsDown, ThumbsUp, TriangleAlert } from "lucide-react";
+import { BadgeCheck, ChartNoAxesColumnIncreasing, ClockAlert, Copy, Info, OctagonAlert, ThumbsDown, ThumbsUp, TrendingUp, TriangleAlert } from "lucide-react";
 import { MarkdownRenderer } from "./MarkdownRender";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { useState, memo } from "react";
 import CustomSpinner from "./CustomSpinner";
 import { MessageStatus, Metrics } from "../types/chat.types";
 import MetricsCard from "./MetricsCard";
+import { useChatStore } from "@/store/chatStore";
+
 const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, msgStatus }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics, status: string, msgStatus?: MessageStatus }) => {
+    const contextThresholdExceeded = useChatStore((state) => {
+        const activeId = state.activeConversationId;
+        return activeId
+            ? state.conversations.find((conv) => conv.id === activeId)?.contextThresholdExceeded ?? false
+            : false;
+    });
     const [showAlert, setShowAlert] = useState(false);
     const [showMetric, setShowMetric] = useState(false)
     const [alertMessage, setAlertMessage] = useState({type: "success", text: ""});
@@ -47,13 +55,13 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
                     <button title="Like" aria-label="Like" className="hover:bg-zinc-200 p-1 rounded-lg"><ThumbsUp size={16} /></button>
                     <button title="Dislike" aria-label="Dislike" className="hover:bg-zinc-200 p-1 rounded-lg"><ThumbsDown size={16} /></button>
                     {usage && <button title="Metrics" aria-label="Metrics" className={`${showMetric ? "bg-zinc-200 " : ""}hover:bg-zinc-200 p-1 rounded-lg`} onClick={() => setShowMetric(!showMetric)}><ChartNoAxesColumnIncreasing size={16} /></button>}
-                    <div title={msgStatus}>
+                    <div title={msgStatus && (contextThresholdExceeded ? "Summarized history due to high token usage" : "completed") }>
                         {msgStatus === "pending"
                             ? <ClockAlert className="text-yellow-400" />
-                            : msgStatus === "cancelled"
-                                ? <TriangleAlert className="text-yellow-500" />
-                                : msgStatus === "error"
-                                    ? <OctagonAlert className="text-red-500"/>
+                            : msgStatus === "cancelled" || msgStatus === "error"
+                                ? <OctagonAlert className="text-red-500" />
+                                : contextThresholdExceeded
+                                    ? <TrendingUp className="text-yellow-500" />
                                     : <BadgeCheck className="text-green-500"/>}
                     </div>
                 </div>
