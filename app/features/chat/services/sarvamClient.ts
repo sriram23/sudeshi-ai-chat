@@ -46,32 +46,25 @@ export async function summarizeText(
     messages: { role: string; content: string }[],
     availableSummary?: string
 ) {
-    messages = messages.slice(-20);
     const text = messages.map(m => `${m.role}: ${m.content}`).join("\n");
     const tokenCount = Math.max(0, Math.ceil(new TextEncoder().encode(text.trim()).length / 4));
 
-    const summaryPrompt = `You are a precise summarization engine.
-
-Your job is to compress a conversation into a structured summary that preserves context for future AI responses.
+    const summaryPrompt = `
+Update the summary using the new conversation.
 
 Rules:
-- Capture key user intents and goals
-- Capture important facts and constraints
-- Capture decisions or conclusions made
-- Capture ongoing tasks or open questions
-- Remove repetition and irrelevant details
-- Do NOT add new information
-- Keep it concise but information-dense
+- Keep only: facts, goals, constraints, decisions, open tasks.
+- Remove repetition and obsolete information.
+- Don't infer or add information.
+- Output <=200 tokens.
+- Use compact bullet points.
 
-Output format:
-- Bullet points
-- Clear and structured
-- No fluff
-
-Summarize the following conversation:${availableSummary ? `\n\nExisting summary:\n${availableSummary}\n\nConversation:\n${text}` : `\n\n${text}`}
+${availableSummary
+  ? `Summary:\n${availableSummary}\n\nNew:\n${text}`
+  : `Conversation:\n${text}`}
 `.trim();
 
-    if (tokenCount < 100) {
+    if (tokenCount < 500) {
         // Returning the original text if the conversation is still small.
         return text;
     }

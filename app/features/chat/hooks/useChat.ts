@@ -2,12 +2,22 @@ import { useChatStore } from "@/store/chatStore";
 import { createMessage } from "@/app/features/chat/utils/messageFactory";
 import { generateTitle, streamChat, summarizeText } from "../services/sarvamClient";
 
-const SUMMARIZE_TOKEN_THRESHOLD = 1200;
+const SUMMARIZE_TOKEN_THRESHOLD = 4500;
 
-const estimateTokenCount = (text: string) => {
-  const trimmed = text.trim();
-  if (!trimmed) return 0;
-  return Math.max(1, Math.ceil(new TextEncoder().encode(trimmed).length / 4));
+export const buildContextHistory = (messages: Array<{ role: string; content: string; usage?: { total_tokens?: number } }>) =>
+  messages.map((msg) => ({
+    role: msg.role,
+    content: msg.content,
+    usage: msg.usage,
+  }));
+
+export const getConversationTokenCount = (history: Array<{ role: string; content: string; usage?: { total_tokens?: number } }>) => {
+  const assistantMessages = history.filter((message) => message.role === "assistant");
+
+  return assistantMessages.reduce((total, message) => {
+    const usage = message.usage;
+    return total + (usage?.total_tokens ?? 0);
+  }, 0);
 };
 
 export const useChat = () => {
@@ -80,28 +90,30 @@ export const useChat = () => {
     const latestMessages = activeConversation?.messages || [];
     const availableSummary = activeConversation?.summary;
     // build context
-    const history = latestMessages.map((msg) => ({
+    const history = buildContextHistory(latestMessages.map((msg) => ({
       role: msg.role,
       content: msg.content,
-    }));
-    const currentContextText = history
-      .map((msg) => `${msg.role}: ${msg.content}`)
-      .join("\n");
-    const currentTokenCount = estimateTokenCount(currentContextText);
+      usage: msg.usage,
+    })));
+    const currentTokenCount = getConversationTokenCount(history);
 
     const preservedHistory = history.slice(-9);
     const summarizedTargets = history.length > preservedHistory.length ? history.slice(0, -9) : history;
 
     const contextThresholdExceeded = currentTokenCount > SUMMARIZE_TOKEN_THRESHOLD;
+    const previouslyExceeded = activeConversation?.contextThresholdExceeded ?? false;
+    const summaryIndex = activeConversation?.summaryIndex ?? 0;
+
     if (activeConversationId) {
       setContextThresholdExceeded(activeConversationId, contextThresholdExceeded);
     }
 
     let summarizedContent = "";
     const shouldSummarize =
-      activeConversation?.summaryIndex !== undefined &&
+      summaryIndex >= 0 &&
       contextThresholdExceeded &&
-      summarizedTargets.length > 0;
+      summarizedTargets.length > 0 &&
+      (!previouslyExceeded || summaryIndex < history.length - 1);
 
     if (shouldSummarize) {
       setIsSummarizingContext(true);
