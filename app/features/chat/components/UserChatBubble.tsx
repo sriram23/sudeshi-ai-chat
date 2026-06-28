@@ -11,7 +11,7 @@ const UserChatBubble = memo(({ message, showEdit=false, onEditSave }: { message:
     }
     return (
         <div className="flex justify-end max-w-3xl">
-            <div className="flex">
+            <div className="flex py-6">
                 {/* Reusing the onEditSave function for refresh as well */}
                 <button aria-label="Retry Message" className="m-1" onClick={() => onEditSave(message)}><RotateCcw size={16} /></button>
                 {showEdit && (
