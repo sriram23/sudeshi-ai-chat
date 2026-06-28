@@ -36,7 +36,7 @@ const ChatContainer = () => {
     const totalCount = messages.length + (status === "streaming" ? 1 : 0);
     return (
         <div className="relative flex flex-col min-h-screen h-full w-full m-0 flex-1 bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
-            <div className="flex items-top sticky top-0 z-10 pt-4 bg-zinc-100 dark:bg-zinc-950 mb-4">
+            <div className="flex items-top sticky top-0 z-10 pt-4 bg-zinc-100 dark:bg-zinc-950 mb-4 border-b border-zinc-100">
                 <ChatHeader />
             </div>
 
@@ -119,18 +119,20 @@ const ChatContainer = () => {
             )}
 
             {/* Input */}
-            <div className="sticky bottom-0 p-4 w-full">
-                {isSummarizingContext && <div className="text-gray-500 flex gap-2 items-center mb-2"><Spinner />Summarizing context...</div>}
-                {status === "streaming" && (currentResponse.length === 0 ? <div className="text-gray-500 flex gap-2 items-center"><Spinner />Thinking...</div> : <div className="text-gray-500 flex gap-2 items-center"><Spinner />Answering...</div>)}
-                <div className=" w-full rounded-xl bg-zinc-100 dark:bg-zinc-950">
-                    <ChatInput status={status} sendMessage={(msg) => {
-                        sendMessage(msg)
-                        virtuosoRef.current?.scrollToIndex({
-                            index: totalCount,
-                            behavior: "auto"
-                        })
-                    }}
-                    stopStreaming={stopStreaming} />
+            <div className="sticky bottom-0">
+                <div className="mx-auto max-w-4xl p-4">
+                    {isSummarizingContext && <div className="text-gray-500 flex gap-2 items-center mb-2"><Spinner />Summarizing context...</div>}
+                    {status === "streaming" && (currentResponse.length === 0 ? <div className="text-gray-500 flex gap-2 items-center"><Spinner />Thinking...</div> : <div className="text-gray-500 flex gap-2 items-center"><Spinner />Answering...</div>)}
+                    <div className=" w-full rounded-xl bg-zinc-100 dark:bg-zinc-950">
+                        <ChatInput status={status} sendMessage={(msg) => {
+                            sendMessage(msg)
+                            virtuosoRef.current?.scrollToIndex({
+                                index: totalCount,
+                                behavior: "auto"
+                            })
+                        }}
+                        stopStreaming={stopStreaming} />
+                    </div>
                 </div>
             </div>
             <OfflineComponent />
