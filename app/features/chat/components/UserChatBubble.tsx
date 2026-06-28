@@ -11,14 +11,14 @@ const UserChatBubble = memo(({ message, showEdit=false, onEditSave }: { message:
     }
     return (
         <div className="flex justify-end max-w-3xl">
-            <div className="flex py-6">
+            <div className="flex py-3">
                 {/* Reusing the onEditSave function for refresh as well */}
                 <button aria-label="Retry Message" className="m-1" onClick={() => onEditSave(message)}><RotateCcw size={16} /></button>
                 {showEdit && (
                     <button aria-label="Edit Message" className="m-1" onClick={() => setEdit(true)}><Pencil size={16} /></button>
                 )}
                 {!edit && (
-                    <div className="bg-zinc-300 dark:bg-zinc-800 text-gray-900 dark:text-gray-100 p-2 m-1 rounded-lg max-w-3xl w-contain">
+                    <div className="bg-zinc-300 dark:bg-zinc-800 text-gray-900 dark:text-gray-100 p-4 m-1 rounded-lg max-w-3xl w-contain">
                         <MarkdownRenderer content={message} />
                     </div>
                 )}

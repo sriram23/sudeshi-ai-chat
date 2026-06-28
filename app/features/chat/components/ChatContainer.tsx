@@ -67,7 +67,7 @@ const ChatContainer = () => {
                         // Streaming message as real item and no Footer hack
                         if (i === messages.length && status === "streaming") {
                             return (
-                                <div className="p-2 flex justify-start">
+                                <div className="mx-auto w-full max-w-4xl px-6 py-3">
                                     <AssistantChatBubble
                                         currentResponse={currentResponse}
                                         status={status}
