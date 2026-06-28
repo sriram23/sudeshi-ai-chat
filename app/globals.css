@@ -5,6 +5,6 @@
 /* Fix for dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
 
-body {
-    font-family: var(--font-nunito), -apple-system, BlinkMacSystemFont, sans-serif;
+:root {
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
 }
