@@ -106,7 +106,7 @@ const ChatContainer = () => {
 
             {!isAtBottom && conversations.filter(c => c.id === activeConversationId) && (
                 <button
-                    className="absolute bottom-36 left-1/2 bg-zinc-800 text-white px-3 py-2 rounded-full shadow-md"
+                    className="absolute bottom-32 left-1/2 bg-zinc-50 text-zinc-800 dark:bg-zinc-800 dark:text-white border-0 border-zinc-200 dark:border-zinc-900 px-2 py-2 rounded-full shadow-md"
                     onClick={() => {
                         virtuosoRef.current?.scrollToIndex({
                             index: totalCount,
