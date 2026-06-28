@@ -1,0 +1,2 @@
+export const SUMMARIZE_TOKEN_THRESHOLD = 4500;
+export const PRESERVED_MESSAGE_COUNT = 6;

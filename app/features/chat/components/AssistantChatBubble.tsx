@@ -6,6 +6,7 @@ import CustomSpinner from "./CustomSpinner";
 import { MessageStatus, Metrics } from "../types/chat.types";
 import MetricsCard from "./MetricsCard";
 import { useChatStore } from "@/store/chatStore";
+import { SUMMARIZE_TOKEN_THRESHOLD } from "../utils/constants";
 
 const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, msgStatus }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics, status: string, msgStatus?: MessageStatus }) => {
     const contextThresholdExceeded = useChatStore((state) => {
@@ -13,8 +14,7 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
         const lastMessage = state.conversations.find((conv) => conv.id === activeId)?.messages.at(-1);
         const tokenUsage = lastMessage?.usage;
         const totalToken = tokenUsage?.total_tokens || 0;
-        return totalToken > 4500
-        // TODO: Move the constants to a separate file
+        return totalToken > SUMMARIZE_TOKEN_THRESHOLD;
     });
     const [showAlert, setShowAlert] = useState(false);
     const [showMetric, setShowMetric] = useState(false)
