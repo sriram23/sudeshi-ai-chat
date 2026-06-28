@@ -7,6 +7,15 @@ Supports both hosted and self-hosted models through a unified streaming pipeline
 🔗 Live Demo: [Sudeshi AI Chat](https://sudeshi-ai-chat.vercel.app?utm_source=github.com)
 
 ---
+[![Testing](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/testing.yml/badge.svg)](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/testing.yml)
+
+[![TruffleHog](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/trufflehog.yml/badge.svg)](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/trufflehog.yml)
+
+[![CodeQL](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/codeql.yml/badge.svg)](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/codeql.yml)
+
+[![WebVitals](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/webvitals.yml/badge.svg)](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/webvitals.yml)
+
+---
 
 ## Overview
 
