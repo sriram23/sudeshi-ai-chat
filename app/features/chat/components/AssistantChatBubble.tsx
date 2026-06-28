@@ -10,9 +10,11 @@ import { useChatStore } from "@/store/chatStore";
 const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, msgStatus }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics, status: string, msgStatus?: MessageStatus }) => {
     const contextThresholdExceeded = useChatStore((state) => {
         const activeId = state.activeConversationId;
-        return activeId
-            ? state.conversations.find((conv) => conv.id === activeId)?.contextThresholdExceeded ?? false
-            : false;
+        const lastMessage = state.conversations.find((conv) => conv.id === activeId)?.messages.at(-1);
+        const tokenUsage = lastMessage?.usage;
+        const totalToken = tokenUsage?.total_tokens || 0;
+        return totalToken > 4500
+        // TODO: Move the constants to a separate file
     });
     const [showAlert, setShowAlert] = useState(false);
     const [showMetric, setShowMetric] = useState(false)
@@ -55,7 +57,7 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
                     <button title="Like" aria-label="Like" className="hover:bg-zinc-200 p-1 rounded-lg"><ThumbsUp size={16} /></button>
                     <button title="Dislike" aria-label="Dislike" className="hover:bg-zinc-200 p-1 rounded-lg"><ThumbsDown size={16} /></button>
                     {usage && <button title="Metrics" aria-label="Metrics" className={`${showMetric ? "bg-zinc-200 " : ""}hover:bg-zinc-200 p-1 rounded-lg`} onClick={() => setShowMetric(!showMetric)}><ChartNoAxesColumnIncreasing size={16} /></button>}
-                    <div title={msgStatus && (contextThresholdExceeded ? "Summarized history due to high token usage" : "completed") }>
+                    <div title={msgStatus && (contextThresholdExceeded ? "High token usage" : "completed") }>
                         {msgStatus === "pending"
                             ? <ClockAlert className="text-yellow-400" />
                             : msgStatus === "cancelled" ? 
