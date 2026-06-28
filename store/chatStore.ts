@@ -11,7 +11,6 @@ type Conversation = {
   messages: Message[];
   createdAt: number;
   summary?: string;
-  summaryIndex?: number;
   contextThresholdExceeded?: boolean;
 };
 
@@ -23,6 +22,7 @@ type ChatStore = {
   currentUsage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
   currentMetrics?: Metrics
   status: ChatStatus;
+  isSummarizingContext: boolean;
   availableModels?: ChatModel[];
   settings: {
     model: ChatModel;
@@ -44,8 +44,9 @@ type ChatStore = {
   addMessage: (message: Message) => void;
   updateMessageStatus: (id: string, status: MessageStatus) => void;
 
-  setSummary: (conversationId: string, summary: string, summaryIndex: number) => void;
+  setSummary: (conversationId: string, summary: string, preservedMessageCount: number) => void;
   setContextThresholdExceeded: (conversationId: string, exceeded: boolean) => void;
+  setIsSummarizingContext: (isSummarizing: boolean) => void;
 
   appendToResponse: (chunk: string) => void;
   finalizeResponse: (messageStatus?: MessageStatus) => void;
@@ -71,6 +72,7 @@ export const useChatStore = create<ChatStore>()(
       currentUsage: undefined,
       currentMetrics: undefined,
       status: "idle",
+      isSummarizingContext: false,
 
       availableModels: ["sarvam-30b", "sarvam-105b"],
       settings: {
@@ -92,7 +94,6 @@ export const useChatStore = create<ChatStore>()(
             messages: [],
             createdAt: Date.now(),
             summary: "",
-            summaryIndex: 0,
             contextThresholdExceeded: false,
           };
 
@@ -220,10 +221,16 @@ export const useChatStore = create<ChatStore>()(
 
       setCurrentUsage: (usage, metrics) => set({ currentUsage: usage, currentMetrics: metrics }),
 
-      setSummary: (conversationId, summary, summaryIndex) =>
+      setSummary: (conversationId, summary, preserveMessageCount) =>
         set((state) => ({
           conversations: state.conversations.map((conv) =>
-            conv.id === conversationId ? { ...conv, summary, summaryIndex } : conv
+            conv.id !== conversationId
+              ? conv
+              : {
+                  ...conv,
+                  summary,
+                  messages: conv.messages.slice(-preserveMessageCount)
+                }
           ),
         })),
 
@@ -233,6 +240,9 @@ export const useChatStore = create<ChatStore>()(
             conv.id === conversationId ? { ...conv, contextThresholdExceeded: exceeded } : conv
           ),
         })),
+
+      setIsSummarizingContext: (isSummarizing) =>
+        set({ isSummarizingContext: isSummarizing }),
 
       setModels: (newModels) => set((state) => ({ availableModels: [...new Set(newModels), ...(state.availableModels ?? [])] })),
 

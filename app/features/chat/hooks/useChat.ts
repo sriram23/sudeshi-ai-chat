@@ -1,13 +1,24 @@
 import { useChatStore } from "@/store/chatStore";
 import { createMessage } from "@/app/features/chat/utils/messageFactory";
 import { generateTitle, streamChat, summarizeText } from "../services/sarvamClient";
+import { SUMMARIZE_TOKEN_THRESHOLD, PRESERVED_MESSAGE_COUNT } from "../utils/constants";
 
-const SUMMARIZE_TOKEN_THRESHOLD = 1200;
 
-const estimateTokenCount = (text: string) => {
-  const trimmed = text.trim();
-  if (!trimmed) return 0;
-  return Math.max(1, Math.ceil(new TextEncoder().encode(trimmed).length / 4));
+
+export const buildContextHistory = (messages: Array<{ role: string; content: string; usage?: { total_tokens?: number } }>) =>
+  messages.map((msg) => ({
+    role: msg.role,
+    content: msg.content,
+    usage: msg.usage,
+  }));
+
+export const getConversationTokenCount = (history: Array<{ role: string; content: string; usage?: { total_tokens?: number } }>) => {
+  const assistantMessages = history.filter((message) => message.role === "assistant");
+
+  return assistantMessages.reduce((total, message) => {
+    const usage = message.usage;
+    return total + (usage?.total_tokens ?? 0);
+  }, 0);
 };
 
 export const useChat = () => {
@@ -23,6 +34,7 @@ export const useChat = () => {
     setCurrentUsage,
     setSummary,
     setContextThresholdExceeded,
+    setIsSummarizingContext,
     renameConversation,
   } = useChatStore();
 
@@ -31,7 +43,11 @@ export const useChat = () => {
     const conversation = conversations.find((c) => c.id === conversationId);
     if (!conversation) return;
 
-    const messages = conversation.messages;
+    const messages = conversation.messages.map((msg) => ({
+      role: msg.role,
+      content: msg.content,
+    }));
+
     if (messages.length === 0) return;
 
     try {
@@ -75,38 +91,44 @@ export const useChat = () => {
     const latestMessages = activeConversation?.messages || [];
     const availableSummary = activeConversation?.summary;
     // build context
-    const history = latestMessages.map((msg) => ({
+    const history = buildContextHistory(latestMessages.map((msg) => ({
       role: msg.role,
       content: msg.content,
-    }));
-    const currentContextText = history
-      .map((msg) => `${msg.role}: ${msg.content}`)
-      .join("\n");
-    const currentTokenCount = estimateTokenCount(currentContextText);
+      usage: msg.usage,
+    })));
+    const currentTokenCount = getConversationTokenCount(history);
 
-    const preservedHistory = history.slice(-9);
-    const summarizedTargets = history.length > preservedHistory.length ? history.slice(0, -9) : history;
+    const preservedHistory = history.slice(-PRESERVED_MESSAGE_COUNT);
+    const summarizedTargets = history.length > preservedHistory.length ? history.slice(0, -PRESERVED_MESSAGE_COUNT) : [];
 
-    const contextThresholdExceeded =
-      currentTokenCount > SUMMARIZE_TOKEN_THRESHOLD;
+    const contextThresholdExceeded = currentTokenCount > SUMMARIZE_TOKEN_THRESHOLD;
 
-    setContextThresholdExceeded(activeConversationId!, contextThresholdExceeded);
+    if (activeConversationId) {
+      setContextThresholdExceeded(activeConversationId, contextThresholdExceeded);
+    }
 
     let summarizedContent = "";
     const shouldSummarize =
-      activeConversation?.summaryIndex !== undefined &&
       contextThresholdExceeded &&
-      summarizedTargets.length > 0;
+      summarizedTargets.length > 0
 
     if (shouldSummarize) {
-      summarizedContent = await summarizeText(summarizedTargets, availableSummary);
-      setSummary(activeConversationId!, summarizedContent, history.length);
+      setIsSummarizingContext(true);
+      try {
+        summarizedContent = await summarizeText(summarizedTargets, availableSummary);
+        if (activeConversationId) {
+          setSummary(activeConversationId, summarizedContent, PRESERVED_MESSAGE_COUNT);
+        }
+      } finally {
+        setIsSummarizingContext(false);
+      }
     }
 
     const payload = shouldSummarize
-      ? summarizedTargets.length === history.length
-        ? [{ role: "system", content: summarizedContent }]
-        : [{ role: "system", content: summarizedContent }, ...preservedHistory]
+      ? [
+        { role: "system", content: summarizedContent },
+        ...preservedHistory,
+      ]
       : history;
 
     // create controller AFTER guards
@@ -114,6 +136,7 @@ export const useChat = () => {
     setAbortController(controller);
 
     setStatus("streaming");
+    console.log("Payload: ", payload)
     try {
       await streamChat(
         {

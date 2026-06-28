@@ -33,7 +33,6 @@ export type Conversation = {
   messages: Message[];
   createdAt: number;
   summary?: string;
-  summaryIndex?: number;
 };
 
 // Commenting for later use when we implement conversation management
