@@ -79,7 +79,7 @@ const ChatContainer = () => {
                         const msg = messages[i];
 
                         return (
-                            <div className="flex flex-col">
+                            <div className="mx-auto w-full max-w-4xl px-6 py-3">
                                 <div className={`flex items-center ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                                     {msg.role === "user" ? (
                                         <UserChatBubble

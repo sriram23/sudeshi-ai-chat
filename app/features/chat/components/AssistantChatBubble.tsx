@@ -40,13 +40,13 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
         <div className="flex flex-col justify-start max-w-3xl">
             <div className="flex items-center text-gray-900 dark:text-gray-100 px-2 m-1 rounded-lg">
                 {currentResponse && (
-                    <div className="p-2 my-1 rounded self-start">
+                    <div className="p-2 my-1 rounded self-start max-w-3xl">
                         <span><MarkdownRenderer content={currentResponse} /></span>
                         {status === "streaming" && <CustomSpinner className="text-gray-800" />}
                     </div>
                 )}
                 {message && (
-                    <div className="p-2 my-1 rounded self-start">
+                    <div className="p-2 my-1 rounded self-start max-w-3xl">
                         <MarkdownRenderer content={message} />
                     </div>
                 )}
