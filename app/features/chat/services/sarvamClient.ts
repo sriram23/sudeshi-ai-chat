@@ -50,18 +50,24 @@ export async function summarizeText(
     const tokenCount = Math.max(0, Math.ceil(new TextEncoder().encode(text.trim()).length / 4));
 
     const summaryPrompt = `
-Update the summary using the new conversation.
+Return ONLY the updated conversation memory.
+
+Output format:
+- Bullet points only.
 
 Rules:
-- Keep only: facts, goals, constraints, decisions, open tasks.
-- Remove repetition and obsolete information.
-- Don't infer or add information.
-- Output <=200 tokens.
-- Use compact bullet points.
+- Facts only.
+- Keep goals, preferences, constraints, decisions and unfinished tasks.
+- Remove duplicates.
+- Remove obsolete information.
+- No reasoning.
+- No explanation.
+- No "Step 1", "Analysis", or headings.
+- Maximum 150 tokens.
 
 ${availableSummary
-  ? `Summary:\n${availableSummary}\n\nNew:\n${text}`
-  : `Conversation:\n${text}`}
+    ? `Memory:\n${availableSummary}\n\nConversation:\n${text}`
+    : `Conversation:\n${text}`}
 `.trim();
 
     if (tokenCount < 500) {

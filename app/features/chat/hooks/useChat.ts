@@ -3,7 +3,7 @@ import { createMessage } from "@/app/features/chat/utils/messageFactory";
 import { generateTitle, streamChat, summarizeText } from "../services/sarvamClient";
 
 const SUMMARIZE_TOKEN_THRESHOLD = 4500;
-const PRESERVED_MESSAGE_COUNT = 10;
+const PRESERVED_MESSAGE_COUNT = 6;
 
 export const buildContextHistory = (messages: Array<{ role: string; content: string; usage?: { total_tokens?: number } }>) =>
   messages.map((msg) => ({
