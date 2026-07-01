@@ -7,6 +7,8 @@ import { MessageStatus, Metrics } from "../types/chat.types";
 import MetricsCard from "./MetricsCard";
 import { useChatStore } from "@/store/chatStore";
 import { SUMMARIZE_TOKEN_THRESHOLD } from "../utils/constants";
+import Image from "next/image";
+import LOGO from "@/app/assets/images/Sudeshi_Chat.png"
 
 const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, msgStatus }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics, status: string, msgStatus?: MessageStatus }) => {
     const contextThresholdExceeded = useChatStore((state) => {
@@ -40,13 +42,17 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
         <div className="flex flex-col justify-start max-w-3xl">
             <div className="flex items-center text-gray-900 dark:text-gray-100 px-2 m-1 rounded-lg">
                 {currentResponse && (
-                    <div className="p-2 my-1 rounded self-start">
+                    <div className="p-2 pl-4 py-3 my-1 rounded self-start max-w-3xl">
                         <span><MarkdownRenderer content={currentResponse} /></span>
                         {status === "streaming" && <CustomSpinner className="text-gray-800" />}
                     </div>
                 )}
                 {message && (
-                    <div className="p-2 my-1 rounded self-start">
+                    <div className="p-2 pl-4 py-3 my-1 rounded self-start max-w-3xl">
+                        <div className="flex mb-2">
+                            <Image className="dark:invert" src={LOGO} alt="Sudeshi Logo" width={25} height={25} />
+                            <span className="ml-2 text-md text-zinc-500 dark:text-zinc-400">Sudeshi</span>
+                        </div>
                         <MarkdownRenderer content={message} />
                     </div>
                 )}

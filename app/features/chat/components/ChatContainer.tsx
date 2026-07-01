@@ -36,7 +36,7 @@ const ChatContainer = () => {
     const totalCount = messages.length + (status === "streaming" ? 1 : 0);
     return (
         <div className="relative flex flex-col min-h-screen h-full w-full m-0 flex-1 bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
-            <div className="flex items-top sticky top-0 z-10 pt-4 bg-zinc-100 dark:bg-zinc-950 mb-4">
+            <div className="flex items-top sticky top-0 z-10 pt-4 bg-zinc-100 dark:bg-zinc-950 mb-4 border-b border-zinc-100 dark:border-zinc-900">
                 <ChatHeader />
             </div>
 
@@ -67,7 +67,7 @@ const ChatContainer = () => {
                         // Streaming message as real item and no Footer hack
                         if (i === messages.length && status === "streaming") {
                             return (
-                                <div className="p-2 flex justify-start">
+                                <div className="mx-auto w-full max-w-4xl px-6 py-3">
                                     <AssistantChatBubble
                                         currentResponse={currentResponse}
                                         status={status}
@@ -79,7 +79,7 @@ const ChatContainer = () => {
                         const msg = messages[i];
 
                         return (
-                            <div className="flex flex-col">
+                            <div className="mx-auto w-full max-w-4xl px-6 py-3">
                                 <div className={`flex items-center ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                                     {msg.role === "user" ? (
                                         <UserChatBubble
@@ -106,7 +106,7 @@ const ChatContainer = () => {
 
             {!isAtBottom && conversations.filter(c => c.id === activeConversationId) && (
                 <button
-                    className="absolute bottom-36 left-1/2 bg-zinc-800 text-white px-3 py-2 rounded-full shadow-md"
+                    className="absolute bottom-32 left-1/2 bg-zinc-50 text-zinc-800 dark:bg-zinc-800 dark:text-white border-0 border-zinc-200 dark:border-zinc-900 px-2 py-2 rounded-full shadow-md"
                     onClick={() => {
                         virtuosoRef.current?.scrollToIndex({
                             index: totalCount,
@@ -119,18 +119,20 @@ const ChatContainer = () => {
             )}
 
             {/* Input */}
-            <div className="sticky bottom-0 p-4 w-full">
-                {isSummarizingContext && <div className="text-gray-500 flex gap-2 items-center mb-2"><Spinner />Summarizing context...</div>}
-                {status === "streaming" && (currentResponse.length === 0 ? <div className="text-gray-500 flex gap-2 items-center"><Spinner />Thinking...</div> : <div className="text-gray-500 flex gap-2 items-center"><Spinner />Answering...</div>)}
-                <div className=" w-full rounded-xl bg-zinc-100 dark:bg-zinc-950">
-                    <ChatInput status={status} sendMessage={(msg) => {
-                        sendMessage(msg)
-                        virtuosoRef.current?.scrollToIndex({
-                            index: totalCount,
-                            behavior: "auto"
-                        })
-                    }}
-                    stopStreaming={stopStreaming} />
+            <div className="sticky bottom-0">
+                <div className="mx-auto max-w-4xl p-4">
+                    {isSummarizingContext && <div className="text-gray-500 flex gap-2 items-center mb-2"><Spinner />Summarizing context...</div>}
+                    {status === "streaming" && (currentResponse.length === 0 ? <div className="text-gray-500 flex gap-2 items-center"><Spinner />Thinking...</div> : <div className="text-gray-500 flex gap-2 items-center"><Spinner />Answering...</div>)}
+                    <div className=" w-full rounded-xl bg-zinc-100 dark:bg-zinc-950">
+                        <ChatInput status={status} sendMessage={(msg) => {
+                            sendMessage(msg)
+                            virtuosoRef.current?.scrollToIndex({
+                                index: totalCount,
+                                behavior: "auto"
+                            })
+                        }}
+                        stopStreaming={stopStreaming} />
+                    </div>
                 </div>
             </div>
             <OfflineComponent />

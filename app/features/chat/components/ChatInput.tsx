@@ -50,7 +50,7 @@ const ChatInput = memo(({ status, sendMessage, stopStreaming }:{ status: string;
                             e.preventDefault()
                             handleSend();
                         }
-                    }} onFocus={handleInputHeight} onBlur={handleBlur} value={input} onChange={(e) => setInput(e.target.value)} rows={1} className="no-scrollbar focus-visible:ring-2 focus:outline-none focus-visible:ring-transparent mt-auto min-h-10 max-h-32 h-full p-2 border rounded-lg resize-none" placeholder="Type your message..."/>
+                    }} onFocus={handleInputHeight} onBlur={handleBlur} value={input} onChange={(e) => setInput(e.target.value)} rows={1} className="no-scrollbar focus-visible:ring-2 focus:outline-none focus-visible:ring-transparent mt-auto min-h-10 max-h-32 h-full p-2 border rounded-lg resize-none" placeholder="Ask Sudeshi Anything..."/>
                 </div>
                 {status === "idle" && (
                     <button aria-label="Send Message" onClick={() => { sendMessage(input); setInput(""); }} className="my-1 p-2 rounded-full text-white bg-zinc-800">
