@@ -36,7 +36,7 @@ const ChatContainer = () => {
     const totalCount = messages.length + (status === "streaming" ? 1 : 0);
     return (
         <div className="relative flex flex-col min-h-screen h-full w-full m-0 flex-1 bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
-            <div className="flex items-top sticky top-0 z-10 pt-4 bg-zinc-100 dark:bg-zinc-950 mb-4 border-b border-zinc-100">
+            <div className="flex items-top sticky top-0 z-10 pt-4 bg-zinc-100 dark:bg-zinc-950 mb-4 border-b border-zinc-100 dark:border-zinc-900">
                 <ChatHeader />
             </div>
 

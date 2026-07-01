@@ -14,12 +14,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useChatStore } from "@/store/chatStore";
-import { ArrowUpRight, Ellipsis, Moon, Pencil, Plus, Settings, Sun, Trash } from "lucide-react";
+import { Ellipsis, MessageCircle, Moon, Pencil, Settings, Sun, Trash } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Image from "next/image";
 import LOGO from "@/app/assets/images/Sudeshi_Chat.png"
-import Link from "next/link";
 import CustomDialog from "./Dialog";
 import SettingsComponent from "./SettingsComponent";
 import SideBarSkeleton from "./SideBarSkeleton";
@@ -89,49 +88,38 @@ const AppSidebar = memo((): React.ReactNode => {
     }
   };
   return (
-    // <div className="bg-gradient-to-br  from-orange-400 via-white to-green-700 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-900">
       <Sidebar collapsible="icon" className="bg-white/10 backdrop-blur-lg dark:bg-transparent dark:backdrop-blur-none border-zinc-300">
         <SidebarHeader>
           <SidebarContent>
             <SidebarGroup title="Welcome to Sudeshi" >
             <SidebarGroupLabel className="flex items-center justify-center mt-2">
-              <div className="m-2 flex flex-col items-center">
+              <div className="m-2 flex items-center">
                 <Image className="m-1 dark:invert" src={LOGO} alt="Sudeshi Logo" width={30} height={30} />
-                <p className="text-lg font-extrabold">Sudeshi</p>
-              </div>
-              {/* <h2 className="text-2xl font-bold">Sudeshi</h2> */}
-            </SidebarGroupLabel>
-            <SidebarGroupLabel className="text-sm text-zinc-600 text-center mt-2">
-              <span className="flex items-center justify-center w-full">Your personal AI assistant</span>
-            </SidebarGroupLabel>
-            <SidebarGroupLabel className="text-sm text-center">
-              <div className="flex items-center justify-center w-full">
-                Powered by
-                <Link className="border-b border-dashed mx-2 flex items-center" href="https://www.sarvam.ai/">
-                  Sarvam AI <ArrowUpRight size={16}/>
-                </Link>
+                <p className="text-lg font-extrabold">&nbsp;Sudeshi</p>
               </div>
             </SidebarGroupLabel>
+          </SidebarGroup>
+          <SidebarGroup title="New Chat" className="p-0" >
+            <SidebarMenu className={isStreaming? "pointer-events-none opacity-70" : ""}>
+              <SidebarMenuItem className="p-0">
+                <SidebarMenuButton onClick={() => createNewConversation()} className="bg-zinc-700 rounded text-white h-10 w-full"><Pencil className="mr-2" />New Chat</SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarGroup>
           </SidebarContent>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarGroup title="New Chat" >
-            <SidebarMenu className={isStreaming? "pointer-events-none opacity-70" : ""}>
-              <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => createNewConversation()} className="bg-zinc-700 rounded text-white h-10"><Plus />New Conversation</SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
           <SidebarGroup title="Conversations">
             <SidebarMenu className={isStreaming? "pointer-events-none opacity-70": ""}>
             {conversations.map(conv => (
               <SidebarMenuItem key={conv.id}>
-                <SidebarMenuButton title={conv.title} onClick={() => setActiveConversation(conv.id)} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-700 text-white' : 'bg-zinc-100 dark:bg-zinc-900'}`}>
-                  <SidebarGroupLabel className="text-sm">{conv.title.length > 18 ? conv.title.slice(0, 17) + "..." : conv.title}</SidebarGroupLabel>
+                <SidebarMenuButton title={conv.title} onClick={() => setActiveConversation(conv.id)} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-300 dark:bg-zinc-700' : 'bg-zinc-100 dark:bg-zinc-900'}`}>
+                  {/* <SidebarGroupLabel className="text-sm"> */}
+                    <MessageCircle className="mr-2" />{conv.title.length > 18 ? conv.title.slice(0, 17) + "..." : conv.title}
+                  {/* </SidebarGroupLabel> */}
                   <div className="flex-1 justify-end flex gap-2 text-transparent hover:text-zinc-900 hover:dark:text-white">
                     <DropdownMenu>
-                      <DropdownMenuTrigger nativeButton={false} render={<div onClick={(e) => e.stopPropagation()} role="presentation"/>}><Ellipsis className={`${conv.id === activeConversationId ? 'text-white' : 'text-zinc-950 dark:text-white'}`}/></DropdownMenuTrigger>
+                      <DropdownMenuTrigger nativeButton={false} render={<div onClick={(e) => e.stopPropagation()} role="presentation"/>}><Ellipsis className={'text-zinc-950 dark:text-white'}/></DropdownMenuTrigger>
                       <DropdownMenuContent className="bg-white dark:bg-zinc-900">
                         <DropdownMenuGroup>
                           <DropdownMenuItem className="hover:bg-yellow-300" onClick={(e) => {
@@ -215,14 +203,13 @@ const AppSidebar = memo((): React.ReactNode => {
           </Dialog>
         ) : null}
         <SidebarFooter>
-          <div className="flex gap-2">
-            <button aria-label="Theme toggle" className="border p-1 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun /> : <Moon />} </button>
-            <button aria-label="Theme toggle" className="border p-1 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setShowSettings(true)}><Settings /></button>
-            {/* TODO: Yet to write the dialog open close logic */}
+          <SidebarMenuItem className="flex flex-col justify-center gap-2">
+            <SidebarMenuButton aria-label="Theme toggle" className="w-full text-center border p-2 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun /> : <Moon />} Theme</SidebarMenuButton>
+            <SidebarMenuButton aria-label="Theme toggle" className="border p-2 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setShowSettings(true)}><Settings /> Settings</SidebarMenuButton>
             <CustomDialog title="Settings" shouldOpen={showSettings} onDialogOpenChange={(o)=>setShowSettings(o)}>
                 <SettingsComponent />
             </CustomDialog>
-          </div>
+          </SidebarMenuItem>
         </SidebarFooter>
       </Sidebar>
     // </div>

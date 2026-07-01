@@ -50,7 +50,7 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
                 {message && (
                     <div className="p-2 pl-4 py-3 my-1 rounded self-start max-w-3xl">
                         <div className="flex mb-2">
-                            <Image src={LOGO} alt="Sudeshi Logo" width={25} height={25} />
+                            <Image className="dark:invert" src={LOGO} alt="Sudeshi Logo" width={25} height={25} />
                             <span className="ml-2 text-md text-zinc-500 dark:text-zinc-400">Sudeshi</span>
                         </div>
                         <MarkdownRenderer content={message} />
