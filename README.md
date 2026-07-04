@@ -1,276 +1,342 @@
 # Sudeshi AI Chat
 
-Production-style multilingual AI chat application focused on low-latency streaming, provider abstraction, and scalable frontend architecture.
+A production-style AI chat platform built with **Next.js**, focused on **real-time streaming**, **provider abstraction**, **high-performance rendering**, and **efficient conversation memory**.
 
-Supports both hosted and self-hosted models through a unified streaming pipeline.
+Rather than being another LLM wrapper, Sudeshi explores the engineering challenges behind building scalable AI interfaces—including streaming protocols, request lifecycle management, token-aware context optimization, and frontend performance.
 
-🔗 Live Demo: [Sudeshi AI Chat](https://sudeshi-ai-chat.vercel.app?utm_source=github.com)
+🌐 **Live Demo:** https://sudeshi-ai-chat.vercel.app
 
 ---
 [![Testing](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/testing.yml/badge.svg)](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/testing.yml)
-
+[![CodeQL](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/codeql.yml/badge.svg)](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/codeql.yml)
+[![WebVitals](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/webvitals.yml/badge.svg)](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/webvitals.yml)
 [![TruffleHog](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/trufflehog.yml/badge.svg)](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/trufflehog.yml)
 
-[![CodeQL](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/codeql.yml/badge.svg)](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/codeql.yml)
+---
 
-[![WebVitals](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/webvitals.yml/badge.svg)](https://github.com/sriram23/sudeshi-ai-chat/actions/workflows/webvitals.yml)
+# Screenshots
+
+### ⚡ Real-Time Streaming
+
+<img width="1916" height="948" alt="Streaming" src="https://github.com/user-attachments/assets/606753cb-f168-4a98-a467-6bfd6ea04106" />
 
 ---
 
-## Overview
+### 💻 Code Generation
 
-Sudeshi was built to explore the engineering challenges behind real-time AI chat systems:
-
-* Streaming responses with low latency
-* Normalizing multiple provider protocols
-* Managing long-running conversations efficiently
-* Preventing stale UI updates during concurrent requests
-* Supporting self-hosted and hosted models through a unified interface
-
-Unlike simple AI wrappers, Sudeshi focuses heavily on streaming architecture, extensibility, rendering performance, and runtime observability.
+<img width="1920" height="947" alt="image" src="https://github.com/user-attachments/assets/0af99977-1f99-41c1-b867-d7976930d91d" />
 
 ---
 
-## Key Features
+### 📊 Rich Markdown & Tables
 
-### Unified Multi-Provider Architecture
-
-* Supports both hosted (`Sarvam AI`) and self-hosted (`Ollama`) models
-* Adapter-driven architecture for future providers
-* Runtime provider selection through a shared interface
-
-### Real-Time Streaming
-
-* Handles SSE and JSONL streaming formats
-* Safe chunk buffering for fragmented responses
-* Abortable requests using `AbortController`
-
-### Scalable Chat Rendering
-
-* Virtualized message rendering using `react-virtuoso`
-* Optimized for long-running conversations
-* Prevents DOM bloat and excessive re-renders
-
-### Context Compression
-
-* Sliding context window for recent messages
-* Automatic summarization of older conversations
-* Reduces token usage while preserving continuity
-
-### Runtime Metrics
-
-Tracks:
-
-* Time-to-first-token
-* Stream duration
-* Token throughput
-* Total generation time
-
-### Security-Conscious Ollama Integration
-
-* Endpoint validation
-* Restricted ports
-* HTTPS enforcement
-* Timeout protection against hanging requests
+<img width="1920" height="947" alt="image" src="https://github.com/user-attachments/assets/49cc091d-c322-4f38-b6f1-8131d39b226f" />
 
 ---
 
-## Engineering Challenges Solved
+### 🏠 Modern Chat Experience
 
-### Streaming Normalization
-
-Different providers expose different streaming protocols:
-
-| Provider | Format |
-| -------- | ------ |
-| Sarvam   | SSE    |
-| Ollama   | JSONL  |
-
-Sudeshi normalizes both into a unified streaming pipeline so the UI remains provider-agnostic.
-
-### Fragmented Stream Handling
-
-Streaming chunks may arrive partially or split mid-JSON.
-
-The streaming engine:
-
-* Buffers incomplete chunks
-* Safely reconstructs payloads
-* Prevents malformed parsing
-
-### Concurrent Request Safety
-
-Implemented protections against:
-
-* stale stream updates
-* race conditions
-* overlapping requests
-* incomplete cancellation flows
-
-### Long Conversation Performance
-
-Large chats can degrade rendering performance significantly.
-
-Sudeshi mitigates this through:
-
-* virtualization
-* selective Zustand subscriptions
-* memoized components
-* streaming-based incremental rendering
+<img width="1920" height="947" alt="image" src="https://github.com/user-attachments/assets/2dd03627-4403-419b-874b-9731ce03d814" />
 
 ---
 
-## Architecture
+# Engineering Highlights
+
+- ⚡ Real-time streaming responses
+- 🔌 Provider abstraction architecture
+- 🧠 Automatic conversation summarization using configurable token thresholds
+- 📈 Runtime performance metrics
+- 🚀 Virtualized rendering for large conversations
+- 🛑 Abortable requests with stale response protection
+- 📦 Persistent conversations
+- 🔒 Secure Ollama endpoint validation
+- 🎯 React performance optimizations
+- 🧪 Comprehensive testing pipeline
+
+---
+
+# Features
+
+## Multi-Provider Support
+
+Sudeshi separates the UI from model providers through an adapter-driven architecture.
+
+Currently supports:
+
+- Sarvam AI (30B & 105B)
+- Self-hosted Ollama models
+
+Adding a new provider only requires implementing the shared `AIAdapter` interface.
+
+---
+
+## Real-Time Streaming
+
+Supports multiple streaming protocols through a unified pipeline.
+
+- Server-Sent Events (SSE)
+- JSONL streams
+- Incremental rendering
+- Safe chunk buffering
+- Fragment reconstruction
+- AbortController support
+
+The UI remains completely provider-agnostic.
+
+---
+
+## High Performance Rendering
+
+Long-running AI conversations can contain hundreds of messages.
+
+Sudeshi keeps rendering performant through:
+
+- React Virtuoso virtualization
+- React.memo
+- Granular Zustand selectors
+- Incremental UI updates
+- Minimal component re-renders
+
+---
+
+## Conversation Memory
+
+Large conversations eventually exceed an LLM's context window.
+
+Instead of relying on message count, Sudeshi monitors the conversation's cumulative token usage.
+
+When a configurable token threshold is exceeded:
+
+- older messages are summarized
+- recent messages are preserved
+- the generated summary becomes part of future context
+- token usage is significantly reduced while maintaining conversational continuity
+
+This allows long-running conversations without continuously increasing prompt size.
+
+---
+
+## Runtime Metrics
+
+Every request captures useful runtime metrics including:
+
+- Time to First Token (TTFT)
+- Stream duration
+- Total generation time
+- Prompt tokens
+- Completion tokens
+- Total tokens
+- Token throughput
+
+These metrics help evaluate model responsiveness and streaming performance.
+
+---
+
+## Request Lifecycle Management
+
+Streaming requests are notoriously difficult to manage correctly.
+
+Sudeshi includes protections for:
+
+- request cancellation
+- stale responses
+- overlapping requests
+- race conditions
+- async cleanup
+- stream completion detection
+
+---
+
+# Architecture
 
 ```text
-UI Components
-    ↓
+React UI
+    │
+    ▼
 useChat Hook
-    ↓
+    │
+    ▼
 Zustand Store
-    ↓
-AdapterManager
-    ↓
-AIAdapter Interface
-    ↓
-┌───────────────┬───────────────┐
-│ SarvamAdapter │ OllamaAdapter │
-└───────────────┴───────────────┘
-    ↓
-Streaming Parser Layer
-    ↓
-SSE / JSONL Processing
+    │
+    ▼
+Adapter Manager
+    │
+    ▼
+AIAdapter
+    │
+ ┌───────────────┬───────────────┐
+ │               │               │
+ ▼               ▼               ▼
+Sarvam      Ollama      Future Providers
+ │               │
+ └──────┬────────┘
+        ▼
+Streaming Parser
+(SSE / JSONL)
+        │
+        ▼
+Incremental UI Updates
 ```
 
 ---
 
-## Tech Stack
+# Engineering Decisions
 
-### Frontend
+## Why Provider Adapters?
 
-* Next.js 16
-* React 19
-* TypeScript
-* Tailwind CSS 4
-* shadcn/ui
+Every provider exposes different APIs and streaming protocols.
 
-### State & Rendering
-
-* Zustand
-* react-virtuoso
-
-### Streaming & AI
-
-* ReadableStream API
-* Server-Sent Events (SSE)
-* Ollama
-* Sarvam AI APIs
-
-### Testing
-
-* Vitest
-* Testing Library
+The adapter layer isolates provider-specific logic from the UI, making future integrations significantly easier.
 
 ---
 
-## Performance Optimizations
+## Why Virtualization?
 
-### Rendering
+Rendering hundreds of React components quickly becomes expensive.
 
-* Virtualized message lists
-* `React.memo` for isolated updates
-* Granular Zustand selectors
-
-### Streaming
-
-* Incremental chunk rendering
-* Non-blocking UI updates
-* Buffered parsing pipeline
-
-### State Management
-
-* Optimistic updates
-* Minimal state subscriptions
-* Persistent conversations
+Virtualization ensures only visible messages are mounted, keeping rendering smooth even during long conversations.
 
 ---
 
-## Security Considerations
+## Why Token Threshold-Based Summarization?
 
-### Ollama Endpoint Validation
+Message count is a poor approximation of actual LLM context usage.
 
-To reduce SSRF risks:
+Instead, Sudeshi monitors cumulative token usage reported by the provider.
 
-* HTTPS enforced for remote endpoints
-* Restricted allowed ports
-
-### Request Lifecycle Safety
-
-* Abortable streams
-* Controlled cleanup
-* Safe async state transitions
+When the configured threshold is exceeded, older messages are summarized while preserving recent context, allowing conversations to continue within a manageable context window.
 
 ---
 
-## Local Development
+## Why Runtime Metrics?
+
+Streaming latency differs across providers and models.
+
+Capturing runtime metrics makes it easier to compare responsiveness and identify performance bottlenecks.
+
+---
+
+# Security
+
+For self-hosted providers, Sudeshi includes multiple safeguards.
+
+- HTTPS enforcement for remote endpoints
+- Restricted port validation
+- Request timeouts
+- Endpoint validation
+- Safe request cancellation
+
+These checks help reduce common networking and SSRF risks.
+
+---
+
+# Tech Stack
+
+## Frontend
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- shadcn/ui
+
+## State Management
+
+- Zustand
+
+## Rendering
+
+- React Virtuoso
+
+## AI
+
+- Sarvam AI
+- Ollama
+- ReadableStream API
+- Server-Sent Events
+
+## Validation
+
+- Zod
+
+## Testing
+
+- Vitest
+- Testing Library
+
+---
+
+# Local Development
 
 ```bash
-git clone <repo>
+git clone https://github.com/sriram23/sudeshi-ai-chat.git
+
 cd sudeshi-ai-chat
 
 npm install
+
 npm run dev
 ```
 
-Create `.env.local`
+Create:
 
 ```env
-SARVAM_API_KEY=your_key
+SARVAM_API_KEY=your_api_key
 ```
 
 ---
 
-## Extending Providers
+# Adding a New Provider
 
-To add a new provider:
+Adding a provider requires only three steps.
 
 1. Implement `AIAdapter`
-2. Add parser logic if required
-3. Register adapter in `AdapterManager`
+2. Add streaming parser if necessary
+3. Register the adapter
 
-The UI layer remains unchanged.
-
----
-
-## Tradeoffs & Current Limitations
-
-* Provider detection is currently model-name driven
-* Conversation summaries may lose fine-grained context
-* No server-side conversation persistence
-* Limited validation for custom provider schemas
+The UI requires no changes.
 
 ---
 
-## Future Improvements
+# Current Limitations
 
-* Web search integration
-* Multi-modal support
-* Conversation export
-* Shared conversations
-* IndexedDB persistence layer
-* Advanced observability dashboard
-* Streaming retry/recovery mechanisms
+- Provider detection is currently model-based
+- Conversation summaries may omit fine-grained details
+- Conversations are stored locally
+- No multimodal support
+- No server-side conversation persistence
 
 ---
 
-## Why This Project Matters
+# Lessons Learned
 
-Sudeshi is primarily an exploration of:
+Building Sudeshi reinforced several engineering lessons.
 
-* streaming systems
-* frontend scalability
-* provider abstraction
-* runtime performance
-* resilient async UI architecture
+- Streaming protocols differ significantly across providers.
+- Rendering performance often becomes a bottleneck before networking.
+- Request cancellation is considerably harder than issuing requests.
+- Provider abstraction greatly simplifies future integrations.
+- Token threshold-based summarization scales better than message-count heuristics.
+- Profiling real applications is more valuable than premature optimization.
 
-The goal was not just to build another AI chat UI, but to design a maintainable and extensible streaming platform.
+---
+
+# Roadmap
+
+- Web Search
+- Image Generation
+- Multi-modal Support
+- MCP Integration
+- Shared Conversations
+- Conversation Export
+- IndexedDB Persistence
+- Additional LLM Providers
+- Advanced Observability Dashboard
+
+---
+
+# Why This Project
+
+Sudeshi AI Chat was built to explore the engineering challenges behind production-grade AI interfaces, from streaming protocols and provider abstraction to rendering performance, request lifecycle management, and token-aware conversation memory.
+
+The goal wasn't simply to build another AI chat application, but to design a maintainable, extensible, and performant frontend architecture capable of supporting modern AI workloads.
