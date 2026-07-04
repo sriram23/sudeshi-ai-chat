@@ -2,75 +2,17 @@
 
 import { memo } from "react";
 import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { coldarkCold, coldarkDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
 import remarkGfm from "remark-gfm";
-import { Copy } from "lucide-react"
-import { useTheme } from "next-themes";
+import CodeBlock from "./CodeBlock";
+
 
 export const MarkdownRenderer = memo(({ content }: { content: string }) => {
-  const { resolvedTheme } = useTheme()
-  const codeTheme = resolvedTheme === "dark" ? coldarkDark : coldarkCold
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        code(props) {
-          const { children, className, node} = props
-          const match = /language-(\w+)/.exec(className || "");
-          const isInline = node?.position?.start.line === node?.position?.end.line
-          if(isInline && !match) {
-            return (
-              <code
-                className="
-                  rounded-md
-                  border
-                  border-zinc-300
-                  bg-zinc-100
-                  px-1.5
-                  py-0.5
-                  font-mono
-                  text-[0.9em]
-                  dark:border-zinc-700
-                  dark:bg-zinc-800
-                "
-              >
-                {children}
-              </code>
-            )
-          }
-
-          return (
-            <div className="my-6 overflow-hidden rounded-xl border border-zinc-700">
-              <div className="flex items-center justify-between border-b border-zinc-700 dark:bg-zinc-900 px-4 py-2">
-                  <span className="text-xs dark:text-zinc-400 uppercase">
-                      {match?.[1] ?? "TEXT"}
-                  </span>
-
-                  <Copy className="text-zinc-400" size={16}/>
-              </div>
-              <SyntaxHighlighter
-                codeTagProps={{className: "font-mono"}}
-                style={codeTheme}
-                language={match && match[1] || "text"}
-                PreTag="div"
-                wrapLongLines
-                customStyle={{
-                  overflowX: "auto",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
-                  maxWidth: "100%",
-                  margin: 0,
-                  padding: "1rem",
-                  borderRadius: 0,
-                  background: "transparent",
-                }}
-              >
-                {String(children).replace(/\n$/, "")}
-              </SyntaxHighlighter>
-            </div>
-          );
-        },
+        code: (props) => <CodeBlock {...props} />,
         h1: ({ children }) => (
           <h1 className="text-2xl font-bold mt-8 mb-4">
             {children}
