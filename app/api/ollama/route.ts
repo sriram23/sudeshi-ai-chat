@@ -1,15 +1,10 @@
+import { buildEndpointUrl } from "@/lib/validateEnpoint";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
     const { messages, model, endpoint } = await req.json()
     if(endpoint) {
-        const url = new URL("/api/chat", endpoint)
-        if(url.protocol !== "https:" && url.hostname !== "localhost"){
-            throw new Error("Only HTTPS endpoints are allowed")
-        }
-        if(!["443", "80", "11434", "3000", "8080"].includes(url.port) ){
-            throw new Error("Current port usage is restricted")
-        }
+        const url = buildEndpointUrl(endpoint, "/api/chat")
         const response = await fetch(url, {
             method: "POST",
             headers: {

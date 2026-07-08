@@ -18,7 +18,7 @@ const UserChatBubble = memo(({ message, showEdit=false, onEditSave }: { message:
                     <button aria-label="Edit Message" className="m-1" onClick={() => setEdit(true)}><Pencil size={16} /></button>
                 )}
                 {!edit && (
-                    <div className="bg-zinc-300 dark:bg-zinc-800 text-gray-900 dark:text-gray-100 p-4 m-1 rounded-lg max-w-3xl w-contain">
+                    <div className="bg-zinc-300 dark:bg-zinc-800 text-gray-900 dark:text-gray-100 px-4 m-1 rounded-lg max-w-3xl w-contain">
                         <MarkdownRenderer content={message} />
                     </div>
                 )}
