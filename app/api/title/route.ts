@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
                     content: `Generate a concise and descriptive title for the following conversation:\n\n${message}`,
                 }
             ],
-            model: "sarvam-30b",
+            model: "sarvam-105b",
         })
     });
     if (!response.ok) {
