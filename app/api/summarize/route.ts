@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
                     content: text,
                 }
             ],
-            model: "sarvam-30b",
+            model: "sarvam-105b",
             temperature: 0,
             max_tokens: 128,
             top_p: 1,
