@@ -11,8 +11,9 @@ import { Spinner } from "@/components/ui/spinner";
 import ChatHeader from "./ChatHeader";
 import OfflineComponent from "./OfflineComponent";
 import { ArrowDown } from "lucide-react";
+import { Campaign } from "@/app/features/chat/types/campaign.types";
 
-const ChatContainer = () => {
+const ChatContainer = ({activeCampaign}: {activeCampaign: Campaign}) => {
     const [ready, setReady] = useState(false)
     const [isAtBottom, setIsAtBottom] = useState(true);
     const { sendMessage, stopStreaming } = useChat();
@@ -43,7 +44,7 @@ const ChatContainer = () => {
             {/* Empty states */}
             {!activeConversationId || !messages.length ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-gray-500 w-full">
-                    <GuideComponent onMessageSend={(msg: string) => sendMessage(msg)} />
+                    <GuideComponent onMessageSend={(msg: string) => sendMessage(msg)} campaign={activeCampaign}/>
                 </div>
             ) : null}
 
