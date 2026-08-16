@@ -74,9 +74,9 @@ export const useChatStore = create<ChatStore>()(
       status: "idle",
       isSummarizingContext: false,
 
-      availableModels: ["sarvam-105b"],
+      availableModels: ["sarvam-105b-conversations","sarvam-105b"],
       settings: {
-        model: "sarvam-105b",
+        model: "sarvam-105b-conversations",
         baseUrl: "",
       },
 

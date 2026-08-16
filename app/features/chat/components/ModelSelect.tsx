@@ -34,12 +34,12 @@ const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, ba
     return(
         <DropdownMenu>
             <DropdownMenuTrigger render={<button className="border rounded-xl p-2" />}>
-                <span className="flex justify-between items-center">{settings?.model === "sarvam-30b" ? "Sarvam 30B": settings?.model === "sarvam-105b" ? "Sarvam 105B": settings?.model} <ChevronDown/></span>
+                <span className="flex justify-between items-center">{settings?.model === "sarvam-105b-conversations" ? "Sarvam 105B (Conversation)": settings?.model === "sarvam-105b" ? "Sarvam 105B (Reasoning)": settings?.model} <ChevronDown/></span>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white dark:bg-zinc-950">
                 <DropdownMenuGroup>
                     {availableModels?.map((model) => (
-                        <DropdownMenuItem key={model} className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: model})}>{model === "sarvam-30b" ? "Sarvam 30B": model === "sarvam-105b" ? "Sarvam 105B": model}</DropdownMenuItem>
+                        <DropdownMenuItem key={model} className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: model})}>{model === "sarvam-105b-conversations" ? "Sarvam 105B (Conversation)": model === "sarvam-105b" ? "Sarvam 105B (Reasoning)": model}</DropdownMenuItem>
                     ))}
                 </DropdownMenuGroup>
             </DropdownMenuContent>
