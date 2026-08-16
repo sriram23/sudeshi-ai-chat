@@ -92,6 +92,40 @@ describe("SSE Stream", () => {
         expect(usage!.total_tokens).toBe(1693)
     })
 
+    it("should disable cost estimates for non-105B models", async () => {
+        const stream = createSSEStream([
+            'data: {"choices":[{"delta":{"content":"Hi"}}]}',
+            'data: {"choices": [], "usage":{"completion_tokens":660,"prompt_tokens":1033,"total_tokens":1693}}',
+            'data: [DONE]'
+        ])
+
+        let usage: { prompt_tokens: number, completion_tokens: number, total_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number } | undefined
+
+        await processStream(stream, sseParser, () => {}, u => { usage = u }, "ollama-llama3")
+
+        expect(usage).toBeDefined()
+        expect(usage!.prompt_cost).toBe(-1)
+        expect(usage!.completion_cost).toBe(-1)
+        expect(usage!.total_cost).toBe(-1)
+    })
+
+    it("should calculate cost estimates for Sarvam 105B models", async () => {
+        const stream = createSSEStream([
+            'data: {"choices":[{"delta":{"content":"Hi"}}]}',
+            'data: {"choices": [], "usage":{"completion_tokens":660,"prompt_tokens":1033,"total_tokens":1693}}',
+            'data: [DONE]'
+        ])
+
+        let usage: { prompt_tokens: number, completion_tokens: number, total_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number } | undefined
+
+        await processStream(stream, sseParser, () => {}, u => { usage = u }, "sarvam-105b")
+
+        expect(usage).toBeDefined()
+        expect(usage!.prompt_cost).toBeGreaterThan(0)
+        expect(usage!.completion_cost).toBeGreaterThan(0)
+        expect(usage!.total_cost).toBeGreaterThan(0)
+    })
+
     it("should handle chunked data across boundaries", async () => {
         const encoder = new TextEncoder();
 

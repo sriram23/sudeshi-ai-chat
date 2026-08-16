@@ -1,2 +1,5 @@
 export const SUMMARIZE_TOKEN_THRESHOLD = 4500;
 export const PRESERVED_MESSAGE_COUNT = 6;
+export const PROMPT_COST_105B = 29.28;
+export const COMPLETION_COST_105B = 73.20;
+export const MILLION = 1000000;

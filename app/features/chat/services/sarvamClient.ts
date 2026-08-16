@@ -34,7 +34,7 @@ export async function streamChat(
     config: { provider: "ollama" | "sarvam";model: string;endpoint?: string },
     message: {role: string; content: string}[],
     onChunk: (chunk:string) => void,
-    onComplete: (usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics) => void,
+    onComplete: (usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number }, metrics?:Metrics) => void,
     signal: AbortSignal
 ) {
     const adapter = getAdapter(config)

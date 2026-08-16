@@ -10,7 +10,7 @@ import { SUMMARIZE_TOKEN_THRESHOLD } from "../utils/constants";
 import Image from "next/image";
 import LOGO from "@/app/assets/images/Sudeshi_Chat.png"
 
-const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, msgStatus }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?:Metrics, status: string, msgStatus?: MessageStatus }) => {
+const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, msgStatus }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number }, metrics?:Metrics, status: string, msgStatus?: MessageStatus }) => {
     const contextThresholdExceeded = useChatStore((state) => {
         const activeId = state.activeConversationId;
         const lastMessage = state.conversations.find((conv) => conv.id === activeId)?.messages.at(-1);
@@ -77,7 +77,7 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
             )}
             {usage && showMetric && (
                 <div className="flex flex-col m-4 max-w-xl">
-                    <MetricsCard totalToken={usage.total_tokens} promptToken={usage.prompt_tokens} completionToken={usage.completion_tokens} totalTime={metrics?.totalTime} tokenSpeed={metrics?.tokensPerSecond} firstChunk={metrics?.timeToFirstChunk} streaming={metrics?.streamingTime}  />
+                    <MetricsCard totalToken={usage.total_tokens} promptToken={usage.prompt_tokens} completionToken={usage.completion_tokens} totalTime={metrics?.totalTime} totalCost={usage?.total_cost ?? 0} promptTokenCost={usage?.prompt_cost ?? 0} completionTokenCost={usage?.completion_cost ?? 0} tokenSpeed={metrics?.tokensPerSecond} firstChunk={metrics?.timeToFirstChunk} streaming={metrics?.streamingTime}  />
                 </div>
             )}
             <Alert className={`fixed max-w-md top-4 right-4 z-50 ${alertMessage.type === "destructive" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"} ${showAlert ? "block" : "hidden"}`}>

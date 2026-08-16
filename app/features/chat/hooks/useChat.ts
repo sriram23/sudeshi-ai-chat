@@ -136,7 +136,6 @@ export const useChat = () => {
     setAbortController(controller);
 
     setStatus("streaming");
-    console.log("Payload: ", payload)
     try {
       await streamChat(
         {

@@ -1,7 +1,7 @@
 import MetricsBar from "./MetricsBar"
 import { createMetricVisual } from "../utils/metricsFactory"
 
-const MetricsCard = ({totalToken, promptToken, completionToken, totalTime=0, tokenSpeed=0, firstChunk=0, streaming=0}:{totalToken: number, promptToken: number, completionToken: number, totalTime: number | undefined, tokenSpeed: number | undefined, firstChunk: number | undefined, streaming: number | undefined}) => {
+const MetricsCard = ({totalToken, promptToken, completionToken, totalCost, promptTokenCost, completionTokenCost, totalTime=0, tokenSpeed=0, firstChunk=0, streaming=0}:{totalToken: number, promptToken: number, completionToken: number, totalCost: number, promptTokenCost: number, completionTokenCost: number, totalTime: number | undefined, tokenSpeed: number | undefined, firstChunk: number | undefined, streaming: number | undefined}) => {
     const firstChunkPercent = (firstChunk/totalTime) * 100
     const streamingPercent = (streaming/totalTime) * 100
     const getInsight = (firstChunkPercent:number, streamingPercent:number) => {
@@ -16,6 +16,7 @@ const MetricsCard = ({totalToken, promptToken, completionToken, totalTime=0, tok
         if(streaming > 10000 || streamingPercent > 75) return <div className="bg-blue-200 px-2 rounded-2xl text-xs text-blue-500">Generation Dominated</div>
         if(tokenSpeed > 120) return <div className="bg-emerald-200 px-2 rounded-2xl text-xs text-emerald-500">High Throughput</div>
     }
+    const shouldShowCostSection = totalCost !== -1 && promptTokenCost !== -1 && completionTokenCost !== -1
     return (
         <div className="rounded-lg shadow-md border border-zinc-200 p-2 text-zinc-600">
             <div className="flex items-center justify-between"><div className="font-bold">Usage & Metrics</div>{getBadge(firstChunk, streaming, firstChunkPercent, streamingPercent)}</div>
@@ -28,6 +29,14 @@ const MetricsCard = ({totalToken, promptToken, completionToken, totalTime=0, tok
                     <div className="text-sm "><span className="text-black dark:text-zinc-100">{completionToken}</span> completion</div>
                 </div>
             </div>
+            {shouldShowCostSection && (
+                <div className="flex flex-col my-2">
+                    <span className="font-bold">Estimated Cost</span>
+                    <div className="text-sm">Total Cost: <span className="text-black dark:text-zinc-100">{totalCost > 0.01 ? '₹' + totalCost.toFixed(2) : '< ₹0.01'}</span></div>
+                    <div className="text-sm">Prompt token Cost: <span className="text-black dark:text-zinc-100">{promptTokenCost > 0.01 ? '₹' + promptTokenCost.toFixed(2) : '< ₹0.01'}</span></div>
+                    <div className="text-sm">Completion token Cost: <span className="text-black dark:text-zinc-100">{completionTokenCost > 0.01 ? '₹' + completionTokenCost.toFixed(2) : '< ₹0.01'}</span></div>
+                </div>
+            )}
             <div className="flex flex-col my-2">
                 <span className="font-bold">Performance</span>
                 <div className="text-sm">Total Time: <span className="text-black dark:text-zinc-100">{totalTime.toFixed(0)} ms</span></div>
