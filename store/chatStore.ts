@@ -19,7 +19,7 @@ type ChatStore = {
   activeConversationId: string | null;
 
   currentResponse: string;
-  currentUsage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+  currentUsage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number };
   currentMetrics?: Metrics
   status: ChatStatus;
   isSummarizingContext: boolean;
@@ -55,7 +55,7 @@ type ChatStore = {
   setStatus: (status: ChatStatus) => void;
 
   setAbortController: (controller?: AbortController) => void;
-  setCurrentUsage: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number }, metrics?: Metrics) => void;
+  setCurrentUsage: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number; prompt_cost?: number; completion_cost?: number; total_cost?: number }, metrics?: Metrics) => void;
   setModels: (models: ChatModel[]) => void;
   setError: (error: string) => void
 
@@ -74,9 +74,9 @@ export const useChatStore = create<ChatStore>()(
       status: "idle",
       isSummarizingContext: false,
 
-      availableModels: ["sarvam-105b"],
+      availableModels: ["sarvam-105b-conversations","sarvam-105b"],
       settings: {
-        model: "sarvam-105b",
+        model: "sarvam-105b-conversations",
         baseUrl: "",
       },
 

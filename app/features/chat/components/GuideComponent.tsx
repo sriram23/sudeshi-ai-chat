@@ -2,7 +2,6 @@ import { Lightbulb } from "lucide-react";
 import { Campaign } from "@/app/features/chat/types/campaign.types"
 
 const GuideComponent = ({ onMessageSend, campaign }: { onMessageSend: (message: string) => void, campaign: Campaign }) => {
-    console.log("Campaign: ", campaign)
     return (
         <div className="p-4">
             {campaign.badge && (

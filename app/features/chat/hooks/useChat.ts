@@ -136,11 +136,10 @@ export const useChat = () => {
     setAbortController(controller);
 
     setStatus("streaming");
-    console.log("Payload: ", payload)
     try {
       await streamChat(
         {
-          provider: (settings.model === "sarvam-30b" || settings.model === "sarvam-105b") ? "sarvam" : "ollama",
+          provider: (settings.model === "sarvam-105b-conversations" || settings.model === "sarvam-105b") ? "sarvam" : "ollama",
           model: settings.model,
           endpoint: settings.baseUrl
         },

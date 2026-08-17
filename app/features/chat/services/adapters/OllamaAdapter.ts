@@ -5,7 +5,7 @@ import { AIAdapter } from "./AIAdapter";
 export class OllamaAdapter implements AIAdapter{
     constructor(private endpoint: string, private model: string) {}
 
-    async streamChat(messages: { role: string; content: string; }[], onChunk: (chunk: string) => void, onComplete?: (usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number }, metrics?: Metrics) => void, signal?: AbortSignal): Promise<void> {
+    async streamChat(messages: { role: string; content: string; }[], onChunk: (chunk: string) => void, onComplete?: (usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number }, metrics?: Metrics) => void, signal?: AbortSignal): Promise<void> {
         const res = await fetch("/api/ollama", {
             method: "POST",
             body: JSON.stringify({
@@ -19,6 +19,6 @@ export class OllamaAdapter implements AIAdapter{
             throw new Error("Network error")
         }
 
-        await processStream(res.body, ollamaParser, onChunk, onComplete)
+        await processStream(res.body, ollamaParser, onChunk, onComplete, this.model)
     }
 }
