@@ -5,6 +5,8 @@ export interface AIAdapter {
         message: {role: string; content: string}[],
         onChunk: (chunk: string) => void,
         onComplete?: (usage?:{ total_tokens: number, prompt_tokens: number, completion_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number }, metrics?:Metrics) => void,
-        signal?: AbortSignal
+        signal?: AbortSignal,
+        thinking?: string,
+        onThinkingChunk?: (chunk: string) => void,
     ): Promise<void>
 }

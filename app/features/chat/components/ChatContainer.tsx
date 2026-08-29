@@ -20,6 +20,7 @@ const ChatContainer = ({activeCampaign}: {activeCampaign: Campaign}) => {
     const conversations = useChatStore(s => s.conversations)
     const activeConversationId = useChatStore(s=>s.activeConversationId)
     const currentResponse = useChatStore(s => s.currentResponse)
+    const currentThinking = useChatStore(s => s.currentThinking)
     const status = useChatStore(s => s.status)
     const isSummarizingContext = useChatStore(s => s.isSummarizingContext)
 
@@ -71,6 +72,7 @@ const ChatContainer = ({activeCampaign}: {activeCampaign: Campaign}) => {
                                 <div className="mx-auto w-full max-w-4xl px-6 py-3">
                                     <AssistantChatBubble
                                         currentResponse={currentResponse}
+                                        currentThinking={currentThinking}
                                         status={status}
                                     />
                                 </div>
@@ -92,6 +94,7 @@ const ChatContainer = ({activeCampaign}: {activeCampaign: Campaign}) => {
                                     ) : (
                                         <AssistantChatBubble
                                             message={msg.content}
+                                            thinking={msg.thinking}
                                             msgStatus={msg.status}
                                             usage={msg.usage}
                                             metrics={msg.metrics}

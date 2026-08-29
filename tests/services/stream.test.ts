@@ -289,4 +289,30 @@ describe("Ollama Stream", () => {
         })
         expect(result).toBe("")
     })
+
+    it("should separate thinking output from the final answer", async () => {
+        const stream = createOllamaStream([
+            '{"message": {"thinking": "I should think first"}}',
+            '{"message": {"content": "Final answer"}, "done": true}'
+        ])
+
+        let finalText = ""
+        let thinkingText = ""
+
+        await processStream(
+            stream,
+            ollamaParser,
+            (chunk) => {
+                finalText += chunk
+            },
+            undefined,
+            undefined,
+            (chunk) => {
+                thinkingText += chunk
+            }
+        )
+
+        expect(thinkingText).toBe("I should think first")
+        expect(finalText).toBe("Final answer")
+    })
 })

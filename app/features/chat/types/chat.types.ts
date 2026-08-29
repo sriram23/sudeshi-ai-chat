@@ -17,6 +17,7 @@ export type Message = {
   id: string;
   role: Role;
   content: string;
+  thinking?: string;
   createdAt: number;
   status: MessageStatus;
   usage?: {

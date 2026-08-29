@@ -27,6 +27,7 @@ type Usage = {
 
 type ParserResult = {
   text?: string;
+  thinking?: string;
   done?: boolean;
   usage?: Usage;
   metrics?: Metrics
@@ -39,7 +40,8 @@ export async function processStream(
     parser: StreamParser,
     onChunk: (chunk: string) => void,
     onComplete?: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number }, metrics?: Metrics) => void,
-    model?: string
+    model?: string,
+    onThinkingChunk?: (chunk: string) => void
 ) {
     const reader = stream.getReader()
     const decoder = new TextDecoder("utf-8");
@@ -63,7 +65,13 @@ export async function processStream(
             const result = parser(line.trim())
             if(!result) continue
 
+            if(result.thinking) {
+                console.log("Thinking: ", result.thinking)
+                onThinkingChunk?.(result.thinking)
+            }
+
             if(result.text) {
+                console.log("Result: ", result.text)
                 onChunk(result.text)
             }
 
@@ -89,10 +97,12 @@ export const sseParser:StreamParser = (line) => {
     try {
         const json = JSON.parse(data);
 
+        const thinking = json?.choices[0]?.delta?.reasoning_content || json?.choices[0]?.message?.reasoning_content || json?.choices[0]?.delta?.thinking || json?.choices[0]?.message?.thinking || "";
         const text = json?.choices[0]?.delta?.content || json?.choices[0]?.message?.content || "";
         const usage = json?.usage
         return {
-            text,
+            text: text || undefined,
+            thinking: thinking || undefined,
             usage
         }
 
@@ -107,6 +117,7 @@ export const ollamaParser: StreamParser = (line) => {
     try {
         const json = JSON.parse(line)
         const text = json?.message?.content
+        const thinking = json?.message?.thinking
         const done = json?.done
         const usage = json?.eval_count != null
         ? {
@@ -133,6 +144,7 @@ export const ollamaParser: StreamParser = (line) => {
             : undefined
         return {
             text,
+            thinking,
             done,
             usage,
             metrics
