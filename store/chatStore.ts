@@ -19,6 +19,7 @@ type ChatStore = {
   activeConversationId: string | null;
 
   currentResponse: string;
+  currentThinking: string;
   currentUsage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number };
   currentMetrics?: Metrics
   status: ChatStatus;
@@ -49,6 +50,7 @@ type ChatStore = {
   setIsSummarizingContext: (isSummarizing: boolean) => void;
 
   appendToResponse: (chunk: string) => void;
+  appendToThinking: (chunk: string) => void;
   finalizeResponse: (messageStatus?: MessageStatus) => void;
 
   setSettings: (newSettings: Partial<{ model: ChatModel, baseUrl?: string }>) => void;
@@ -69,6 +71,7 @@ export const useChatStore = create<ChatStore>()(
       activeConversationId: null,
 
       currentResponse: "",
+      currentThinking: "",
       currentUsage: undefined,
       currentMetrics: undefined,
       status: "idle",
@@ -168,16 +171,25 @@ export const useChatStore = create<ChatStore>()(
           currentResponse: state.currentResponse + chunk,
         })),
 
+      appendToThinking: (chunk) =>
+        set((state) => ({
+          currentThinking: state.currentThinking + chunk,
+        })),
+
       // finalize AI response
       finalizeResponse: (messageStatus: MessageStatus="completed") => {
-        const { currentResponse, currentUsage, currentMetrics, conversations, activeConversationId } = get();
+        const { currentResponse, currentThinking, currentUsage, currentMetrics, conversations, activeConversationId } = get();
 
-        if (!currentResponse || !activeConversationId) return;
+        if (!activeConversationId) return;
+
+        const hasAnyOutput = Boolean(currentResponse || currentThinking);
+        if (!hasAnyOutput) return;
 
         const newMessage: Message = {
           id: crypto.randomUUID(),
           role: "assistant",
           content: currentResponse,
+          thinking: currentThinking || undefined,
           createdAt: Date.now(),
           status: messageStatus,
           usage: currentUsage,
@@ -191,6 +203,7 @@ export const useChatStore = create<ChatStore>()(
               : conv
           ),
           currentResponse: "",
+          currentThinking: "",
           currentUsage: undefined,
           currentMetrics: undefined,
           status: "idle",
@@ -253,6 +266,7 @@ export const useChatStore = create<ChatStore>()(
           conversations: [],
           activeConversationId: null,
           currentResponse: "",
+          currentThinking: "",
           currentUsage: undefined,
           currentMetrics: undefined,
           status: "idle",

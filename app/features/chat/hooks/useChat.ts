@@ -25,6 +25,7 @@ export const useChat = () => {
   const {
     addMessage,
     appendToResponse,
+    appendToThinking,
     finalizeResponse,
     setStatus,
     status,
@@ -146,7 +147,9 @@ export const useChat = () => {
         payload,
         (chunk) => appendToResponse(chunk),
         (usage, metrics) => setCurrentUsage(usage, metrics),
-        controller.signal
+        controller.signal,
+        undefined,
+        (chunk) => appendToThinking(chunk)
       )
 
       finalizeResponse();

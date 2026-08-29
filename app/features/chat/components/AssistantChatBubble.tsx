@@ -10,7 +10,7 @@ import { SUMMARIZE_TOKEN_THRESHOLD } from "../utils/constants";
 import Image from "next/image";
 import LOGO from "@/app/assets/images/Sudeshi_Chat.png"
 
-const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, status, msgStatus }: { message?: string, currentResponse?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number }, metrics?:Metrics, status: string, msgStatus?: MessageStatus }) => {
+const AssistantChatBubble = memo(({ message, thinking, currentResponse, currentThinking, usage, metrics, status, msgStatus }: { message?: string, thinking?: string, currentResponse?: string, currentThinking?: string, usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number }, metrics?:Metrics, status: string, msgStatus?: MessageStatus }) => {
     const contextThresholdExceeded = useChatStore((state) => {
         const activeId = state.activeConversationId;
         const lastMessage = state.conversations.find((conv) => conv.id === activeId)?.messages.at(-1);
@@ -21,6 +21,7 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
     const [showAlert, setShowAlert] = useState(false);
     const [showMetric, setShowMetric] = useState(false)
     const [alertMessage, setAlertMessage] = useState({type: "success", text: ""});
+    const [showThinking, setShowThinking] = useState(false);
     const handleCopy = () => {
         if (message) {
             try{
@@ -38,9 +39,16 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
         }
     };
 
+
     return (
         <div className="flex flex-col justify-start max-w-3xl">
             <div className="flex items-center text-gray-900 dark:text-gray-100 px-2 m-1 rounded-lg">
+                {currentThinking && !currentResponse && (
+                    <div className="p-2 pl-4 py-3 my-1 rounded self-start max-w-3xl bg-zinc-100 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800">
+                        <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">Thinking</div>
+                        <span className="text-xs font-light"><MarkdownRenderer content={currentThinking} /></span>
+                    </div>
+                )}
                 {currentResponse && (
                     <div className="p-2 pl-4 py-3 my-1 rounded self-start max-w-3xl">
                         <span><MarkdownRenderer content={currentResponse} /></span>
@@ -53,6 +61,12 @@ const AssistantChatBubble = memo(({ message, currentResponse, usage, metrics, st
                             <Image className="dark:invert" src={LOGO} alt="Sudeshi Logo" width={25} height={25} />
                             <span className="ml-2 text-md text-zinc-500 dark:text-zinc-400">Sudeshi</span>
                         </div>
+                        {thinking && (
+                            <div className="mb-3 rounded-md bg-zinc-100 dark:bg-zinc-900/80 p-3 text-sm text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800">
+                                <div className="mb-1 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400 flex justify-between w-full"><div>Thinking</div><button onClick={() => setShowThinking(!showThinking)}>{showThinking? "Hide" : "Show"}</button></div>
+                                {showThinking && <span className="text-xs font-light"><MarkdownRenderer content={thinking} /></span>}
+                            </div>
+                        )}
                         <MarkdownRenderer content={message} />
                     </div>
                 )}

@@ -35,11 +35,13 @@ export async function streamChat(
     message: {role: string; content: string}[],
     onChunk: (chunk:string) => void,
     onComplete: (usage?: { total_tokens: number, prompt_tokens: number, completion_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number }, metrics?:Metrics) => void,
-    signal: AbortSignal
+    signal: AbortSignal,
+    thinking?: string,
+    onThinkingChunk?: (chunk:string) => void
 ) {
     const adapter = getAdapter(config)
 
-    await adapter.streamChat(message, onChunk, onComplete, signal)
+    await adapter.streamChat(message, onChunk, onComplete, signal, thinking, onThinkingChunk)
 }
 
 export async function summarizeText(
