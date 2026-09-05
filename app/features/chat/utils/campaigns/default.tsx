@@ -10,11 +10,10 @@ import type { Campaign } from "@/app/features/chat/types/campaign.types";
 export const defaultCampaign: Campaign = {
     id: "default",
 
-
     title: "How can I help you today?",
 
     subtitle:
-        "Powered by Sarvam AI. Multilingual AI Assistant",
+        "Ask anything. Get answers in your language.",
 
     inspirationLabel: "Need inspiration?",
 
