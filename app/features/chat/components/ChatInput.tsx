@@ -75,7 +75,6 @@ const ChatInput = memo(
                 >
                     <div className="min-w-0 flex-1 mr-2">
                         <textarea
-                            style={{ width: "100%" }}
                             onKeyDown={(e) => {
                                 if (isMobile) return;
 
