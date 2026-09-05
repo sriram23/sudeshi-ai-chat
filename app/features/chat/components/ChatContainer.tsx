@@ -10,7 +10,7 @@ import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { Spinner } from "@/components/ui/spinner";
 import ChatHeader from "./ChatHeader";
 import OfflineComponent from "./OfflineComponent";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Plus } from "lucide-react";
 import { Campaign } from "@/app/features/chat/types/campaign.types";
 
 const ChatContainer = ({activeCampaign}: {activeCampaign: Campaign}) => {
@@ -38,6 +38,40 @@ const ChatContainer = ({activeCampaign}: {activeCampaign: Campaign}) => {
     const totalCount = messages.length + (status === "streaming" ? 1 : 0);
     return (
         <div className="relative flex flex-col min-h-screen h-full w-full m-0 flex-1 bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
+            {/* Mobile New Chat FAB */}
+            {activeConversationId && messages.length > 0 && (
+                <button
+                    type="button"
+                    aria-label="New chat"
+                    className="
+                        fixed
+                        right-5
+                        bottom-24
+                        z-20
+                        flex
+                        h-12
+                        w-12
+                        items-center
+                        justify-center
+                        rounded-full
+                        bg-zinc-900
+                        text-white
+                        shadow-lg
+                        transition-transform
+                        hover:scale-105
+                        active:scale-95
+                        dark:bg-white
+                        dark:text-zinc-900
+                        md:hidden
+                    "
+                    onClick={() => {
+                        useChatStore.getState().createConversation();
+                    }}
+                >
+                    <Plus size={22} />
+                </button>
+            )}
+
             <div className="flex items-top sticky top-0 z-10 pt-4 bg-zinc-100 dark:bg-zinc-950 mb-4 border-b border-zinc-100 dark:border-zinc-900">
                 <ChatHeader />
             </div>
