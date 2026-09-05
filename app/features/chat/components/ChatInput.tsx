@@ -97,6 +97,7 @@ const ChatInput = memo(
                             type="button"
                             aria-label="Send Message"
                             onClick={handleSend}
+                            disabled={!input.trim() || status === "streaming"}
                             className="
                                 shrink-0
                                 w-9
@@ -111,6 +112,10 @@ const ChatInput = memo(
                                 duration-150
                                 hover:bg-zinc-700
                                 active:scale-95
+                                disabled:opacity-40
+                                disabled:cursor-not-allowed
+                                disabled:hover:bg-zinc-800
+                                disabled:active:scale-100
                                 focus:outline-none
                                 focus-visible:ring-2
                                 focus-visible:ring-zinc-400
@@ -118,6 +123,7 @@ const ChatInput = memo(
                                 dark:bg-zinc-100
                                 dark:text-zinc-900
                                 dark:hover:bg-white
+                                dark:disabled:hover:bg-zinc-100
                             "
                         >
                             <ArrowUp size={17} />
