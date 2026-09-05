@@ -35,7 +35,23 @@ const ChatInput = memo(
         return (
             <div className="w-full flex flex-col relative">
                 {status === "error" && (
-                    <div className="p-2 mb-2 rounded bg-red-100 text-red-800">
+                    <div
+                        role="alert"
+                        className="
+                            mb-2
+                            rounded-lg
+                            border
+                            border-red-200
+                            bg-red-50
+                            px-3
+                            py-2
+                            text-sm
+                            text-red-700
+                            dark:border-red-900/50
+                            dark:bg-red-950/30
+                            dark:text-red-300
+                        "
+                    >
                         An error occurred while streaming. Please try again.
                     </div>
                 )}
