@@ -127,11 +127,33 @@ const ChatInput = memo(
 
                     {status === "streaming" && (
                         <button
+                            type="button"
                             aria-label="Cancel Response"
                             onClick={stopStreaming}
-                            className="my-1 p-2 rounded bg-red-500 text-white"
+                            className="
+                                shrink-0
+                                w-9
+                                h-9
+                                flex
+                                items-center
+                                justify-center
+                                rounded-full
+                                bg-zinc-800
+                                text-white
+                                transition-all
+                                duration-150
+                                hover:bg-zinc-700
+                                active:scale-95
+                                focus:outline-none
+                                focus-visible:ring-2
+                                focus-visible:ring-zinc-400
+                                focus-visible:ring-offset-2
+                                dark:bg-zinc-100
+                                dark:text-zinc-900
+                                dark:hover:bg-white
+                            "
                         >
-                            <Square size={16} />
+                            <Square size={15} />
                         </button>
                     )}
                 </div>
