@@ -1,4 +1,13 @@
-import { BadgeCheck, ChartNoAxesColumnIncreasing, ClockAlert, Copy, Info, OctagonAlert, ThumbsDown, ThumbsUp, TrendingUp, TriangleAlert } from "lucide-react";
+import {
+    BadgeCheck,
+    ChartNoAxesColumnIncreasing,
+    ClockAlert,
+    Copy,
+    Info,
+    OctagonAlert,
+    TrendingUp,
+    TriangleAlert,
+} from "lucide-react";
 import { MarkdownRenderer } from "./MarkdownRender";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { useState, memo } from "react";
@@ -74,18 +83,56 @@ const AssistantChatBubble = memo(({ message, thinking, currentResponse, currentT
             {status === "idle" && (
                 <div className="flex gap-2 mx-1 px-4 mb-2">
                     <button title="Copy Response" aria-label="Copy Response" className="hover:bg-zinc-200 p-1 rounded-lg" onClick={handleCopy}><Copy size={16}/></button>
-                    <button title="Like" aria-label="Like" className="hover:bg-zinc-200 p-1 rounded-lg"><ThumbsUp size={16} /></button>
-                    <button title="Dislike" aria-label="Dislike" className="hover:bg-zinc-200 p-1 rounded-lg"><ThumbsDown size={16} /></button>
                     {usage && <button title="Metrics" aria-label="Metrics" className={`${showMetric ? "bg-zinc-200 " : ""}hover:bg-zinc-200 p-1 rounded-lg`} onClick={() => setShowMetric(!showMetric)}><ChartNoAxesColumnIncreasing size={16} /></button>}
-                    <div title={msgStatus && (contextThresholdExceeded ? "High token usage" : "completed") }>
-                        {msgStatus === "pending"
-                            ? <ClockAlert className="text-yellow-400" />
-                            : msgStatus === "cancelled" ? 
-                                <TriangleAlert className="text-yellow-500" /> : msgStatus === "error"
-                                ? <OctagonAlert className="text-red-500" />
-                                : contextThresholdExceeded
-                                    ? <TrendingUp className="text-orange-500" />
-                                    : <BadgeCheck className="text-green-500"/>}
+                    <div
+                        title={
+                            msgStatus
+                                ? contextThresholdExceeded
+                                    ? "High token usage"
+                                    : msgStatus
+                                : undefined
+                        }
+                        className="
+                            inline-flex
+                            items-center
+                            gap-1.5
+                            rounded-md
+                            px-2
+                            py-1
+                            text-xs
+                            font-medium
+                            bg-zinc-100
+                            text-zinc-500
+                            dark:bg-zinc-800
+                            dark:text-zinc-400
+                        "
+                    >
+                        {msgStatus === "pending" ? (
+                            <>
+                                <ClockAlert size={14} className="text-yellow-500" />
+                                <span>Pending</span>
+                            </>
+                        ) : msgStatus === "cancelled" ? (
+                            <>
+                                <TriangleAlert size={14} className="text-yellow-500" />
+                                <span>Cancelled</span>
+                            </>
+                        ) : msgStatus === "error" ? (
+                            <>
+                                <OctagonAlert size={14} className="text-red-500" />
+                                <span>Error</span>
+                            </>
+                        ) : contextThresholdExceeded ? (
+                            <>
+                                <TrendingUp size={14} className="text-orange-500" />
+                                <span>High token usage</span>
+                            </>
+                        ) : (
+                            <>
+                                <BadgeCheck size={14} className="text-green-500" />
+                                <span>Completed</span>
+                            </>
+                        )}
                     </div>
                 </div>
             )}
