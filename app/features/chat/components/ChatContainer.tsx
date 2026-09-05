@@ -157,7 +157,7 @@ const ChatContainer = ({activeCampaign}: {activeCampaign: Campaign}) => {
             )}
 
             {/* Input */}
-            <div className="sticky bottom-0">
+            <div className="sticky bottom-0 z-10">
                 <div className="mx-auto max-w-4xl p-4">
                     {isSummarizingContext && <div className="text-gray-500 flex gap-2 items-center mb-2"><Spinner />Summarizing context...</div>}
                     {status === "streaming" && (currentResponse.length === 0 ? <div className="text-gray-500 flex gap-2 items-center"><Spinner />Thinking...</div> : <div className="text-gray-500 flex gap-2 items-center"><Spinner />Answering...</div>)}

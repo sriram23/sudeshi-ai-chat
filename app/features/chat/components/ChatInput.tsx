@@ -30,6 +30,14 @@ const ChatInput = memo(
 
             sendMessage(input);
             setInput("");
+
+            const textarea = document.querySelector<HTMLTextAreaElement>(
+                "textarea[data-chat-input]"
+            );
+
+            if (textarea) {
+                textarea.style.height = "auto";
+            }
         };
 
         return (
@@ -75,6 +83,7 @@ const ChatInput = memo(
                 >
                     <div className="min-w-0 flex-1 mr-2">
                         <textarea
+                            data-chat-input
                             onKeyDown={(e) => {
                                 if (isMobile) return;
 
@@ -112,7 +121,7 @@ const ChatInput = memo(
                             type="button"
                             aria-label="Send Message"
                             onClick={handleSend}
-                            disabled={!input.trim() || status === "streaming"}
+                            disabled={!input.trim()}
                             className="
                                 shrink-0
                                 w-9
@@ -127,7 +136,7 @@ const ChatInput = memo(
                                 duration-150
                                 hover:bg-zinc-700
                                 active:scale-95
-                                disabled:opacity-40
+                                disabled:opacity-30
                                 disabled:cursor-not-allowed
                                 disabled:hover:bg-zinc-800
                                 disabled:active:scale-100
