@@ -66,13 +66,31 @@ const AssistantChatBubble = memo(({ message, thinking, currentResponse, currentT
                 )}
                 {message && (
                     <div className="p-2 pl-4 py-3 my-1 rounded self-start max-w-3xl">
-                        <div className="flex mb-2">
-                            <Image className="dark:invert" src={LOGO} alt="Sudeshi Logo" width={25} height={25} />
-                            <span className="ml-2 text-md text-zinc-500 dark:text-zinc-400">Sudeshi</span>
+                        <div className="flex items-center gap-2 mb-2">
+                            <Image
+                                className="dark:invert"
+                                src={LOGO}
+                                alt="Sudeshi Logo"
+                                width={20}
+                                height={20}
+                            />
+                            <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                                Sudeshi
+                            </span>
                         </div>
                         {thinking && (
                             <div className="mb-3 rounded-md bg-zinc-100 dark:bg-zinc-900/80 p-3 text-sm text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800">
-                                <div className="mb-1 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400 flex justify-between w-full"><div>Thinking</div><button onClick={() => setShowThinking(!showThinking)}>{showThinking? "Hide" : "Show"}</button></div>
+                                <div className="mb-1 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+                                    <div>Thinking</div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowThinking(!showThinking)}
+                                        className="text-[10px] normal-case tracking-normal hover:text-zinc-800 dark:hover:text-zinc-200"
+                                    >
+                                        {showThinking ? "Hide" : "Show"}
+                                    </button>
+                                </div>
                                 {showThinking && <span className="text-xs font-light"><MarkdownRenderer content={thinking} /></span>}
                             </div>
                         )}
@@ -81,9 +99,17 @@ const AssistantChatBubble = memo(({ message, thinking, currentResponse, currentT
                 )}
             </div>
             {status === "idle" && (
-                <div className="flex gap-2 mx-1 px-4 mb-2">
-                    <button title="Copy Response" aria-label="Copy Response" className="hover:bg-zinc-200 p-1 rounded-lg" onClick={handleCopy}><Copy size={16}/></button>
-                    {usage && <button title="Metrics" aria-label="Metrics" className={`${showMetric ? "bg-zinc-200 " : ""}hover:bg-zinc-200 p-1 rounded-lg`} onClick={() => setShowMetric(!showMetric)}><ChartNoAxesColumnIncreasing size={16} /></button>}
+                <div className="flex items-center gap-1.5 mx-1 px-4 mb-2">
+                    <button title="Copy Response" aria-label="Copy Response" className="p-1.5 rounded-md
+    text-zinc-400
+    hover:bg-zinc-100 hover:text-zinc-700
+    dark:hover:bg-zinc-800 dark:hover:text-zinc-200
+    transition-colors" onClick={handleCopy}><Copy size={16}/></button>
+                    {usage && <button title="Metrics" aria-label="Metrics" className={`${showMetric ? "bg-zinc-200 " : ""}p-1.5 rounded-md
+    text-zinc-400
+    hover:bg-zinc-100 hover:text-zinc-700
+    dark:hover:bg-zinc-800 dark:hover:text-zinc-200
+    transition-colors`} onClick={() => setShowMetric(!showMetric)}><ChartNoAxesColumnIncreasing size={16} /></button>}
                     <div
                         title={
                             msgStatus
