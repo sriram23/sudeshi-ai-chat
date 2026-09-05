@@ -1,0 +1,188 @@
+.visual {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+}
+
+.svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Portrait */
+
+.portrait {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    z-index: 10;
+    transform: translateX(-50%);
+}
+
+.image {
+    width: auto;
+    height: 220px;
+    object-fit: contain;
+    filter:
+        drop-shadow(0 10px 14px rgb(0 0 0 / 0.12))
+        drop-shadow(0 2px 3px rgb(0 0 0 / 0.08));
+}
+
+/* Sun */
+
+.sun {
+    transform-origin: 360px 135px;
+    animation: sunPulse 6s ease-in-out infinite;
+}
+
+/* Waves */
+
+.wave {
+    stroke-dasharray: 720;
+    stroke-dashoffset: 720;
+    animation: waveReveal 5s ease-out infinite;
+}
+
+.green {
+    animation-delay: 0.4s;
+}
+
+/* Orbital paths */
+
+.orbit {
+    transform-origin: center;
+    animation: orbitMove 12s ease-in-out infinite;
+}
+
+.orbit2 {
+    transform-origin: center;
+    animation: orbitMoveReverse 16s ease-in-out infinite;
+}
+
+/* Water */
+
+.water {
+    animation: waterMove 6s ease-in-out infinite;
+}
+
+/* Particles */
+
+.particle {
+    animation: particleFloat 4s ease-in-out infinite;
+}
+
+.particle2 {
+    animation-delay: 0.6s;
+}
+
+.particle3 {
+    animation-delay: 1.2s;
+}
+
+.particle4 {
+    animation-delay: 1.8s;
+}
+
+.particle5 {
+    animation-delay: 2.4s;
+}
+
+.particle6 {
+    animation-delay: 3s;
+}
+
+/* Animations */
+
+@keyframes sunPulse {
+    0%,
+    100% {
+        transform: scale(0.96);
+        opacity: 0.75;
+    }
+
+    50% {
+        transform: scale(1.04);
+        opacity: 1;
+    }
+}
+
+@keyframes waveReveal {
+    0% {
+        stroke-dashoffset: 720;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.55;
+    }
+
+    65%,
+    100% {
+        stroke-dashoffset: 0;
+        opacity: 0.55;
+    }
+}
+
+@keyframes orbitMove {
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.15;
+    }
+
+    50% {
+        transform: translateY(-6px);
+        opacity: 0.28;
+    }
+}
+
+@keyframes orbitMoveReverse {
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.1;
+    }
+
+    50% {
+        transform: translateY(6px);
+        opacity: 0.2;
+    }
+}
+
+@keyframes waterMove {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(8px);
+    }
+}
+
+@keyframes particleFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.25;
+    }
+
+    50% {
+        transform: translateY(-8px);
+        opacity: 0.7;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sun,
+    .wave,
+    .orbit,
+    .orbit2,
+    .water,
+    .particle {
+        animation: none;
+    }
+}
