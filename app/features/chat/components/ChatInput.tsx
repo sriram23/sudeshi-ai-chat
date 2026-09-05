@@ -52,12 +52,12 @@ const ChatInput = memo(
                         dark:border-zinc-700
                         focus-within:border-zinc-900
                         dark:focus-within:border-zinc-100
-                        p-4
+                        px-3 py-2.5 sm:px-4 sm:py-3
                         rounded-xl
                         transition-colors
                     "
                 >
-                    <div className="flex-4">
+                    <div className="min-w-0 flex-1 mr-2">
                         <textarea
                             style={{ width: "100%" }}
                             onKeyDown={(e) => {
