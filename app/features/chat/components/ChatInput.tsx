@@ -95,14 +95,33 @@ const ChatInput = memo(
 
                     {status === "idle" && (
                         <button
+                            type="button"
                             aria-label="Send Message"
-                            onClick={() => {
-                                sendMessage(input);
-                                setInput("");
-                            }}
-                            className="my-1 p-2 rounded-full text-white bg-zinc-800"
+                            onClick={handleSend}
+                            className="
+                                shrink-0
+                                w-9
+                                h-9
+                                flex
+                                items-center
+                                justify-center
+                                rounded-full
+                                bg-zinc-800
+                                text-white
+                                transition-all
+                                duration-150
+                                hover:bg-zinc-700
+                                active:scale-95
+                                focus:outline-none
+                                focus-visible:ring-2
+                                focus-visible:ring-zinc-400
+                                focus-visible:ring-offset-2
+                                dark:bg-zinc-100
+                                dark:text-zinc-900
+                                dark:hover:bg-white
+                            "
                         >
-                            <ArrowUp size={16} />
+                            <ArrowUp size={17} />
                         </button>
                     )}
 
