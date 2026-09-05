@@ -78,10 +78,9 @@ const ChatInput = memo(
                             className="
                                 no-scrollbar
                                 w-full
-                                min-h-10
+                                min-h-9
                                 max-h-32
-                                h-full
-                                p-2
+                                p-1.5
                                 border-0
                                 outline-none
                                 resize-none
