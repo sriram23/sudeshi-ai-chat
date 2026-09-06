@@ -22,6 +22,7 @@ import LOGO from "@/app/assets/images/Sudeshi_Chat.png"
 import CustomDialog from "./Dialog";
 import SettingsComponent from "./SettingsComponent";
 import SideBarSkeleton from "./SideBarSkeleton";
+import SudeshiLogo from "./SudeshiLogo";
 
 const AppSidebar = memo((): React.ReactNode => {
   const conversationsRaw = useChatStore(s => s.conversations)
@@ -94,14 +95,7 @@ const AppSidebar = memo((): React.ReactNode => {
             <SidebarGroup title="Welcome to Sudeshi" >
             <SidebarGroupLabel className="flex items-center justify-center py-2">
               <div className="flex items-center gap-2">
-                  <Image
-                      className="dark:invert"
-                      src={LOGO}
-                      alt="Sudeshi Logo"
-                      width={28}
-                      height={28}
-                  />
-                  <p className="text-base font-bold">Sudeshi</p>
+                  <SudeshiLogo size={32} animated={false}/>
               </div>
             </SidebarGroupLabel>
           </SidebarGroup>
