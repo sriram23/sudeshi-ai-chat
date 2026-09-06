@@ -113,28 +113,71 @@ const AppSidebar = memo((): React.ReactNode => {
             <SidebarMenu className={isStreaming? "pointer-events-none opacity-70": ""}>
             {conversations.map(conv => (
               <SidebarMenuItem key={conv.id}>
-                <SidebarMenuButton title={conv.title} onClick={() => setActiveConversation(conv.id)} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-300 dark:bg-zinc-700' : 'bg-zinc-100 dark:bg-zinc-900'}`}>
-                  {/* <SidebarGroupLabel className="text-sm"> */}
-                    <MessageCircle className="mr-2" />{conv.title.length > 18 ? conv.title.slice(0, 17) + "..." : conv.title}
-                  {/* </SidebarGroupLabel> */}
-                  <div className="flex-1 justify-end flex gap-2 text-transparent hover:text-zinc-900 hover:dark:text-white">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger nativeButton={false} render={<div onClick={(e) => e.stopPropagation()} role="presentation"/>}><Ellipsis className={'text-zinc-950 dark:text-white'}/></DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-white dark:bg-zinc-900">
-                        <DropdownMenuGroup>
-                          <DropdownMenuItem className="hover:bg-yellow-300" onClick={(e) => {
-                            setNewName(conv.title);
-                            setEditDialogId(conv.id);
-                            e.stopPropagation();
-                          }}><Pencil/> Rename</DropdownMenuItem>
-                          <DropdownMenuItem className="hover:bg-red-500" onClick={(e) => {
-                            setDeleteDialogId(conv.id);
-                            e.stopPropagation();
-                          }}><Trash/> Delete Chat</DropdownMenuItem>
-                        </DropdownMenuGroup>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                <SidebarMenuButton
+                    title={conv.title}
+                    onClick={() => setActiveConversation(conv.id)}
+                    className={`group p-2 m-1 cursor-pointer rounded-lg ${
+                        conv.id === activeConversationId
+                            ? "bg-zinc-300 dark:bg-zinc-700"
+                            : "bg-zinc-100 dark:bg-zinc-900"
+                    }`}
+                >
+                    <MessageCircle className="mr-2 shrink-0" />
+
+                    <span className="min-w-0 flex-1 truncate">
+                        {conv.title}
+                    </span>
+
+                    <div className="shrink-0">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger
+                                nativeButton={false}
+                                render={
+                                    <div
+                                        onClick={(e) => e.stopPropagation()}
+                                        role="presentation"
+                                        className="
+                                            flex items-center justify-center
+                                            rounded-md p-1
+                                            opacity-0
+                                            transition-opacity
+                                            group-hover:opacity-100
+                                            group-focus-within:opacity-100
+                                        "
+                                    />
+                                }
+                            >
+                                <Ellipsis size={18} />
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuContent className="bg-white dark:bg-zinc-900">
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem
+                                        className="hover:bg-yellow-300"
+                                        onClick={(e) => {
+                                            setNewName(conv.title);
+                                            setEditDialogId(conv.id);
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <Pencil />
+                                        Rename
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem
+                                        className="hover:bg-red-500"
+                                        onClick={(e) => {
+                                            setDeleteDialogId(conv.id);
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <Trash />
+                                        Delete Chat
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
