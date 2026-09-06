@@ -22,6 +22,7 @@ import LOGO from "@/app/assets/images/Sudeshi_Chat.png"
 import CustomDialog from "./Dialog";
 import SettingsComponent from "./SettingsComponent";
 import SideBarSkeleton from "./SideBarSkeleton";
+import SudeshiLogo from "./SudeshiLogo";
 
 const AppSidebar = memo((): React.ReactNode => {
   const conversationsRaw = useChatStore(s => s.conversations)
@@ -92,49 +93,107 @@ const AppSidebar = memo((): React.ReactNode => {
         <SidebarHeader>
           <SidebarContent>
             <SidebarGroup title="Welcome to Sudeshi" >
-            <SidebarGroupLabel className="flex items-center justify-center mt-2">
-              <div className="m-2 flex items-center">
-                <Image className="m-1 dark:invert" src={LOGO} alt="Sudeshi Logo" width={30} height={30} />
-                <p className="text-lg font-extrabold">&nbsp;Sudeshi</p>
+            <SidebarGroupLabel className="flex items-center justify-center py-2">
+              <div className="flex items-center gap-2">
+                  <SudeshiLogo size={32} animated={false}/>
               </div>
             </SidebarGroupLabel>
           </SidebarGroup>
           <SidebarGroup title="New Chat" className="p-0" >
             <SidebarMenu className={isStreaming? "pointer-events-none opacity-70" : ""}>
               <SidebarMenuItem className="p-0">
-                <SidebarMenuButton onClick={() => createNewConversation()} className="bg-zinc-700 rounded text-white h-10 w-full"><Pencil className="mr-2" />New Chat</SidebarMenuButton>
+                <SidebarMenuButton
+                    onClick={() => createNewConversation()}
+                    className="
+                        h-10 w-full rounded-lg
+                        bg-zinc-800 text-white
+                        hover:bg-zinc-700
+                        dark:bg-zinc-100 dark:text-zinc-900
+                        dark:hover:bg-white
+                        group-data-[collapsible=icon]:justify-center
+                    "
+                >
+                    <Pencil className="shrink-0" />
+
+                    <span className="group-data-[collapsible=icon]:hidden">
+                        New Chat
+                    </span>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
           </SidebarContent>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarGroup title="Conversations">
+          <SidebarGroup title="Conversations" className="pt-4">
             <SidebarMenu className={isStreaming? "pointer-events-none opacity-70": ""}>
             {conversations.map(conv => (
               <SidebarMenuItem key={conv.id}>
-                <SidebarMenuButton title={conv.title} onClick={() => setActiveConversation(conv.id)} className={`p-2 m-1 cursor-pointer rounded-lg ${conv.id === activeConversationId ? 'bg-zinc-300 dark:bg-zinc-700' : 'bg-zinc-100 dark:bg-zinc-900'}`}>
-                  {/* <SidebarGroupLabel className="text-sm"> */}
-                    <MessageCircle className="mr-2" />{conv.title.length > 18 ? conv.title.slice(0, 17) + "..." : conv.title}
-                  {/* </SidebarGroupLabel> */}
-                  <div className="flex-1 justify-end flex gap-2 text-transparent hover:text-zinc-900 hover:dark:text-white">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger nativeButton={false} render={<div onClick={(e) => e.stopPropagation()} role="presentation"/>}><Ellipsis className={'text-zinc-950 dark:text-white'}/></DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-white dark:bg-zinc-900">
-                        <DropdownMenuGroup>
-                          <DropdownMenuItem className="hover:bg-yellow-300" onClick={(e) => {
-                            setNewName(conv.title);
-                            setEditDialogId(conv.id);
-                            e.stopPropagation();
-                          }}><Pencil/> Rename</DropdownMenuItem>
-                          <DropdownMenuItem className="hover:bg-red-500" onClick={(e) => {
-                            setDeleteDialogId(conv.id);
-                            e.stopPropagation();
-                          }}><Trash/> Delete Chat</DropdownMenuItem>
-                        </DropdownMenuGroup>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                <SidebarMenuButton
+                    title={conv.title}
+                    onClick={() => setActiveConversation(conv.id)}
+                    className={`group p-2 m-1 cursor-pointer rounded-lg transition-colors ${
+                        conv.id === activeConversationId
+                            ? "bg-zinc-200 dark:bg-zinc-800"
+                            : "hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                    }`}
+                >
+                    <MessageCircle className="mr-2 shrink-0 group-data-[collapsible=icon]:mr-0" />
+
+                    <span className="min-w-0 flex-1 truncate group-data-[collapsible=icon]:hidden">
+                        {conv.title}
+                    </span>
+
+                    <div className="shrink-0 group-data-[collapsible=icon]:hidden">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger
+                                nativeButton={false}
+                                render={
+                                    <div
+                                        onClick={(e) => e.stopPropagation()}
+                                        role="presentation"
+                                        className="
+                                            flex items-center justify-center
+                                            rounded-md p-1
+                                            opacity-0
+                                            transition-opacity
+                                            group-hover:opacity-100
+                                            group-focus-within:opacity-100
+                                        "
+                                    />
+                                }
+                            >
+                                <Ellipsis size={18} />
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuContent className="bg-white dark:bg-zinc-900">
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem
+                                        className="hover:bg-yellow-300"
+                                        onClick={(e) => {
+                                            setNewName(conv.title);
+                                            setEditDialogId(conv.id);
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <Pencil />
+                                        Rename
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem
+                                        className="hover:bg-red-500"
+                                        onClick={(e) => {
+                                            setDeleteDialogId(conv.id);
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <Trash />
+                                        Delete Chat
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
@@ -204,8 +263,20 @@ const AppSidebar = memo((): React.ReactNode => {
         ) : null}
         <SidebarFooter>
           <SidebarMenuItem className="flex flex-col justify-center gap-2">
-            <SidebarMenuButton aria-label="Theme toggle" className="w-full text-center border p-2 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun /> : <Moon />} Theme</SidebarMenuButton>
-            <SidebarMenuButton aria-label="Theme toggle" className="border p-2 border-zinc-900 dark:border-zinc-600 rounded" onClick={() => setShowSettings(true)}><Settings /> Settings</SidebarMenuButton>
+            <SidebarMenuButton aria-label="Theme toggle" className="
+    w-full rounded-lg px-2 py-1.5
+    text-zinc-500 dark:text-zinc-400
+    hover:bg-zinc-100 hover:text-zinc-900
+    dark:hover:bg-zinc-900 dark:hover:text-zinc-100
+    transition-colors
+" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun /> : <Moon />} Theme</SidebarMenuButton>
+            <SidebarMenuButton aria-label="Theme toggle" className="
+    w-full rounded-lg px-2 py-1.5
+    text-zinc-500 dark:text-zinc-400
+    hover:bg-zinc-100 hover:text-zinc-900
+    dark:hover:bg-zinc-900 dark:hover:text-zinc-100
+    transition-colors
+" onClick={() => setShowSettings(true)}><Settings /> Settings</SidebarMenuButton>
             <CustomDialog title="Settings" shouldOpen={showSettings} onDialogOpenChange={(o)=>setShowSettings(o)}>
                 <SettingsComponent />
             </CustomDialog>
