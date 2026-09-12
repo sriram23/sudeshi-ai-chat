@@ -15,8 +15,43 @@ const jetBrainsMono = JetBrains_Mono({
 
 
 export const metadata: Metadata = {
-  title: "Sudeshi AI Chat",
-  description: "AI-powered multilingual chat assistant built with Sarvam AI",
+  metadataBase: new URL("https://sudeshi-ai-chat.vercel.app"),
+
+  title: {
+    default: "Sudeshi AI Chat — AI Assistant for Indian Languages",
+    template: "%s | Sudeshi AI Chat",
+  },
+
+  description:
+    "Sudeshi is a multilingual AI chat assistant for Indian languages. Chat, learn, translate, write, and explore with AI in the languages you use every day.",
+
+  applicationName: "Sudeshi AI Chat",
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+
+  alternates: {
+    canonical: "https://sudeshi-ai-chat.vercel.app/",
+  },
+
+  openGraph: {
+    type: "website",
+    url: "https://sudeshi-ai-chat.vercel.app/",
+    siteName: "Sudeshi AI Chat",
+    title: "Sudeshi AI Chat — AI Assistant for Indian Languages",
+    description:
+      "A multilingual AI chat assistant built for natural conversations across Indian languages.",
+    locale: "en_IN",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Sudeshi AI Chat — AI Assistant for Indian Languages",
+    description:
+      "A multilingual AI chat assistant built for natural conversations across Indian languages.",
+  },
 };
 
 export default function RootLayout({
