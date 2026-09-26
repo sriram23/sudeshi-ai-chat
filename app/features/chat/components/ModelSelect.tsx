@@ -1,52 +1,83 @@
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { useChatStore } from "@/store/chatStore";
-import { ChevronDown } from "lucide-react"
-import { memo, useEffect } from "react";
-import { fetchAvailableModels } from "../services/sarvamClient";
-const ModelSelect = memo(({settings, setSettings}:{settings: { model: string, baseUrl?: string }; setSettings: (newSettings: { model: string, baseUrl?: string }) => void;}) => {
-    const {availableModels, setModels,} = useChatStore();
-    const setError = useChatStore(s => s.setError)
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { useChatStore } from '@/store/chatStore';
+import { ChevronDown } from 'lucide-react';
+import { memo, useEffect } from 'react';
+import { fetchAvailableModels } from '../services/sarvamClient';
+const ModelSelect = memo(
+  ({
+    settings,
+    setSettings,
+  }: {
+    settings: { model: string; baseUrl?: string };
+    setSettings: (newSettings: { model: string; baseUrl?: string }) => void;
+  }) => {
+    const { availableModels, setModels } = useChatStore();
+    const setError = useChatStore((s) => s.setError);
 
-    const baseUrl = settings.baseUrl
+    const baseUrl = settings.baseUrl;
     useEffect(() => {
-        if(!baseUrl) return
-        const fetchModels = async () => {
-            try {
-                const res = await fetchAvailableModels(baseUrl)
-                if(res?.error === null) {
-                    const models = res.models
-                    const modelArray = models.map((model: { name?: string }) => model?.name)
+      if (!baseUrl) return;
+      const fetchModels = async () => {
+        try {
+          const res = await fetchAvailableModels(baseUrl);
+          if (res?.error === null) {
+            const models = res.models;
+            const modelArray = models.map((model: { name?: string }) => model?.name);
 
-                    if(modelArray.length) {
-                        setModels(modelArray)
-                    }
-                } else {
-                    setError(res?.error ?? "Unknown error")
-                }
-            } catch(error) {
-                setError(error instanceof Error ? error.message : "Unknown error")
+            if (modelArray.length) {
+              setModels(modelArray);
             }
+          } else {
+            setError(res?.error ?? 'Unknown error');
+          }
+        } catch (error) {
+          setError(error instanceof Error ? error.message : 'Unknown error');
         }
-        // Fetch available models from the server
-        fetchModels();
+      };
+      // Fetch available models from the server
+      fetchModels();
     }, [baseUrl, setModels, setError]);
 
-    return(
-        <DropdownMenu>
-            <DropdownMenuTrigger render={<button className="border rounded-xl p-2" />}>
-                <span className="flex justify-between items-center">{settings?.model === "sarvam-105b-conversations" ? "Sarvam 105B (Conversation)": settings?.model === "sarvam-105b" ? "Sarvam 105B (Reasoning)": settings?.model} <ChevronDown/></span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-white dark:bg-zinc-950">
-                <DropdownMenuGroup>
-                    {availableModels?.map((model) => (
-                        <DropdownMenuItem key={model} className="hover:bg-gray-200 dark:hover:bg-zinc-800" onClick={() => setSettings({model: model})}>{model === "sarvam-105b-conversations" ? "Sarvam 105B (Conversation)": model === "sarvam-105b" ? "Sarvam 105B (Reasoning)": model}</DropdownMenuItem>
-                    ))}
-                </DropdownMenuGroup>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    )
-})
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger render={<button className="border rounded-xl p-2" />}>
+          <span className="flex justify-between items-center">
+            {settings?.model === 'sarvam-105b-conversations'
+              ? 'Sarvam 105B (Conversation)'
+              : settings?.model === 'sarvam-105b'
+                ? 'Sarvam 105B (Reasoning)'
+                : settings?.model}{' '}
+            <ChevronDown />
+          </span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-white dark:bg-zinc-950">
+          <DropdownMenuGroup>
+            {availableModels?.map((model) => (
+              <DropdownMenuItem
+                key={model}
+                className="hover:bg-gray-200 dark:hover:bg-zinc-800"
+                onClick={() => setSettings({ model: model })}
+              >
+                {model === 'sarvam-105b-conversations'
+                  ? 'Sarvam 105B (Conversation)'
+                  : model === 'sarvam-105b'
+                    ? 'Sarvam 105B (Reasoning)'
+                    : model}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  },
+);
 
-ModelSelect.displayName="ModelSelect"
+ModelSelect.displayName = 'ModelSelect';
 
-export default ModelSelect
+export default ModelSelect;

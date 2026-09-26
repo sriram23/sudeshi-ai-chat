@@ -4,9 +4,7 @@
       "startServerCommand": "npm run build && npm run start",
       "startServerReadyPattern": "ready",
       "numberOfRuns": 3,
-      "url": [
-        "http://localhost:3000/"
-      ],
+      "url": ["http://localhost:3000/"],
       "settings": {
         "preset": "desktop",
         "throttlingMethod": "simulate",

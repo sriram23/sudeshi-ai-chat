@@ -1,318 +1,344 @@
-import { processStream, sseParser, ollamaParser } from "@/app/features/chat/utils/processStream"
-import { describe, expect, it } from "vitest"
+import { processStream, sseParser, ollamaParser } from '@/app/features/chat/utils/processStream';
+import { describe, expect, it } from 'vitest';
 
-export function createSSEStream(events: string[]){
-    let index=0
-    return new ReadableStream({
-        pull(controller) {
-            if(index < events.length){
-                controller.enqueue(
-                    new TextEncoder().encode(events[index] + '\n')
-                )
-                index++
-            } else {
-                controller.close()
-            }
-        }
-    })
+export function createSSEStream(events: string[]) {
+  let index = 0;
+  return new ReadableStream({
+    pull(controller) {
+      if (index < events.length) {
+        controller.enqueue(new TextEncoder().encode(events[index] + '\n'));
+        index++;
+      } else {
+        controller.close();
+      }
+    },
+  });
 }
 
-export function createOllamaStream(events: string[]){
-    let index=0
-    return new ReadableStream({
-        pull(controller) {
-            if(index < events.length){
-                controller.enqueue(
-                    new TextEncoder().encode(events[index] + '\n')
-                )
-                index++
-            } else {
-                controller.close()
-            }
-        }
-    })
+export function createOllamaStream(events: string[]) {
+  let index = 0;
+  return new ReadableStream({
+    pull(controller) {
+      if (index < events.length) {
+        controller.enqueue(new TextEncoder().encode(events[index] + '\n'));
+        index++;
+      } else {
+        controller.close();
+      }
+    },
+  });
 }
 
-describe("SSE Stream", () => {
-    it("should process streamed chunk in order", async() => {
-        const stream = createSSEStream([
-            'data: {"choices":[{"delta":{"content":"Hel"}}]}',
-            'data: {"choices":[{"delta":{"content":"lo"}}]}',
-            'data: [DONE]'
-        ])
-        let result = ""
+describe('SSE Stream', () => {
+  it('should process streamed chunk in order', async () => {
+    const stream = createSSEStream([
+      'data: {"choices":[{"delta":{"content":"Hel"}}]}',
+      'data: {"choices":[{"delta":{"content":"lo"}}]}',
+      'data: [DONE]',
+    ]);
+    let result = '';
 
-        await processStream(stream, sseParser, (chunk) => {
-            result += chunk
-        })
-
-        expect(result).toBe("Hello")
-    })
-    it("should call the onChunk callback for each chunk", async () => {
-        const stream = createSSEStream([
-            'data: {"choices":[{"delta":{"content":"A"}}]}',
-            'data: {"choices":[{"delta":{"content":"B"}}]}',
-            'data: [DONE]'
-        ])
-
-        const calls: string[] = []
-
-        await processStream(stream, sseParser, (chunk) => {
-            calls.push(chunk)
-        })
-
-        expect(calls).toEqual(["A", "B"])
-    })
-    it("should ignore invalid JSON without crash", async () => {
-        const stream = createSSEStream([
-            'data: asdfsdf',
-            'data: {"choices":[{"delta":{"content":"A"}}]}',
-            'data: [DONE]'
-        ])
-
-        let result = ""
-
-        await processStream(stream, sseParser, (chunk) => {
-            result += chunk
-        })
-
-        expect(result).toBe("A")
-    })
-    it("should pass usage data on completion", async() => {
-        const stream = createSSEStream([
-            'data: {"choices":[{"delta":{"content":"Hi"}}]}',
-            'data: {"choices": [], "usage":{"completion_tokens":660,"prompt_tokens":1033,"total_tokens":1693,"completion_tokens_details":null,"prompt_tokens_details":null,"reasoning_tokens":0}}',
-            'data: [DONE]'
-        ])
-
-        let usage:{ prompt_tokens: number, completion_tokens: number, total_tokens: number}
-
-        await processStream(stream, sseParser, () => {}, u => {usage = u})
-        expect(usage).toBeDefined()
-        expect(usage!.total_tokens).toBe(1693)
-    })
-
-    it("should disable cost estimates for non-105B models", async () => {
-        const stream = createSSEStream([
-            'data: {"choices":[{"delta":{"content":"Hi"}}]}',
-            'data: {"choices": [], "usage":{"completion_tokens":660,"prompt_tokens":1033,"total_tokens":1693}}',
-            'data: [DONE]'
-        ])
-
-        let usage: { prompt_tokens: number, completion_tokens: number, total_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number } | undefined
-
-        await processStream(stream, sseParser, () => {}, u => { usage = u }, "ollama-llama3")
-
-        expect(usage).toBeDefined()
-        expect(usage!.prompt_cost).toBe(-1)
-        expect(usage!.completion_cost).toBe(-1)
-        expect(usage!.total_cost).toBe(-1)
-    })
-
-    it("should calculate cost estimates for Sarvam 105B models", async () => {
-        const stream = createSSEStream([
-            'data: {"choices":[{"delta":{"content":"Hi"}}]}',
-            'data: {"choices": [], "usage":{"completion_tokens":660,"prompt_tokens":1033,"total_tokens":1693}}',
-            'data: [DONE]'
-        ])
-
-        let usage: { prompt_tokens: number, completion_tokens: number, total_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number } | undefined
-
-        await processStream(stream, sseParser, () => {}, u => { usage = u }, "sarvam-105b")
-
-        expect(usage).toBeDefined()
-        expect(usage!.prompt_cost).toBeGreaterThan(0)
-        expect(usage!.completion_cost).toBeGreaterThan(0)
-        expect(usage!.total_cost).toBeGreaterThan(0)
-    })
-
-    it("should handle chunked data across boundaries", async () => {
-        const encoder = new TextEncoder();
-
-        const full = 'data: {"choices":[{"delta":{"content":"A"}}]}\n';
-
-        const stream = new ReadableStream({
-            start(controller) {
-            controller.enqueue(encoder.encode(full.slice(0, 15)));
-            controller.enqueue(encoder.encode(full.slice(15)));
-            controller.enqueue(encoder.encode('data: [DONE]\n'));
-            controller.close();
-            }
-        });
-
-        let result = "";
-
-        await processStream(stream, sseParser, (chunk) => {
-            result += chunk;
-        });
-
-        expect(result).toBe("A");
+    await processStream(stream, sseParser, (chunk) => {
+      result += chunk;
     });
 
-    it("should complete when stream ends without DONE", async () => {
-        const stream = createSSEStream([
-            'data: {"choices":[{"delta":{"content":"A"}}]}'
-        ]);
+    expect(result).toBe('Hello');
+  });
+  it('should call the onChunk callback for each chunk', async () => {
+    const stream = createSSEStream([
+      'data: {"choices":[{"delta":{"content":"A"}}]}',
+      'data: {"choices":[{"delta":{"content":"B"}}]}',
+      'data: [DONE]',
+    ]);
 
-        let result = "";
+    const calls: string[] = [];
 
-        await processStream(stream, sseParser, (chunk) => {
-            result += chunk;
-        });
-
-        expect(result).toBe("A");
+    await processStream(stream, sseParser, (chunk) => {
+      calls.push(chunk);
     });
-    it("should handle multiple events in a single chunk", async () => {
-        const encoder = new TextEncoder()
-        const combined =
-            'data: {"choices":[{"delta":{"content":"A"}}]}\n' +
-            'data: {"choices":[{"delta":{"content":"B"}}]}\n' +
-            'data: [DONE]\n';
 
-        const stream =  new ReadableStream({
-            start(controller) {
-                controller.enqueue(encoder.encode(combined))
-                controller.close()
-            }
-        })
+    expect(calls).toEqual(['A', 'B']);
+  });
+  it('should ignore invalid JSON without crash', async () => {
+    const stream = createSSEStream([
+      'data: asdfsdf',
+      'data: {"choices":[{"delta":{"content":"A"}}]}',
+      'data: [DONE]',
+    ]);
 
-        let result = ""
+    let result = '';
 
-        await processStream(stream, sseParser, (chunk) => {
-            result += chunk
-        })
+    await processStream(stream, sseParser, (chunk) => {
+      result += chunk;
+    });
 
-        expect(result).toBe("AB")
-    })
+    expect(result).toBe('A');
+  });
+  it('should pass usage data on completion', async () => {
+    const stream = createSSEStream([
+      'data: {"choices":[{"delta":{"content":"Hi"}}]}',
+      'data: {"choices": [], "usage":{"completion_tokens":660,"prompt_tokens":1033,"total_tokens":1693,"completion_tokens_details":null,"prompt_tokens_details":null,"reasoning_tokens":0}}',
+      'data: [DONE]',
+    ]);
 
-})
+    let usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
 
-describe("Ollama Stream", () => {
-    it("should call onchunk for each Ollama chunk", async () => {
-        const stream = createOllamaStream([
-            '{"message": {"content": "A"}}',
-            '{"message": {"content": "B"}, "done": true}',
-        ])
+    await processStream(
+      stream,
+      sseParser,
+      () => {},
+      (u) => {
+        usage = u;
+      },
+    );
+    expect(usage).toBeDefined();
+    expect(usage!.total_tokens).toBe(1693);
+  });
 
-        const calls: string[] = []
+  it('should disable cost estimates for non-105B models', async () => {
+    const stream = createSSEStream([
+      'data: {"choices":[{"delta":{"content":"Hi"}}]}',
+      'data: {"choices": [], "usage":{"completion_tokens":660,"prompt_tokens":1033,"total_tokens":1693}}',
+      'data: [DONE]',
+    ]);
 
-        await processStream(stream, ollamaParser, (chunk) => {
-            calls.push(chunk)
-        })
+    let usage:
+      | {
+          prompt_tokens: number;
+          completion_tokens: number;
+          total_tokens: number;
+          prompt_cost?: number;
+          completion_cost?: number;
+          total_cost?: number;
+        }
+      | undefined;
 
-        expect(calls).toEqual(["A", "B"])
-    })
-    it("should ignore invalid Ollama JSON", async () => {
-        const stream = createOllamaStream([
-            'asdfghjkl',
-            '{"message": {"content": "A"}, "done": true}',
-        ])
+    await processStream(
+      stream,
+      sseParser,
+      () => {},
+      (u) => {
+        usage = u;
+      },
+      'ollama-llama3',
+    );
 
-        let result = ""
+    expect(usage).toBeDefined();
+    expect(usage!.prompt_cost).toBe(-1);
+    expect(usage!.completion_cost).toBe(-1);
+    expect(usage!.total_cost).toBe(-1);
+  });
 
-        await processStream(stream, ollamaParser, (chunk) => {
-            result += chunk
-        })
+  it('should calculate cost estimates for Sarvam 105B models', async () => {
+    const stream = createSSEStream([
+      'data: {"choices":[{"delta":{"content":"Hi"}}]}',
+      'data: {"choices": [], "usage":{"completion_tokens":660,"prompt_tokens":1033,"total_tokens":1693}}',
+      'data: [DONE]',
+    ]);
 
-        expect(result).toBe("A")
-    })
-    it("should handle chunk boundaries", async () => {
-        const encoder = new TextEncoder()
-        const full = '{"message": {"content": "Hello"}, "done": true}\n';
-        const stream = new ReadableStream({
+    let usage:
+      | {
+          prompt_tokens: number;
+          completion_tokens: number;
+          total_tokens: number;
+          prompt_cost?: number;
+          completion_cost?: number;
+          total_cost?: number;
+        }
+      | undefined;
 
-            start(controller) {
-                controller.enqueue(encoder.encode(full.slice(0, 20)));
-                controller.enqueue(encoder.encode(full.slice(20)));
-                controller.close()
-            }
-        })
-        let result = ""
+    await processStream(
+      stream,
+      sseParser,
+      () => {},
+      (u) => {
+        usage = u;
+      },
+      'sarvam-105b',
+    );
 
-        await processStream(stream, ollamaParser, (chunk) => {
-            result += chunk
-        })
-        expect(result).toBe("Hello")
-    })
-    it("should process multiple JSON events in a single chunk", async () => {
-        const encode = new TextEncoder()
-        const combined = 
-            '{"message": {"content": "A"}}\n' +
-            '{"message": {"content": "B"}}\n' +
-            '{"message": {"content": "C"}, "done": true}\n';
-        const stream = new ReadableStream({
-            start(controller) {
-                controller.enqueue(encode.encode(combined))
-                controller.close()
-            }
-        })
+    expect(usage).toBeDefined();
+    expect(usage!.prompt_cost).toBeGreaterThan(0);
+    expect(usage!.completion_cost).toBeGreaterThan(0);
+    expect(usage!.total_cost).toBeGreaterThan(0);
+  });
 
-        let result = ""
-        await processStream(stream, ollamaParser, (chunk) => {
-            result += chunk
-        })
+  it('should handle chunked data across boundaries', async () => {
+    const encoder = new TextEncoder();
 
-        expect(result).toBe("ABC")
-    })
-    it("should complete when stream ends without done=true", async () => {
-        const stream = createOllamaStream([
-            '{"message": {"content": "Hello"}}'
-        ])
-        let result = ""
+    const full = 'data: {"choices":[{"delta":{"content":"A"}}]}\n';
 
-        await processStream(stream, ollamaParser, (chunk) => {
-            result += chunk
-        })
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(full.slice(0, 15)));
+        controller.enqueue(encoder.encode(full.slice(15)));
+        controller.enqueue(encoder.encode('data: [DONE]\n'));
+        controller.close();
+      },
+    });
 
-        expect(result).toBe("Hello")
-    })
-    it("should ignore empty message content", async () => {
-        const stream = createOllamaStream([
-            '{"message": {"content": ""}}',
-            '{"message": {"content": "Hello"}, "done": true}'
-        ])
-        
-        let result = ""
-        await processStream(stream, ollamaParser, (chunk) => {
-            result += chunk
-        })
-        expect(result).toBe("Hello")
-    })
-    it("should handle done=true without content", async () => {
-        const stream = createOllamaStream([
-            '{"done": true}'
-        ])
+    let result = '';
 
-        let result = ""
-        await processStream(stream, ollamaParser, (chunk) => {
-            result += chunk
-        })
-        expect(result).toBe("")
-    })
+    await processStream(stream, sseParser, (chunk) => {
+      result += chunk;
+    });
 
-    it("should separate thinking output from the final answer", async () => {
-        const stream = createOllamaStream([
-            '{"message": {"thinking": "I should think first"}}',
-            '{"message": {"content": "Final answer"}, "done": true}'
-        ])
+    expect(result).toBe('A');
+  });
 
-        let finalText = ""
-        let thinkingText = ""
+  it('should complete when stream ends without DONE', async () => {
+    const stream = createSSEStream(['data: {"choices":[{"delta":{"content":"A"}}]}']);
 
-        await processStream(
-            stream,
-            ollamaParser,
-            (chunk) => {
-                finalText += chunk
-            },
-            undefined,
-            undefined,
-            (chunk) => {
-                thinkingText += chunk
-            }
-        )
+    let result = '';
 
-        expect(thinkingText).toBe("I should think first")
-        expect(finalText).toBe("Final answer")
-    })
-})
+    await processStream(stream, sseParser, (chunk) => {
+      result += chunk;
+    });
+
+    expect(result).toBe('A');
+  });
+  it('should handle multiple events in a single chunk', async () => {
+    const encoder = new TextEncoder();
+    const combined =
+      'data: {"choices":[{"delta":{"content":"A"}}]}\n' +
+      'data: {"choices":[{"delta":{"content":"B"}}]}\n' +
+      'data: [DONE]\n';
+
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(combined));
+        controller.close();
+      },
+    });
+
+    let result = '';
+
+    await processStream(stream, sseParser, (chunk) => {
+      result += chunk;
+    });
+
+    expect(result).toBe('AB');
+  });
+});
+
+describe('Ollama Stream', () => {
+  it('should call onchunk for each Ollama chunk', async () => {
+    const stream = createOllamaStream([
+      '{"message": {"content": "A"}}',
+      '{"message": {"content": "B"}, "done": true}',
+    ]);
+
+    const calls: string[] = [];
+
+    await processStream(stream, ollamaParser, (chunk) => {
+      calls.push(chunk);
+    });
+
+    expect(calls).toEqual(['A', 'B']);
+  });
+  it('should ignore invalid Ollama JSON', async () => {
+    const stream = createOllamaStream(['asdfghjkl', '{"message": {"content": "A"}, "done": true}']);
+
+    let result = '';
+
+    await processStream(stream, ollamaParser, (chunk) => {
+      result += chunk;
+    });
+
+    expect(result).toBe('A');
+  });
+  it('should handle chunk boundaries', async () => {
+    const encoder = new TextEncoder();
+    const full = '{"message": {"content": "Hello"}, "done": true}\n';
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(full.slice(0, 20)));
+        controller.enqueue(encoder.encode(full.slice(20)));
+        controller.close();
+      },
+    });
+    let result = '';
+
+    await processStream(stream, ollamaParser, (chunk) => {
+      result += chunk;
+    });
+    expect(result).toBe('Hello');
+  });
+  it('should process multiple JSON events in a single chunk', async () => {
+    const encode = new TextEncoder();
+    const combined =
+      '{"message": {"content": "A"}}\n' +
+      '{"message": {"content": "B"}}\n' +
+      '{"message": {"content": "C"}, "done": true}\n';
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encode.encode(combined));
+        controller.close();
+      },
+    });
+
+    let result = '';
+    await processStream(stream, ollamaParser, (chunk) => {
+      result += chunk;
+    });
+
+    expect(result).toBe('ABC');
+  });
+  it('should complete when stream ends without done=true', async () => {
+    const stream = createOllamaStream(['{"message": {"content": "Hello"}}']);
+    let result = '';
+
+    await processStream(stream, ollamaParser, (chunk) => {
+      result += chunk;
+    });
+
+    expect(result).toBe('Hello');
+  });
+  it('should ignore empty message content', async () => {
+    const stream = createOllamaStream([
+      '{"message": {"content": ""}}',
+      '{"message": {"content": "Hello"}, "done": true}',
+    ]);
+
+    let result = '';
+    await processStream(stream, ollamaParser, (chunk) => {
+      result += chunk;
+    });
+    expect(result).toBe('Hello');
+  });
+  it('should handle done=true without content', async () => {
+    const stream = createOllamaStream(['{"done": true}']);
+
+    let result = '';
+    await processStream(stream, ollamaParser, (chunk) => {
+      result += chunk;
+    });
+    expect(result).toBe('');
+  });
+
+  it('should separate thinking output from the final answer', async () => {
+    const stream = createOllamaStream([
+      '{"message": {"thinking": "I should think first"}}',
+      '{"message": {"content": "Final answer"}, "done": true}',
+    ]);
+
+    let finalText = '';
+    let thinkingText = '';
+
+    await processStream(
+      stream,
+      ollamaParser,
+      (chunk) => {
+        finalText += chunk;
+      },
+      undefined,
+      undefined,
+      (chunk) => {
+        thinkingText += chunk;
+      },
+    );
+
+    expect(thinkingText).toBe('I should think first');
+    expect(finalText).toBe('Final answer');
+  });
+});

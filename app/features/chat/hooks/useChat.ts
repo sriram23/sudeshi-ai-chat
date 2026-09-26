@@ -1,19 +1,21 @@
-import { useChatStore } from "@/store/chatStore";
-import { createMessage } from "@/app/features/chat/utils/messageFactory";
-import { generateTitle, streamChat, summarizeText } from "../services/sarvamClient";
-import { SUMMARIZE_TOKEN_THRESHOLD, PRESERVED_MESSAGE_COUNT } from "../utils/constants";
+import { useChatStore } from '@/store/chatStore';
+import { createMessage } from '@/app/features/chat/utils/messageFactory';
+import { generateTitle, streamChat, summarizeText } from '../services/sarvamClient';
+import { SUMMARIZE_TOKEN_THRESHOLD, PRESERVED_MESSAGE_COUNT } from '../utils/constants';
 
-
-
-export const buildContextHistory = (messages: Array<{ role: string; content: string; usage?: { total_tokens?: number } }>) =>
+export const buildContextHistory = (
+  messages: Array<{ role: string; content: string; usage?: { total_tokens?: number } }>,
+) =>
   messages.map((msg) => ({
     role: msg.role,
     content: msg.content,
     usage: msg.usage,
   }));
 
-export const getConversationTokenCount = (history: Array<{ role: string; content: string; usage?: { total_tokens?: number } }>) => {
-  const assistantMessages = history.filter((message) => message.role === "assistant");
+export const getConversationTokenCount = (
+  history: Array<{ role: string; content: string; usage?: { total_tokens?: number } }>,
+) => {
+  const assistantMessages = history.filter((message) => message.role === 'assistant');
 
   return assistantMessages.reduce((total, message) => {
     const usage = message.usage;
@@ -39,7 +41,7 @@ export const useChat = () => {
     renameConversation,
   } = useChatStore();
 
-    const generateAndSetConversationTitle = async (conversationId: string) => {
+  const generateAndSetConversationTitle = async (conversationId: string) => {
     const { conversations } = useChatStore.getState();
     const conversation = conversations.find((c) => c.id === conversationId);
     if (!conversation) return;
@@ -55,52 +57,52 @@ export const useChat = () => {
       const title = await generateTitle(messages);
       renameConversation(conversationId, title);
     } catch (error) {
-      console.error("Error generating conversation title:", error);
+      console.error('Error generating conversation title:', error);
     }
   };
 
-
   const sendMessage = async (input: string) => {
     if (!input.trim()) return;
-    if (status === "streaming") return;
+    if (status === 'streaming') return;
 
     const store = useChatStore.getState();
 
     // ensure conversation exists
     if (!store.activeConversationId) {
-      createConversation("New Chat");
+      createConversation('New Chat');
     }
 
     // add user message
-    const userMessage = createMessage("user", input, "completed");
+    const userMessage = createMessage('user', input, 'completed');
     addMessage(userMessage);
 
     // get latest state AFTER adding message
-    const {
-      conversations,
-      activeConversationId,
-    } = useChatStore.getState();
+    const { conversations, activeConversationId } = useChatStore.getState();
 
-    const activeConversation = conversations.find(
-      (c) => c.id === activeConversationId
-    );
+    const activeConversation = conversations.find((c) => c.id === activeConversationId);
 
-    if(activeConversation?.title.includes("New Chat") && activeConversation.messages.length === 1) {
+    if (
+      activeConversation?.title.includes('New Chat') &&
+      activeConversation.messages.length === 1
+    ) {
       // Generate title for new conversation based on first user message
       generateAndSetConversationTitle(activeConversation.id);
     }
     const latestMessages = activeConversation?.messages || [];
     const availableSummary = activeConversation?.summary;
     // build context
-    const history = buildContextHistory(latestMessages.map((msg) => ({
-      role: msg.role,
-      content: msg.content,
-      usage: msg.usage,
-    })));
+    const history = buildContextHistory(
+      latestMessages.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+        usage: msg.usage,
+      })),
+    );
     const currentTokenCount = getConversationTokenCount(history);
 
     const preservedHistory = history.slice(-PRESERVED_MESSAGE_COUNT);
-    const summarizedTargets = history.length > preservedHistory.length ? history.slice(0, -PRESERVED_MESSAGE_COUNT) : [];
+    const summarizedTargets =
+      history.length > preservedHistory.length ? history.slice(0, -PRESERVED_MESSAGE_COUNT) : [];
 
     const contextThresholdExceeded = currentTokenCount > SUMMARIZE_TOKEN_THRESHOLD;
 
@@ -108,10 +110,8 @@ export const useChat = () => {
       setContextThresholdExceeded(activeConversationId, contextThresholdExceeded);
     }
 
-    let summarizedContent = "";
-    const shouldSummarize =
-      contextThresholdExceeded &&
-      summarizedTargets.length > 0
+    let summarizedContent = '';
+    const shouldSummarize = contextThresholdExceeded && summarizedTargets.length > 0;
 
     if (shouldSummarize) {
       setIsSummarizingContext(true);
@@ -126,42 +126,42 @@ export const useChat = () => {
     }
 
     const payload = shouldSummarize
-      ? [
-        { role: "system", content: summarizedContent },
-        ...preservedHistory,
-      ]
+      ? [{ role: 'system', content: summarizedContent }, ...preservedHistory]
       : history;
 
     // create controller AFTER guards
     const controller = new AbortController();
     setAbortController(controller);
 
-    setStatus("streaming");
+    setStatus('streaming');
     try {
       await streamChat(
         {
-          provider: (settings.model === "sarvam-105b-conversations" || settings.model === "sarvam-105b") ? "sarvam" : "ollama",
+          provider:
+            settings.model === 'sarvam-105b-conversations' || settings.model === 'sarvam-105b'
+              ? 'sarvam'
+              : 'ollama',
           model: settings.model,
-          endpoint: settings.baseUrl
+          endpoint: settings.baseUrl,
         },
         payload,
         (chunk) => appendToResponse(chunk),
         (usage, metrics) => setCurrentUsage(usage, metrics),
         controller.signal,
         undefined,
-        (chunk) => appendToThinking(chunk)
-      )
+        (chunk) => appendToThinking(chunk),
+      );
 
       finalizeResponse();
-      setStatus("idle");
+      setStatus('idle');
     } catch (error) {
       if (controller.signal.aborted) {
-        finalizeResponse("cancelled");
-        setStatus("idle");
+        finalizeResponse('cancelled');
+        setStatus('idle');
       } else {
-        console.error("Error during streaming:", error);
-        finalizeResponse("error")
-        setStatus("error");
+        console.error('Error during streaming:', error);
+        finalizeResponse('error');
+        setStatus('error');
       }
     } finally {
       setAbortController(undefined);
@@ -174,4 +174,4 @@ export const useChat = () => {
   };
 
   return { sendMessage, stopStreaming, generateAndSetConversationTitle };
-}
+};
