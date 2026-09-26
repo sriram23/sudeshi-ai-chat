@@ -508,9 +508,3 @@ Token usage, estimated cost, time-to-first-token, streaming duration, and throug
 
 - [Why I Started Building Sudeshi AI Chat](https://medium.com/@Sriram23/why-i-started-building-sudeshi-ai-chat-cf23033bf74f)
 - [Sudeshi AI Chat on GitHub](https://github.com/sriram23/sudeshi-ai-chat)
-
----
-
-# License
-
-See the repository for licensing information.
