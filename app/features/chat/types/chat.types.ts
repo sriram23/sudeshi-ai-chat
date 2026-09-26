@@ -1,17 +1,17 @@
-export type MessageStatus = "pending" | "completed" | "error" | "cancelled";
-export type Role = "user" | "assistant" | "system";
+export type MessageStatus = 'pending' | 'completed' | 'error' | 'cancelled';
+export type Role = 'user' | 'assistant' | 'system';
 
 export type Metrics = {
-  startTime: number
-  firstChunkTime?: number
-  endTime?: number
+  startTime: number;
+  firstChunkTime?: number;
+  endTime?: number;
 
-  totalTime?: number
-  timeToFirstChunk?: number
-  streamingTime?: number
-  tokenCount?: number
-  tokensPerSecond?: number
-}
+  totalTime?: number;
+  timeToFirstChunk?: number;
+  streamingTime?: number;
+  tokenCount?: number;
+  tokensPerSecond?: number;
+};
 
 export type Message = {
   id: string;
@@ -25,7 +25,7 @@ export type Message = {
     completion_tokens: number;
     total_tokens: number;
   };
-  metrics?:Metrics
+  metrics?: Metrics;
 };
 
 export type Conversation = {

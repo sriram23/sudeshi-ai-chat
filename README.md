@@ -261,13 +261,13 @@ The provider adapters implement a shared `AIAdapter` interface.
 
 # Supporting API Routes
 
-| Route | Purpose |
-| --- | --- |
-| `/api/chat` | Streams Sarvam chat completions |
-| `/api/ollama` | Proxies streaming requests to a configured Ollama endpoint |
-| `/api/checkOllama` | Checks an Ollama endpoint and retrieves available models |
-| `/api/summarize` | Generates compact conversation summaries using Sarvam 105B |
-| `/api/title` | Generates conversation titles using Sarvam 105B |
+| Route              | Purpose                                                    |
+| ------------------ | ---------------------------------------------------------- |
+| `/api/chat`        | Streams Sarvam chat completions                            |
+| `/api/ollama`      | Proxies streaming requests to a configured Ollama endpoint |
+| `/api/checkOllama` | Checks an Ollama endpoint and retrieves available models   |
+| `/api/summarize`   | Generates compact conversation summaries using Sarvam 105B |
+| `/api/title`       | Generates conversation titles using Sarvam 105B            |
 
 ---
 

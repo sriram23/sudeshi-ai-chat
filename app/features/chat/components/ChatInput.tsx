@@ -1,51 +1,47 @@
-import { useIsMobile } from "@/hooks/use-mobile";
-import { ArrowUp, Square } from "lucide-react";
-import { memo, useState } from "react";
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ArrowUp, Square } from 'lucide-react';
+import { memo, useState } from 'react';
 
 const ChatInput = memo(
-    ({
-        status,
-        sendMessage,
-        stopStreaming,
-    }: {
-        status: string;
-        sendMessage: (value: string) => void;
-        stopStreaming: () => void;
-    }) => {
-        const [input, setInput] = useState("");
-        const isMobile = useIsMobile();
+  ({
+    status,
+    sendMessage,
+    stopStreaming,
+  }: {
+    status: string;
+    sendMessage: (value: string) => void;
+    stopStreaming: () => void;
+  }) => {
+    const [input, setInput] = useState('');
+    const isMobile = useIsMobile();
 
-        const handleInputHeight = (
-            e: React.FormEvent<HTMLTextAreaElement>
-        ) => {
-            const textarea = e.currentTarget;
+    const handleInputHeight = (e: React.FormEvent<HTMLTextAreaElement>) => {
+      const textarea = e.currentTarget;
 
-            textarea.style.height = "auto";
-            textarea.style.height = `${textarea.scrollHeight}px`;
-        };
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    };
 
-        const handleSend = () => {
-            if (status === "streaming") return;
-            if (!input.trim()) return;
+    const handleSend = () => {
+      if (status === 'streaming') return;
+      if (!input.trim()) return;
 
-            sendMessage(input);
-            setInput("");
+      sendMessage(input);
+      setInput('');
 
-            const textarea = document.querySelector<HTMLTextAreaElement>(
-                "textarea[data-chat-input]"
-            );
+      const textarea = document.querySelector<HTMLTextAreaElement>('textarea[data-chat-input]');
 
-            if (textarea) {
-                textarea.style.height = "auto";
-            }
-        };
+      if (textarea) {
+        textarea.style.height = 'auto';
+      }
+    };
 
-        return (
-            <div className="w-full flex flex-col relative">
-                {status === "error" && (
-                    <div
-                        role="alert"
-                        className="
+    return (
+      <div className="w-full flex flex-col relative">
+        {status === 'error' && (
+          <div
+            role="alert"
+            className="
                             mb-2
                             rounded-lg
                             border
@@ -59,13 +55,13 @@ const ChatInput = memo(
                             dark:bg-red-950/30
                             dark:text-red-300
                         "
-                    >
-                        An error occurred while streaming. Please try again.
-                    </div>
-                )}
+          >
+            An error occurred while streaming. Please try again.
+          </div>
+        )}
 
-                <div
-                    className="
+        <div
+          className="
                         flex
                         justify-between
                         items-center
@@ -80,26 +76,23 @@ const ChatInput = memo(
                         rounded-xl
                         transition-colors
                     "
-                >
-                    <div className="min-w-0 flex-1 mr-2">
-                        <textarea
-                            data-chat-input
-                            onKeyDown={(e) => {
-                                if (isMobile) return;
+        >
+          <div className="min-w-0 flex-1 mr-2">
+            <textarea
+              data-chat-input
+              onKeyDown={(e) => {
+                if (isMobile) return;
 
-                                if (
-                                    e.key === "Enter" &&
-                                    !e.shiftKey
-                                ) {
-                                    e.preventDefault();
-                                    handleSend();
-                                }
-                            }}
-                            onInput={handleInputHeight}
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            rows={1}
-                            className="
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              onInput={handleInputHeight}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              rows={1}
+              className="
                                 no-scrollbar
                                 w-full
                                 min-h-9
@@ -112,17 +105,17 @@ const ChatInput = memo(
                                 focus:outline-none
                                 focus:ring-0
                             "
-                            placeholder="Ask Sudeshi Anything..."
-                        />
-                    </div>
+              placeholder="Ask Sudeshi Anything..."
+            />
+          </div>
 
-                    {status === "idle" && (
-                        <button
-                            type="button"
-                            aria-label="Send Message"
-                            onClick={handleSend}
-                            disabled={!input.trim()}
-                            className="
+          {status === 'idle' && (
+            <button
+              type="button"
+              aria-label="Send Message"
+              onClick={handleSend}
+              disabled={!input.trim()}
+              className="
                                 shrink-0
                                 w-9
                                 h-9
@@ -149,17 +142,17 @@ const ChatInput = memo(
                                 dark:hover:bg-white
                                 dark:disabled:hover:bg-zinc-100
                             "
-                        >
-                            <ArrowUp size={17} />
-                        </button>
-                    )}
+            >
+              <ArrowUp size={17} />
+            </button>
+          )}
 
-                    {status === "streaming" && (
-                        <button
-                            type="button"
-                            aria-label="Cancel Response"
-                            onClick={stopStreaming}
-                            className="
+          {status === 'streaming' && (
+            <button
+              type="button"
+              aria-label="Cancel Response"
+              onClick={stopStreaming}
+              className="
                                 shrink-0
                                 w-9
                                 h-9
@@ -181,16 +174,16 @@ const ChatInput = memo(
                                 dark:text-zinc-900
                                 dark:hover:bg-white
                             "
-                        >
-                            <Square size={15} />
-                        </button>
-                    )}
-                </div>
-            </div>
-        );
-    }
+            >
+              <Square size={15} />
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  },
 );
 
-ChatInput.displayName = "ChatInput";
+ChatInput.displayName = 'ChatInput';
 
 export default ChatInput;

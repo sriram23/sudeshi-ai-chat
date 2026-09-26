@@ -7,22 +7,22 @@ export function buildEndpointUrl(endpoint: string, path: string): URL {
   const base = new URL(endpoint);
 
   const isLocal =
-    base.hostname === "localhost" ||
-    base.hostname === "127.0.0.1" ||
-    base.hostname === "::1" ||
-    base.hostname.endsWith(".local") ||
+    base.hostname === 'localhost' ||
+    base.hostname === '127.0.0.1' ||
+    base.hostname === '::1' ||
+    base.hostname.endsWith('.local') ||
     PRIVATE_IP_REGEX.test(base.hostname);
 
-  if (!["http:", "https:"].includes(base.protocol)) {
-    throw new Error("Only HTTP and HTTPS endpoints are supported.");
+  if (!['http:', 'https:'].includes(base.protocol)) {
+    throw new Error('Only HTTP and HTTPS endpoints are supported.');
   }
 
-  if (base.protocol === "http:" && !isLocal) {
-    throw new Error("Only HTTPS endpoints are allowed for remote servers.");
+  if (base.protocol === 'http:' && !isLocal) {
+    throw new Error('Only HTTPS endpoints are allowed for remote servers.');
   }
 
   if (base.username || base.password) {
-    throw new Error("Credentials in the endpoint URL are not supported.");
+    throw new Error('Credentials in the endpoint URL are not supported.');
   }
 
   return new URL(path, base);

@@ -1,8 +1,8 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { Message, MessageStatus, Metrics } from "@/app/features/chat/types/chat.types";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { Message, MessageStatus, Metrics } from '@/app/features/chat/types/chat.types';
 
-type ChatStatus = "idle" | "streaming" | "error";
+type ChatStatus = 'idle' | 'streaming' | 'error';
 type ChatModel = string;
 
 type Conversation = {
@@ -20,8 +20,15 @@ type ChatStore = {
 
   currentResponse: string;
   currentThinking: string;
-  currentUsage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number, prompt_cost?: number, completion_cost?: number, total_cost?: number };
-  currentMetrics?: Metrics
+  currentUsage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+    prompt_cost?: number;
+    completion_cost?: number;
+    total_cost?: number;
+  };
+  currentMetrics?: Metrics;
   status: ChatStatus;
   isSummarizingContext: boolean;
   availableModels?: ChatModel[];
@@ -53,13 +60,23 @@ type ChatStore = {
   appendToThinking: (chunk: string) => void;
   finalizeResponse: (messageStatus?: MessageStatus) => void;
 
-  setSettings: (newSettings: Partial<{ model: ChatModel, baseUrl?: string }>) => void;
+  setSettings: (newSettings: Partial<{ model: ChatModel; baseUrl?: string }>) => void;
   setStatus: (status: ChatStatus) => void;
 
   setAbortController: (controller?: AbortController) => void;
-  setCurrentUsage: (usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number; prompt_cost?: number; completion_cost?: number; total_cost?: number }, metrics?: Metrics) => void;
+  setCurrentUsage: (
+    usage?: {
+      prompt_tokens: number;
+      completion_tokens: number;
+      total_tokens: number;
+      prompt_cost?: number;
+      completion_cost?: number;
+      total_cost?: number;
+    },
+    metrics?: Metrics,
+  ) => void;
   setModels: (models: ChatModel[]) => void;
-  setError: (error: string) => void
+  setError: (error: string) => void;
 
   reset: () => void;
 };
@@ -70,33 +87,33 @@ export const useChatStore = create<ChatStore>()(
       conversations: [],
       activeConversationId: null,
 
-      currentResponse: "",
-      currentThinking: "",
+      currentResponse: '',
+      currentThinking: '',
       currentUsage: undefined,
       currentMetrics: undefined,
-      status: "idle",
+      status: 'idle',
       isSummarizingContext: false,
 
-      availableModels: ["sarvam-105b-conversations","sarvam-105b"],
+      availableModels: ['sarvam-105b-conversations', 'sarvam-105b'],
       settings: {
-        model: "sarvam-105b-conversations",
-        baseUrl: "",
+        model: 'sarvam-105b-conversations',
+        baseUrl: '',
       },
 
       controls: {},
 
-      error: "",
+      error: '',
 
       // create new conversation
-      createConversation: (title = "New Chat") => {
-        const newId = crypto.randomUUID()
+      createConversation: (title = 'New Chat') => {
+        const newId = crypto.randomUUID();
         set((state) => {
           const newConv: Conversation = {
             id: newId,
             title,
             messages: [],
             createdAt: Date.now(),
-            summary: "",
+            summary: '',
             contextThresholdExceeded: false,
           };
 
@@ -104,34 +121,37 @@ export const useChatStore = create<ChatStore>()(
             conversations: [newConv, ...state.conversations],
             activeConversationId: newConv.id,
           };
-        })
-        return newId
+        });
+        return newId;
       },
 
       // switch chat
       setActiveConversation: (id) =>
         set((state) => ({
           // checking if the id is a valid conversation id.
-          activeConversationId: state.conversations.filter(con => con.id === id).length ? id : null 
+          activeConversationId: state.conversations.filter((con) => con.id === id).length
+            ? id
+            : null,
         })),
 
       renameConversation: (id, newTitle) =>
         set((state) => ({
           conversations: state.conversations.map((conv) =>
-            conv.id === id ? { ...conv, title: newTitle } : conv
+            conv.id === id ? { ...conv, title: newTitle } : conv,
           ),
         })),
 
       deleteConversation: (id) =>
         set((state) => {
           const updated = state.conversations.filter((conv) => conv.id !== id);
-          const isDeletingActive = state.activeConversationId === id
+          const isDeletingActive = state.activeConversationId === id;
           return {
             conversations: updated,
-            activeConversationId: isDeletingActive ? updated[0]?.id ?? null : state.activeConversationId,
-          }
+            activeConversationId: isDeletingActive
+              ? (updated[0]?.id ?? null)
+              : state.activeConversationId,
+          };
         }),
-
 
       // add user message
       addMessage: (message) =>
@@ -142,7 +162,7 @@ export const useChatStore = create<ChatStore>()(
             conversations: state.conversations.map((conv) =>
               conv.id === state.activeConversationId
                 ? { ...conv, messages: [...conv.messages, message] }
-                : conv
+                : conv,
             ),
           };
         }),
@@ -157,10 +177,10 @@ export const useChatStore = create<ChatStore>()(
                 ? {
                     ...conv,
                     messages: conv.messages.map((msg) =>
-                      msg.id === id ? { ...msg, status } : msg
+                      msg.id === id ? { ...msg, status } : msg,
                     ),
                   }
-                : conv
+                : conv,
             ),
           };
         }),
@@ -177,8 +197,15 @@ export const useChatStore = create<ChatStore>()(
         })),
 
       // finalize AI response
-      finalizeResponse: (messageStatus: MessageStatus="completed") => {
-        const { currentResponse, currentThinking, currentUsage, currentMetrics, conversations, activeConversationId } = get();
+      finalizeResponse: (messageStatus: MessageStatus = 'completed') => {
+        const {
+          currentResponse,
+          currentThinking,
+          currentUsage,
+          currentMetrics,
+          conversations,
+          activeConversationId,
+        } = get();
 
         if (!activeConversationId) return;
 
@@ -187,26 +214,26 @@ export const useChatStore = create<ChatStore>()(
 
         const newMessage: Message = {
           id: crypto.randomUUID(),
-          role: "assistant",
+          role: 'assistant',
           content: currentResponse,
           thinking: currentThinking || undefined,
           createdAt: Date.now(),
           status: messageStatus,
           usage: currentUsage,
-          metrics: currentMetrics
+          metrics: currentMetrics,
         };
 
         set({
           conversations: conversations.map((conv) =>
             conv.id === activeConversationId
               ? { ...conv, messages: [...conv.messages, newMessage] }
-              : conv
+              : conv,
           ),
-          currentResponse: "",
-          currentThinking: "",
+          currentResponse: '',
+          currentThinking: '',
           currentUsage: undefined,
           currentMetrics: undefined,
-          status: "idle",
+          status: 'idle',
           controls: {
             ...get().controls,
             abortController: undefined,
@@ -242,44 +269,46 @@ export const useChatStore = create<ChatStore>()(
               : {
                   ...conv,
                   summary,
-                  messages: conv.messages.slice(-preserveMessageCount)
-                }
+                  messages: conv.messages.slice(-preserveMessageCount),
+                },
           ),
         })),
 
       setContextThresholdExceeded: (conversationId, exceeded) =>
         set((state) => ({
           conversations: state.conversations.map((conv) =>
-            conv.id === conversationId ? { ...conv, contextThresholdExceeded: exceeded } : conv
+            conv.id === conversationId ? { ...conv, contextThresholdExceeded: exceeded } : conv,
           ),
         })),
 
-      setIsSummarizingContext: (isSummarizing) =>
-        set({ isSummarizingContext: isSummarizing }),
+      setIsSummarizingContext: (isSummarizing) => set({ isSummarizingContext: isSummarizing }),
 
-      setModels: (newModels) => set((state) => ({ availableModels: [...new Set(newModels), ...(state.availableModels ?? [])] })),
+      setModels: (newModels) =>
+        set((state) => ({
+          availableModels: [...new Set(newModels), ...(state.availableModels ?? [])],
+        })),
 
-      setError: (error:string) => set({ error }),
+      setError: (error: string) => set({ error }),
 
       reset: () =>
         set({
           conversations: [],
           activeConversationId: null,
-          currentResponse: "",
-          currentThinking: "",
+          currentResponse: '',
+          currentThinking: '',
           currentUsage: undefined,
           currentMetrics: undefined,
-          status: "idle",
+          status: 'idle',
           controls: {},
         }),
     }),
     {
-      name: "sudeshi-chat-store",
+      name: 'sudeshi-chat-store',
       partialize: (state) => ({
         conversations: state.conversations,
         settings: state.settings,
         activeConversationId: state.activeConversationId,
       }),
-    }
-  )
+    },
+  ),
 );

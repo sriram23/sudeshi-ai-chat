@@ -1,7 +1,22 @@
-"use client";
-import { useEffect, useState, memo, useMemo } from "react";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+'use client';
+import { useEffect, useState, memo, useMemo } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Sidebar,
   SidebarContent,
@@ -12,67 +27,73 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { useChatStore } from "@/store/chatStore";
-import { Ellipsis, MessageCircle, Moon, Pencil, Settings, Sun, Trash } from "lucide-react";
-import { useTheme } from "next-themes";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import Image from "next/image";
-import LOGO from "@/app/assets/images/Sudeshi_Chat.png"
-import CustomDialog from "./Dialog";
-import SettingsComponent from "./SettingsComponent";
-import SideBarSkeleton from "./SideBarSkeleton";
-import SudeshiLogo from "./SudeshiLogo";
+} from '@/components/ui/sidebar';
+import { useChatStore } from '@/store/chatStore';
+import { Ellipsis, MessageCircle, Moon, Pencil, Settings, Sun, Trash } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import Image from 'next/image';
+import LOGO from '@/app/assets/images/Sudeshi_Chat.png';
+import CustomDialog from './Dialog';
+import SettingsComponent from './SettingsComponent';
+import SideBarSkeleton from './SideBarSkeleton';
+import SudeshiLogo from './SudeshiLogo';
 
 const AppSidebar = memo((): React.ReactNode => {
-  const conversationsRaw = useChatStore(s => s.conversations)
-  const activeConversationId = useChatStore(s => s.activeConversationId)
-  const createConversation = useChatStore(s => s.createConversation)
-  const setActiveConversation = useChatStore(s => s.setActiveConversation)
-  const renameConversation = useChatStore(s => s.renameConversation)
-  const deleteConversation = useChatStore(s => s.deleteConversation)
+  const conversationsRaw = useChatStore((s) => s.conversations);
+  const activeConversationId = useChatStore((s) => s.activeConversationId);
+  const createConversation = useChatStore((s) => s.createConversation);
+  const setActiveConversation = useChatStore((s) => s.setActiveConversation);
+  const renameConversation = useChatStore((s) => s.renameConversation);
+  const deleteConversation = useChatStore((s) => s.deleteConversation);
 
-  const isStreaming = useChatStore(s => s.status === "streaming")
+  const isStreaming = useChatStore((s) => s.status === 'streaming');
 
   const conversations = useMemo(() => {
-    return conversationsRaw.map(c => ({
+    return conversationsRaw.map((c) => ({
       id: c.id,
       title: c.title,
-      messagesLength: c.messages.length
-    }))
-  }, [conversationsRaw])
+      messagesLength: c.messages.length,
+    }));
+  }, [conversationsRaw]);
 
   const { theme, setTheme } = useTheme();
   const [deleteDialogId, setDeleteDialogId] = useState<string | null>(null);
   const [editDialogId, setEditDialogId] = useState<string | null>(null);
-  const [newName, setNewName] = useState("")
+  const [newName, setNewName] = useState('');
 
-  const [mounted, setMounted] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
-
+  const [mounted, setMounted] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
-  if(!mounted) {
+  if (!mounted) {
     return (
-    <div className="w-0 md:w-64 h-screen">
-      <SideBarSkeleton />
-    </div>
-    )
+      <div className="w-0 md:w-64 h-screen">
+        <SideBarSkeleton />
+      </div>
+    );
   }
 
   const createNewConversation = () => {
-    const title = "New Chat " + Date.now().toString();
-    const currentConv = conversations.find(c => c.id === activeConversationId);
-    if(currentConv && !currentConv.messagesLength) {
+    const title = 'New Chat ' + Date.now().toString();
+    const currentConv = conversations.find((c) => c.id === activeConversationId);
+    if (currentConv && !currentConv.messagesLength) {
       setActiveConversation(currentConv.id);
       return;
     }
     createConversation(title);
-  }
+  };
 
   const handleDelete = (id: string) => {
     if (isStreaming) return;
@@ -81,30 +102,33 @@ const AppSidebar = memo((): React.ReactNode => {
   };
 
   const handleEdit = (id: string) => {
-    if(isStreaming) return;
-    if(newName.trim()) {
+    if (isStreaming) return;
+    if (newName.trim()) {
       renameConversation(id, newName.trim());
       setEditDialogId(null);
-      setNewName("");
+      setNewName('');
     }
   };
   return (
-      <Sidebar collapsible="icon" className="bg-white/10 backdrop-blur-lg dark:bg-transparent dark:backdrop-blur-none border-zinc-300">
-        <SidebarHeader>
-          <SidebarContent>
-            <SidebarGroup title="Welcome to Sudeshi" >
+    <Sidebar
+      collapsible="icon"
+      className="bg-white/10 backdrop-blur-lg dark:bg-transparent dark:backdrop-blur-none border-zinc-300"
+    >
+      <SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup title="Welcome to Sudeshi">
             <SidebarGroupLabel className="flex items-center justify-center py-2">
               <div className="flex items-center gap-2">
-                  <SudeshiLogo size={32} animated={false}/>
+                <SudeshiLogo size={32} animated={false} />
               </div>
             </SidebarGroupLabel>
           </SidebarGroup>
-          <SidebarGroup title="New Chat" className="p-0" >
-            <SidebarMenu className={isStreaming? "pointer-events-none opacity-70" : ""}>
+          <SidebarGroup title="New Chat" className="p-0">
+            <SidebarMenu className={isStreaming ? 'pointer-events-none opacity-70' : ''}>
               <SidebarMenuItem className="p-0">
                 <SidebarMenuButton
-                    onClick={() => createNewConversation()}
-                    className="
+                  onClick={() => createNewConversation()}
+                  className="
                         h-10 w-full rounded-lg
                         bg-zinc-800 text-white
                         hover:bg-zinc-700
@@ -113,46 +137,44 @@ const AppSidebar = memo((): React.ReactNode => {
                         group-data-[collapsible=icon]:justify-center
                     "
                 >
-                    <Pencil className="shrink-0" />
+                  <Pencil className="shrink-0" />
 
-                    <span className="group-data-[collapsible=icon]:hidden">
-                        New Chat
-                    </span>
+                  <span className="group-data-[collapsible=icon]:hidden">New Chat</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
-          </SidebarContent>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup title="Conversations" className="pt-4">
-            <SidebarMenu className={isStreaming? "pointer-events-none opacity-70": ""}>
-            {conversations.map(conv => (
+        </SidebarContent>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup title="Conversations" className="pt-4">
+          <SidebarMenu className={isStreaming ? 'pointer-events-none opacity-70' : ''}>
+            {conversations.map((conv) => (
               <SidebarMenuItem key={conv.id}>
                 <SidebarMenuButton
-                    title={conv.title}
-                    onClick={() => setActiveConversation(conv.id)}
-                    className={`group p-2 m-1 cursor-pointer rounded-lg transition-colors ${
-                        conv.id === activeConversationId
-                            ? "bg-zinc-200 dark:bg-zinc-800"
-                            : "hover:bg-zinc-100 dark:hover:bg-zinc-900"
-                    }`}
+                  title={conv.title}
+                  onClick={() => setActiveConversation(conv.id)}
+                  className={`group p-2 m-1 cursor-pointer rounded-lg transition-colors ${
+                    conv.id === activeConversationId
+                      ? 'bg-zinc-200 dark:bg-zinc-800'
+                      : 'hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                  }`}
                 >
-                    <MessageCircle className="mr-2 shrink-0 group-data-[collapsible=icon]:mr-0" />
+                  <MessageCircle className="mr-2 shrink-0 group-data-[collapsible=icon]:mr-0" />
 
-                    <span className="min-w-0 flex-1 truncate group-data-[collapsible=icon]:hidden">
-                        {conv.title}
-                    </span>
+                  <span className="min-w-0 flex-1 truncate group-data-[collapsible=icon]:hidden">
+                    {conv.title}
+                  </span>
 
-                    <div className="shrink-0 group-data-[collapsible=icon]:hidden">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger
-                                nativeButton={false}
-                                render={
-                                    <div
-                                        onClick={(e) => e.stopPropagation()}
-                                        role="presentation"
-                                        className="
+                  <div className="shrink-0 group-data-[collapsible=icon]:hidden">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        nativeButton={false}
+                        render={
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            role="presentation"
+                            className="
                                             flex items-center justify-center
                                             rounded-md p-1
                                             opacity-0
@@ -160,131 +182,161 @@ const AppSidebar = memo((): React.ReactNode => {
                                             group-hover:opacity-100
                                             group-focus-within:opacity-100
                                         "
-                                    />
-                                }
-                            >
-                                <Ellipsis size={18} />
-                            </DropdownMenuTrigger>
+                          />
+                        }
+                      >
+                        <Ellipsis size={18} />
+                      </DropdownMenuTrigger>
 
-                            <DropdownMenuContent className="bg-white dark:bg-zinc-900">
-                                <DropdownMenuGroup>
-                                    <DropdownMenuItem
-                                        className="hover:bg-yellow-300"
-                                        onClick={(e) => {
-                                            setNewName(conv.title);
-                                            setEditDialogId(conv.id);
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        <Pencil />
-                                        Rename
-                                    </DropdownMenuItem>
+                      <DropdownMenuContent className="bg-white dark:bg-zinc-900">
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem
+                            className="hover:bg-yellow-300"
+                            onClick={(e) => {
+                              setNewName(conv.title);
+                              setEditDialogId(conv.id);
+                              e.stopPropagation();
+                            }}
+                          >
+                            <Pencil />
+                            Rename
+                          </DropdownMenuItem>
 
-                                    <DropdownMenuItem
-                                        className="hover:bg-red-500"
-                                        onClick={(e) => {
-                                            setDeleteDialogId(conv.id);
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        <Trash />
-                                        Delete Chat
-                                    </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
+                          <DropdownMenuItem
+                            className="hover:bg-red-500"
+                            onClick={(e) => {
+                              setDeleteDialogId(conv.id);
+                              e.stopPropagation();
+                            }}
+                          >
+                            <Trash />
+                            Delete Chat
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-            </SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-        {deleteDialogId ? (
-          <AlertDialog
-            open={Boolean(deleteDialogId)}
-            onOpenChange={(open) => {
-              if (!open) setDeleteDialogId(null)
-            }}
-          >
-            <AlertDialogContent className="bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete your chat.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => deleteDialogId && handleDelete(deleteDialogId)} className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700">Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        ) : null}
-        {editDialogId ? (
-          <Dialog
-            open={Boolean(editDialogId)}
-            onOpenChange={(open) => {
-              if (!open) {
-                setEditDialogId(null);
-                setNewName("");
-              }
-            }}
-          >
-            <DialogContent className="bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
-              <DialogHeader>
-                <DialogTitle>Rename Chat</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-2">
-                <label htmlFor="chat-title" className="text-sm font-medium">New Chat Title</label>
-                <input
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  type="text"
-                  id="chat-title"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-900"
-                  placeholder="Enter new chat title"
-                />
-              </div>
-              <DialogFooter>
-                <DialogClose render={
-                  <button aria-label="Close Dialog" className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
-                } />
-                <button
-                  aria-label="Rename Chat"
-                  onClick={() => editDialogId && handleEdit(editDialogId)}
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
-                >
-                  Rename
-                </button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        ) : null}
-        <SidebarFooter>
-          <SidebarMenuItem className="flex flex-col justify-center gap-2">
-            <SidebarMenuButton aria-label="Theme toggle" className="
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      {deleteDialogId ? (
+        <AlertDialog
+          open={Boolean(deleteDialogId)}
+          onOpenChange={(open) => {
+            if (!open) setDeleteDialogId(null);
+          }}
+        >
+          <AlertDialogContent className="bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your chat.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => deleteDialogId && handleDelete(deleteDialogId)}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      ) : null}
+      {editDialogId ? (
+        <Dialog
+          open={Boolean(editDialogId)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setEditDialogId(null);
+              setNewName('');
+            }
+          }}
+        >
+          <DialogContent className="bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
+            <DialogHeader>
+              <DialogTitle>Rename Chat</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2">
+              <label htmlFor="chat-title" className="text-sm font-medium">
+                New Chat Title
+              </label>
+              <input
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                type="text"
+                id="chat-title"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-900"
+                placeholder="Enter new chat title"
+              />
+            </div>
+            <DialogFooter>
+              <DialogClose
+                render={
+                  <button
+                    aria-label="Close Dialog"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                }
+              />
+              <button
+                aria-label="Rename Chat"
+                onClick={() => editDialogId && handleEdit(editDialogId)}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
+              >
+                Rename
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      ) : null}
+      <SidebarFooter>
+        <SidebarMenuItem className="flex flex-col justify-center gap-2">
+          <SidebarMenuButton
+            aria-label="Theme toggle"
+            className="
     w-full rounded-lg px-2 py-1.5
     text-zinc-500 dark:text-zinc-400
     hover:bg-zinc-100 hover:text-zinc-900
     dark:hover:bg-zinc-900 dark:hover:text-zinc-100
     transition-colors
-" onClick={() => setTheme(theme === "dark"?"light":"dark")}>{theme === "dark" ? <Sun /> : <Moon />} Theme</SidebarMenuButton>
-            <SidebarMenuButton aria-label="Theme toggle" className="
+"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          >
+            {theme === 'dark' ? <Sun /> : <Moon />} Theme
+          </SidebarMenuButton>
+          <SidebarMenuButton
+            aria-label="Theme toggle"
+            className="
     w-full rounded-lg px-2 py-1.5
     text-zinc-500 dark:text-zinc-400
     hover:bg-zinc-100 hover:text-zinc-900
     dark:hover:bg-zinc-900 dark:hover:text-zinc-100
     transition-colors
-" onClick={() => setShowSettings(true)}><Settings /> Settings</SidebarMenuButton>
-            <CustomDialog title="Settings" shouldOpen={showSettings} onDialogOpenChange={(o)=>setShowSettings(o)}>
-                <SettingsComponent />
-            </CustomDialog>
-          </SidebarMenuItem>
-        </SidebarFooter>
-      </Sidebar>
+"
+            onClick={() => setShowSettings(true)}
+          >
+            <Settings /> Settings
+          </SidebarMenuButton>
+          <CustomDialog
+            title="Settings"
+            shouldOpen={showSettings}
+            onDialogOpenChange={(o) => setShowSettings(o)}
+          >
+            <SettingsComponent />
+          </CustomDialog>
+        </SidebarMenuItem>
+      </SidebarFooter>
+    </Sidebar>
     // </div>
-  )
-})
-AppSidebar.displayName="App Side bar"
-export default AppSidebar
+  );
+});
+AppSidebar.displayName = 'App Side bar';
+export default AppSidebar;
